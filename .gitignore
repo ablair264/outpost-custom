@@ -101,3 +101,6 @@ dist-ssr/
 
 # Generated files
 /scripts/*.log
+
+# Shadcn admin folder
+/shadcn-admin
