@@ -1,0 +1,243 @@
+.logo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.logo-modal {
+  background: #1a1a1a;
+  color: #fff;
+  width: 92%;
+  max-width: 1000px;
+  height: 84vh;
+  max-height: 760px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.logo-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333;
+}
+
+.logo-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.close-btn {
+  background: transparent;
+  border: 1px solid #555;
+  color: #ddd;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #fff;
+  border-color: #888;
+}
+
+.logo-modal-content {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  padding: 18px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.logo-modal-left {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.preview-logo-free {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  will-change: transform, left, top;
+}
+
+.preview-logo-free:active {
+  cursor: grabbing;
+}
+
+.preview-placeholder {
+  color: #777;
+  font-size: 14px;
+}
+
+.logo-modal-right {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 16px;
+  overflow: auto;
+}
+
+.field {
+  margin-top: 14px;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.uploader input[type="file"] {
+  width: 100%;
+}
+
+.hint {
+  color: #888;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.info {
+  color: #a0e7a0;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 2px solid #333;
+  background: #222;
+  color: #fff;
+}
+
+.logo-modal-actions {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.clear-btn {
+  background: transparent;
+  border: 1px solid #666;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #bbb;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+  border-color: #999;
+  color: #fff;
+}
+
+.apply-btn {
+  background: #78BE20;
+  color: #1a1a1a;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.apply-btn:hover:enabled {
+  background: #6ba51b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(120, 190, 32, 0.3);
+}
+
+.apply-btn:disabled {
+  background: #3a3a3a;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.modal-color-swatches {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.modal-color-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.modal-color-swatch:hover {
+  transform: scale(1.08);
+}
+
+.modal-color-swatch.active {
+  border-color: #78BE20;
+  box-shadow: 0 0 0 2px rgba(120, 190, 32, 0.25);
+}
+
+@media (max-width: 900px) {
+  .logo-modal-content {
+    grid-template-columns: 1fr;
+    height: 100%;
+  }
+}

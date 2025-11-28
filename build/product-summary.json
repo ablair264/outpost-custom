@@ -1,0 +1,4671 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-28T16:48:40.652Z",
+    "total_products": 121,
+    "total_variants": 1000,
+    "brands": [
+      "2786",
+      "AWDis Academy",
+      "AWDis Just Cool",
+      "Beechfield",
+      "Westford Mill",
+      "Wombat",
+      "Yoko"
+    ],
+    "product_types": [
+      "Aprons",
+      "Bags",
+      "Caps",
+      "Cushion Covers",
+      "Polos",
+      "Safety Vests",
+      "Shirts",
+      "Shorts",
+      "Slippers",
+      "Snoods",
+      "Softshells",
+      "Storage",
+      "Tabards",
+      "Towels"
+    ],
+    "genders": [
+      "Female",
+      "Male",
+      "Unisex"
+    ],
+    "age_groups": [
+      "Adult",
+      "Kids"
+    ],
+    "price_range": {
+      "min": 0.45,
+      "max": 21.3
+    }
+  },
+  "products": [
+    {
+      "style_code": "WM216",
+      "style_name": "Premium cotton stuff bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 1.3,
+        "max": 3.45
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "size_range": "XS to XL",
+      "features": [
+        "Premium cotton for extra durability",
+        "Superior print surface",
+        "Double drawcord closure"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7f15b286ee281eed20/3471c298/WM216_LS00_2025.jpg",
+      "variant_count": 10
+    },
+    {
+      "style_code": "WM225",
+      "style_name": "Premium cotton maxi tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.3,
+        "max": 2.6
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "French Navy",
+        "Graphite Grey",
+        "Natural",
+        "White"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Premium cotton for extra durability",
+        "Superior print surface",
+        "Large capacity"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7f15b286ee281eed1d/4c8619a9/WM225_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM235",
+      "style_name": "Organic cotton wave print maxi tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.7,
+        "max": 3.7
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural/Blue Grey",
+        "Natural/Caramel",
+        "Natural/Dusty Green",
+        "Natural/Peach",
+        "Natural/Black"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "The Organic cotton wave print maxi tote combines sustainability with laidback style. Made from organic cotton, featuring an abstract swirl pattern, this tote bag provides the perfect canvas for person",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/f405e09b/67483f7f15b286ee281eed1a/WM235_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM350",
+      "style_name": "Fairtrade cotton canvas cushion cover",
+      "brand": "Westford Mill",
+      "product_type": "Cushion Covers",
+      "price_range": {
+        "min": 3.8,
+        "max": 4.9
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Light Grey",
+        "Natural"
+      ],
+      "sizes": [
+        "L",
+        "S",
+        "M"
+      ],
+      "size_range": "S to L",
+      "features": [
+        "Fairtrade certified",
+        "Self-coloured concealed zips",
+        "Perfect for print and embroidery"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Cushion Covers"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/13b7bbff/67483f7d15b286ee281eecf0/WM350_LS00_2025.jpg",
+      "variant_count": 9
+    },
+    {
+      "style_code": "WM251",
+      "style_name": "Striped organic cotton tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.4,
+        "max": 3.4
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Grey/Stripe",
+        "Red/Stripe"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Theres nothing more timeless than a classic tote bag with a chic striped print  the perfect way to elevate soft, minimal styling with a subtle pop of colour. Sized to store all of your on-the-go ess",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d82edd96/67483f7f15b286ee281eed17/WM251_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM253",
+      "style_name": "Striped organic accessory pouch",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.2,
+        "max": 2.6
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Grey/Stripe",
+        "Red/Stripe"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "size_range": "SL",
+      "features": [],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "When youre looking for somewhere to put small items at home or on your travels, look no further than this pouch. Its perfectly sized for accessories or travel-sized toiletries and is completed by a ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/76f875fd/67483f7e15b286ee281eed14/WM253_LS00_2025.jpg",
+      "variant_count": 6
+    },
+    {
+      "style_code": "WM255",
+      "style_name": "Striped organic cotton shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 5.8,
+        "max": 5.8
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Grey/Stripe",
+        "Red/Stripe"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "From high street shops to your local farmers market, this striped shopper is a must for any modern multitasker  the perfect way to elevate soft, minimal styling with a subtle pop of colour. Sized to",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/fae677de/67483f7e15b286ee281eed11/WM255_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM258",
+      "style_name": "Striped organic cotton barrel bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 7.59,
+        "max": 7.59
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Grey/Stripe",
+        "Red/Stripe"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Whether its a trip to the beach, a session in the yoga studio or a long weekend at the spa, this relaxed barrel bag has a soft silhouette while also offering a spacious capacity for essentials and mo",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/6d0df12f/67483f7e15b286ee281eed0e/WM258_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM260",
+      "style_name": "Organic premium cotton gymsac",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.6,
+        "max": 3.6
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Classic Red",
+        "French Navy",
+        "Graphite Grey"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Superior print surface",
+        "Rope drawcord closure"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Every retail collection needs a multi-purpose drawstring bag and this certified organic premium cotton gymsac provides fashion and function in a way that is simple, yet stylish. This sporty staple fea",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/671f39cc/67483f7e15b286ee281eed0b/WM260_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM261",
+      "style_name": "Organic premium cotton tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.7,
+        "max": 3.2
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Bright Royal",
+        "Classic Red",
+        "French Navy",
+        "Graphite Grey",
+        "Light Grey",
+        "Natural",
+        "White"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Superior print surface",
+        "Premium cotton"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "The certified organic premium cotton tote offers a selection of retail-ready colourways, each one crafted in sustainable organic cotton. This quality tote serves as the perfect shopping companion and ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/4174ff1c/67483f7e15b286ee281eed05/WM261_LS00_2025.jpg",
+      "variant_count": 8
+    },
+    {
+      "style_code": "WM265",
+      "style_name": "Organic premium cotton maxi tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 0.89,
+        "max": 3.7
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Classic Red",
+        "French Navy",
+        "Graphite Grey",
+        "Light Grey",
+        "Natural",
+        "White"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Carry by hand or over the shoulder",
+        "Premium cotton",
+        "Superior print surface",
+        "soft",
+        "lightweight"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Crafted using a soft-touch premium certified organic cotton, the maxi tote is a stylish addition to any sustainable collection. A simple design with a superior print surface. Lightweight with a large ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/133bff4b/67483f7e15b286ee281eed02/WM265_LS00_2025.jpg",
+      "variant_count": 7
+    },
+    {
+      "style_code": "WM266",
+      "style_name": "Organic premium cotton stuff bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 1.5,
+        "max": 2.94
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "size_range": "XS to L",
+      "features": [
+        "Organic Content Standard 100  Certification",
+        "Superior print surface",
+        "Double drawcord closure",
+        "durable"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Made to last and built for purpose, this certified organic premium cotton stuff bag comes in versatile sizes. Woven from durable organic cotton, this everyday essential has a natural finish that lends",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/ac9ebe08/67483f7d15b286ee281eecff/WM266_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM281",
+      "style_name": "Organic natural dyed bag for life",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.65,
+        "max": 3.65
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Indigo Blue",
+        "Myrobalan Stone",
+        "Pomegranate Rose",
+        "Sea Salt"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Coloured with sustainably-derived natural dyes",
+        "Fades beautifully over time",
+        "Can be carried by hand or over the shoulder",
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "For this collection, we took inspiration from the natural elements to create a colour palette of soft hues thats derived from some of the planets purest sources. Sustainably-derived dyes, extracted ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/54600a8d/67483f7d15b286ee281eecfc/WM281_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM285",
+      "style_name": "Organic natural dyed maxi bag for life",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.84,
+        "max": 3.84
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Indigo Blue",
+        "Myrobalan Stone",
+        "Pomegranate Rose",
+        "Sea Salt"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Coloured with sustainably-derived natural dyes",
+        "Fades beautifully over time",
+        "Large capacity",
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "For this collection, we took inspiration from the natural elements to create a colour palette of soft hues thats derived from some of the planets purest sources. Sustainably-derived dyes, extracted ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/621d5b93/67483f7d15b286ee281eecf9/WM285_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM407",
+      "style_name": "Jute classic shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.94,
+        "max": 3.45
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural/Forest Green",
+        "Natural/Fuchsia",
+        "Navy/Navy",
+        "Black/Black",
+        "Graphite Grey/Graphite Grey",
+        "Natural",
+        "Natural/Black",
+        "Natural/Bright Red"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Cotton carry handles",
+        "Choice of colours for the handle",
+        "Handle length 55cm"
+      ],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/591b321b/67483f7c15b286ee281eecde/WM407_LS00_2025.jpg",
+      "variant_count": 8
+    },
+    {
+      "style_code": "WM340",
+      "style_name": "Garment-dyed accessory bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.7,
+        "max": 3.7
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Vintage Black",
+        "Vintage Denim",
+        "Vintage Dusky Pink",
+        "Vintage Aqua",
+        "Vintage Light Blue",
+        "Vintage Sand"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Relaxed and effortless, the Garment-dyed accessory bag seamlessly blends style and function. Perfect for travel or daily use, this pouch comes in washed timeless shades and soft pastels, making it a v",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/986205eb/67483f7d15b286ee281eecf5/WM340_LS00_2025.jpg",
+      "variant_count": 6
+    },
+    {
+      "style_code": "WM345",
+      "style_name": "Garment-dyed shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 5.85,
+        "max": 5.85
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Vintage Black",
+        "Vintage Denim",
+        "Vintage Dusky Pink",
+        "Vintage Aqua",
+        "Vintage Light Blue",
+        "Vintage Sand"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "The Garment-dyed shopper merges casual style with everyday practicality. With its stone-washed finish and spacious, oversized oval design, its ideal for carrying everyday essentials. The range of was",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/5cd815fa/67483f7d15b286ee281eecf3/WM345_LS00_2025.jpg",
+      "variant_count": 6
+    },
+    {
+      "style_code": "WM408",
+      "style_name": "Jute jumbo shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.6,
+        "max": 3.6
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Cotton carry handles",
+        "Colour: Natural",
+        "Handle length 37cm"
+      ],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7c15b286ee281eecdb/3402d13a/WM408_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM355",
+      "style_name": "Fairtrade cotton piped cushion cover",
+      "brand": "Westford Mill",
+      "product_type": "Cushion Covers",
+      "price_range": {
+        "min": 4.4,
+        "max": 4.4
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural/Black",
+        "Natural/French Navy",
+        "Natural/Light Grey",
+        "Natural/Sage Green"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Fairtrade certified",
+        "Contrast colour back",
+        "Self-coloured concealed zip",
+        "soft"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Cushion Covers"
+      ],
+      "description": "A house becomes a home with Westford Mill. Our homeware collection is thoughtfully designed to help you create a beautiful, curated space that feels like your very own sanctuary. Choose from a palette",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/1fa66ee5/67483f7c15b286ee281eeced/WM355_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM362",
+      "style_name": "Fairtrade cotton junior craft apron",
+      "brand": "Westford Mill",
+      "product_type": "Aprons",
+      "price_range": {
+        "min": 2.94,
+        "max": 3.45
+      },
+      "gender": "Unisex",
+      "age_group": "Kids",
+      "colors": [
+        "Natural",
+        "Natural/Classic Red",
+        "Natural/French Navy",
+        "Natural/Pistachio",
+        "Natural/Pastel Pink"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Fairtrade certified",
+        "Neck tie with Rip-Strip fastening safety closure",
+        "Cotton herringbone 60cm waist ties"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Aprons",
+        "Workwear"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7c15b286ee281eecea/584fb21a/WM362_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM364",
+      "style_name": "Fairtrade cotton adult craft apron",
+      "brand": "Westford Mill",
+      "product_type": "Aprons",
+      "price_range": {
+        "min": 1.75,
+        "max": 6.39
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "French Navy",
+        "Light Grey",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Fairtrade certified",
+        "Deep front pocket",
+        "Neck tie with sliding buckle"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Aprons",
+        "Workwear"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7c15b286ee281eece7/70f70ffd/WM364_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM406",
+      "style_name": "Jute compact tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.34,
+        "max": 2.34
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Cotton carry handles",
+        "Use in hand or over the shoulder",
+        "Handle length 60cm"
+      ],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/b7633f74/67483f7c15b286ee281eece4/WM406_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM415",
+      "style_name": "Jute stuff bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 0.9,
+        "max": 4.14
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black/Natural",
+        "Natural"
+      ],
+      "sizes": [
+        "XXS",
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "size_range": "XXS to XL",
+      "features": [
+        "Rope double drawcord closure",
+        "Available in six sizes",
+        "100% jute"
+      ],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "Not available",
+      "variant_count": 12
+    },
+    {
+      "style_code": "WM422",
+      "style_name": "Printers jute classic shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.64,
+        "max": 3.64
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Fuchsia",
+        "Natural",
+        "Navy"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Print-friendly canvas side panels",
+        "Cotton carry handles",
+        "Use in hand or over the shoulder"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/52e53b59/67483f7a15b286ee281eecc3/WM422_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM425",
+      "style_name": "Cotton pocket jute gift bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.4,
+        "max": 2.4
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Print-friendly front pocket",
+        "Cotton carry handles",
+        "Handle length - 35cm"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/0d7557c0/67483f7a15b286ee281eecc0/WM425_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM426",
+      "style_name": "Cotton pocket jute midi tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.8,
+        "max": 2.8
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Print-friendly front pocket",
+        "Cotton carry handles",
+        "Handle length - 40cm"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/afd677dc/67483f7a15b286ee281eecbd/WM426_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM427",
+      "style_name": "Cotton pocket jute shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.4,
+        "max": 3.4
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Print-friendly front pocket",
+        "Cotton carry handles",
+        "Handle length - 55cm"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/f4288ed7/67483f7a15b286ee281eecba/WM427_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM433",
+      "style_name": "Shimmer jute bottle bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 1.79,
+        "max": 1.79
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Red Gold"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Holds a bottle of up to 1.5 litres",
+        "Reinforced cotton carry handles",
+        "Gold shimmer thread detail"
+      ],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "The perfect bottle bag for celebrating in style, this jute carrier fits bottles of up to 1.5 litres and has reinforced handles for added safety. The natural jute has a special glittering thread fibre ",
+      "image": "Not available",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM437",
+      "style_name": "Shimmer jute shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.65,
+        "max": 3.65
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural Gold"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Cotton carry handles",
+        "Gold shimmer thread detail",
+        "Handle length - 55cm"
+      ],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d8d5c501/67483f7a15b286ee281eecb4/WM437_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM441",
+      "style_name": "Juco mini gift bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.7,
+        "max": 2.7
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Cotton carry handles",
+        "Refined jute/cotton blend for ease of decoration",
+        "Handle length: 35cm"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/a8186a37/67483f7a15b286ee281eecb1/WM441_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM447",
+      "style_name": "Juco shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.94,
+        "max": 3.94
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Cotton carry handles",
+        "Refined jute/cotton blend for ease of decoration",
+        "Handle length: 55cm"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/9d758a00/67483f7915b286ee281eecae/WM447_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM450",
+      "style_name": "Jute base canvas shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.35,
+        "max": 3.35
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Print-friendly canvas body",
+        "Premium heavyweight fabric",
+        "Cotton webbing carry handles"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Embrace practical, sustainable style with this jute base canvas shopper. With a premium cotton canvas body, this natural carryall is a print-friendly option for custom decoration and embroidery and th",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7915b286ee281eeca8/da3a1806/WM450_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM451",
+      "style_name": "Jute base canvas tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.55,
+        "max": 3.55
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Print-friendly canvas body",
+        "Premium heavyweight fabric",
+        "Cotton webbing carry handles",
+        "durable"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Premium totes, like the jute base canvas tote, offer a fresh look and feel for retails staple shopper. Crafted from natural cotton canvas and featuring a durable jute base, this print-friendly tote c",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/215d0606/67483f7915b286ee281eeca5/WM451_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM452",
+      "style_name": "Jute base canvas tote XL",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 4.14,
+        "max": 4.14
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Print-friendly canvas body",
+        "Large capacity",
+        "Cotton webbing carry handles",
+        "durable"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Supersize your cotton canvas collection with the jute base canvas tote XL. Stylish and spacious, this premium tote features a heavyweight cotton body and durable jute base to deliver a naturally ethic",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/1281a37e/67483f7915b286ee281eeca2/WM452_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM455",
+      "style_name": "Unlaminated jute tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.69,
+        "max": 2.69
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Cotton carry handles",
+        "Close weave construction",
+        "Handle length - 67cm"
+      ],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "This innovate unlaminated jute tote is made with a tighter and smoother weave fabric and with cotton webbed handles, and is the ideal everyday bag.",
+      "image": "Not available",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM458",
+      "style_name": "Unlaminated jute shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.1,
+        "max": 3.45
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural",
+        "Navy/Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Cotton carry handles",
+        "Close weave construction",
+        "Handle length - 67cm"
+      ],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "The innovated unlaminated jute tote is made with a tighter and smoother weave fabric and with cotton webbed handles, and is the ideal shopping companion.",
+      "image": "Not available",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM466",
+      "style_name": "Soft washed jute beach bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 9,
+        "max": 9
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Blossom",
+        "Duck Egg Blue",
+        "Natural",
+        "Saffron"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "soft"
+      ],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "This beach bag is made from soft washed jute that offers a chic distressed finish to complement laid-back looks and casual styling. Its relaxed silhouette and generous capacity are perfect, on and off",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/119bbd7a/67483f7915b286ee281eec9f/WM466_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM470",
+      "style_name": "Natural starched jute classic shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.8,
+        "max": 3.2
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black/Black",
+        "Natural/Olive Green",
+        "Natural",
+        "Natural/Black",
+        "Natural/Navy"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Every piece in the unlaminated Natural Starched Jute collection has angular edges and a sturdy construction for more boxy styling and structured storage. The fabric is tactile to the touch and organic",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/62b64e00/67483f7915b286ee281eec9c/WM470_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM671",
+      "style_name": "Fairtrade cotton Camden shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.95,
+        "max": 4.55
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural",
+        "Black",
+        "French Navy",
+        "Natural/Black"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Fairtrade certified",
+        "Use in hand or over the shoulder",
+        "Handle length 58cm"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/36479a32/67483f7515b286ee281eec54/WM671_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM473",
+      "style_name": "Natural starched jute midi tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.5,
+        "max": 2.7
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black/Black",
+        "Natural/Olive Green",
+        "Natural",
+        "Natural/Black",
+        "Natural/Navy"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Every piece in the unlaminated Natural Starched Jute collection has angular edges and a sturdy construction for more boxy styling and structured storage. The fabric is tactile to the touch and organic",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/39d29e17/67483f7815b286ee281eec99/WM473_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM530",
+      "style_name": "Canvas accessory pouch",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 1.5,
+        "max": 2.8
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Navy",
+        "Black",
+        "Light Grey",
+        "Natural",
+        "Off White",
+        "True Pink"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "size_range": "XS to L",
+      "features": [
+        "Multi-purpose use",
+        "Vintage-style metal zip",
+        "Ideal for print and embroidery"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "Not available",
+      "variant_count": 24
+    },
+    {
+      "style_code": "WM475",
+      "style_name": "Natural starched jute market shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.6,
+        "max": 3.6
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural/Olive Green",
+        "Natural/Orange Rust",
+        "Natural",
+        "Natural/Black",
+        "Natural/Navy"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Every piece in the unlaminated Natural Starched Jute collection has angular edges and a sturdy construction for more boxy styling and structured storage. The fabric is tactile to the touch and organic",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/a038fd07/67483f7815b286ee281eec96/WM475_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM810",
+      "style_name": "EarthAware® organic gymsac",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 0.89,
+        "max": 0.89
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "White"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100  Certification",
+        "Premium heavyweight fabric",
+        "Heavy rope drawcord closure"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "",
+      "image": "Not available",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM477",
+      "style_name": "Natural starched jute mini gift bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.2,
+        "max": 2.2
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural/Olive Green",
+        "Natural/Orange Rust",
+        "Natural",
+        "Natural/Black",
+        "Natural/Navy"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Every piece in the unlaminated Natural Starched Jute collection has angular edges and a sturdy construction for more boxy styling and structured storage. The fabric is tactile to the touch and organic",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/15dd6644/67483f7815b286ee281eec93/WM477_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM544",
+      "style_name": "Dipped base canvas accessory bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 0.75,
+        "max": 3.4
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural/True Pink",
+        "Natural/Black",
+        "Natural/Navy"
+      ],
+      "sizes": [
+        "M",
+        "L"
+      ],
+      "size_range": "M to L",
+      "features": [
+        "Available in two sizes - M and L",
+        "Zipped closure",
+        "Multi-purpose use"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "Not available",
+      "variant_count": 6
+    },
+    {
+      "style_code": "WM480",
+      "style_name": "Cotton pocket natural starched jute shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.44,
+        "max": 3.44
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Every piece in the unlaminated Natural Starched Jute collection has angular edges and a sturdy construction for more boxy styling and structured storage. The fabric is tactile to the touch and rustic ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/da9b2349/67483f7815b286ee281eec8d/WM480_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM483",
+      "style_name": "Cotton pocket natural starched jute midi tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.75,
+        "max": 2.75
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Every piece in the unlaminated Natural Starched Jute collection has angular edges and a sturdy construction for more boxy styling and structured storage. The fabric is tactile to the touch and rustic ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/f28463ce/67483f7815b286ee281eec8a/WM483_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM520",
+      "style_name": "Canvas wristlet pouch",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.2,
+        "max": 2.3
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black/Black",
+        "Natural/Black",
+        "Natural/Light Grey",
+        "Natural/Natural",
+        "Natural/Navy",
+        "Natural/Pink"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Contrasting colour zip",
+        "Detachable wristlet strap",
+        "Premium heavyweight fabric"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Introducing the canvas wristlet pouch, a compact yet versatile accessory for today's trend-led re-seller. Featuring a removable strap and colour-contrast zip, this stylish pouch adds a welcome pop of ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/4d45080e/67483f7815b286ee281eec87/WM520_LS00_2025.jpg",
+      "variant_count": 6
+    },
+    {
+      "style_code": "WM620",
+      "style_name": "Fairtrade cotton bottle bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.2,
+        "max": 2.6
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Bottle Green",
+        "Light Grey",
+        "Natural",
+        "Black"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Fairtrade certified",
+        "Holds up to 1.5 litre bottles",
+        "Handle length: 30cm"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/a1d5a38a/67483f7615b286ee281eec5d/WM620_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM540",
+      "style_name": "Canvas accessory bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 0.5,
+        "max": 2.95
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Light Grey",
+        "Natural",
+        "Navy",
+        "Off White"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "size_range": "S to L",
+      "features": [
+        "Multi-purpose use",
+        "Vintage-style metal zip",
+        "Ideal for print and embroidery"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/8f2dd694/67483f7715b286ee281eec81/WM540_LS00_2025.jpg",
+      "variant_count": 15
+    },
+    {
+      "style_code": "WM552",
+      "style_name": "Canvas accessory case",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.7,
+        "max": 3.54
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "S",
+        "L"
+      ],
+      "size_range": "S to L",
+      "features": [
+        "Available in two sizes - S and L",
+        "Zipped closure",
+        "Multi-purpose use"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/35e74b47/67483f7715b286ee281eec7b/WM552_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM558",
+      "style_name": "Canvas vanity case",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 6.19,
+        "max": 6.19
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Cotton carry handle",
+        "Full cotton lining",
+        "Zippered closure"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/90cb387d/67483f7715b286ee281eec78/WM558_LS00_2025.jpg",
+      "variant_count": 1
+    },
+    {
+      "style_code": "WM572",
+      "style_name": "Reversible canvas organiser",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 0.75,
+        "max": 3.8
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural",
+        "Natural/Black",
+        "Natural/Navy"
+      ],
+      "sizes": [
+        "M",
+        "L"
+      ],
+      "size_range": "M to L",
+      "features": [
+        "Available in two sizes - M and L",
+        "Easy-to-decorate storage solution",
+        "Fully reversible"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/240b8a54/67483f7715b286ee281eec75/WM572_LS00_2025.jpg",
+      "variant_count": 6
+    },
+    {
+      "style_code": "WM574",
+      "style_name": "Canvas storage tubs",
+      "brand": "Westford Mill",
+      "product_type": "Storage",
+      "price_range": {
+        "min": 0.69,
+        "max": 5.5
+      },
+      "gender": null,
+      "age_group": "Adult",
+      "colors": [
+        "Light Grey",
+        "Natural",
+        "Pastel Pink",
+        "Sage Green"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "size_range": "S to L",
+      "features": [
+        "Premium, heavyweight fabric",
+        "Multi-purpose use",
+        "Reinforced, built-in handles"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Storage"
+      ],
+      "description": "Simple and effective, this multipurpose tub made from 100% premium cotton canvas is available in 3 sizes to create a versatile solution for all of your storage needs. Designed to help keep any home or",
+      "image": "Not available",
+      "variant_count": 12
+    },
+    {
+      "style_code": "WM623",
+      "style_name": "Fairtrade cotton classic shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 4.44,
+        "max": 5.75
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Bottle Green",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Fairtrade certified",
+        "Use in hand or over-the-shoulder",
+        "Handle length: 58cm"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/16f4dfed/67483f7515b286ee281eec5a/WM623_LS00_2025.jpg",
+      "variant_count": 3
+    },
+    {
+      "style_code": "WM580",
+      "style_name": "Heavy canvas storage trug",
+      "brand": "Westford Mill",
+      "product_type": "Storage",
+      "price_range": {
+        "min": 6.05,
+        "max": 11.49
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural",
+        "Pure Grey"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "size_range": "S to L",
+      "features": [
+        "Durable canvas construction",
+        "Heavyweight rope carry handles",
+        "Available in three sizes"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Storage"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/2d8e1c73/67483f7715b286ee281eec72/WM580_LS00_2025.jpg",
+      "variant_count": 6
+    },
+    {
+      "style_code": "WM600",
+      "style_name": "Gallery canvas tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 1.15,
+        "max": 4.54
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "French Navy",
+        "Graphite Grey",
+        "Natural",
+        "Natural/Black"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Premium heavyweight fabric",
+        "Long handles",
+        "Handle length - 57cm"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Framed and finished with premium French seams, the gallery canvas tote is a robust option for an everyday bag. Sized to A3, the canvas tote is available in a variety of mix and match colour options to",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/f972e3f3/67483f7615b286ee281eec6c/WM600_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM604",
+      "style_name": "Double-handle cargo pocket tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 7.25,
+        "max": 8.55
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Mushroom",
+        "Natural",
+        "Olive Green"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "The Double-handle cargo pocket tote offers plenty of space for essentials, making it ideal for shopping or weekend trips. Made from organic cotton, featuring a front pocket for easy access to smaller ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/faf0f72e/67483f7615b286ee281eec69/WM604_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM606",
+      "style_name": "Oversized heavy duty canvas tote bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 7.05,
+        "max": 8.35
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Mushroom",
+        "Natural",
+        "Rose"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "The Oversized heavy duty canvas tote bag is ideal for sunny seaside days. Made from sturdy canvas, with a secure zip closure, it keeps your essentials safe  from sun cream to a good book. Its over-th",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/b776e0a8/67483f7615b286ee281eec66/WM606_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM608",
+      "style_name": "Resort canvas bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 5.14,
+        "max": 5.99
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Graphite Grey",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Premium heavyweight fabric",
+        "Structured base and side panels",
+        "Internal slip pocket"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "From exotic island-hopping to exploring Europes fashion capitals, this timeless design has everything you need to tote your travel essentials in style. A boxy silhouette offers a contemporary structu",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/f4f1d17a/67483f7615b286ee281eec63/WM608_LS00_2025.jpg",
+      "variant_count": 3
+    },
+    {
+      "style_code": "WM610",
+      "style_name": "Everyday canvas tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 4.9,
+        "max": 5.85
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Bottle Green",
+        "Caramel",
+        "Mushroom",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Oversized style",
+        "Soft webbing handles for maximum comfort",
+        "Can be carried by hand or over the shoulder",
+        "soft"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Designed with modern lifestyles in mind, this canvas tote is the perfect way to carry everything from water bottles and journals to activewear and extra layers. An oversized silhouette is soft and uns",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/a42ab79e/67483f7615b286ee281eec60/WM610_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM626",
+      "style_name": "Fairtrade cotton deck bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 6.05,
+        "max": 7.45
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "French Navy",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Fairtrade certified",
+        "Internal zipped pocket",
+        "Cotton carry handles"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Trends come and go  but every accessory collection needs some forever pieces to rely on. This classic canvas deck bag, with its roomy capacity, lends itself perfectly to effortless styling  a trusty",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/dc2d54e8/67483f7515b286ee281eec57/WM626_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM680",
+      "style_name": "Nautical beach bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 8.8,
+        "max": 9.29
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "French Navy",
+        "Natural",
+        "Natural/Grey",
+        "Natural/Navy",
+        "Natural/Pink"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Printed stripe design",
+        "Durable canvas construction",
+        "Heavyweight rope carry handles",
+        "brushed fabric"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Horizontal stripes continue to influence high street fashion, and this boardwalk beach bag delivers as a key statement piece for fans of the popular maxi-bag style. Chunky rope carry handles offer cla",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7515b286ee281eec51/5e268e81/WM680_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM684",
+      "style_name": "Nautical accessory bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.2,
+        "max": 3.2
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural/Grey",
+        "Natural/Navy",
+        "Natural/Pink"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Printed stripe design",
+        "Durable canvas construction",
+        "Zippered closure",
+        "brushed fabric"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Splash out on classic beach styling with the nautical accessory bag. Constructed with a premium, heavyweight brushed cotton canvas featuring a maritime stripe print design, this multi-use bag has styl",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7515b286ee281eec4e/5c257985/WM684_LS00_2025.jpg",
+      "variant_count": 3
+    },
+    {
+      "style_code": "WM688",
+      "style_name": "Nautical barrel bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 9.39,
+        "max": 9.39
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural/Navy",
+        "Natural/Pink"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Printed stripe design",
+        "Zippered closure",
+        "Webbing carry handles",
+        "soft"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags"
+      ],
+      "description": "Horizontal stripes continue to influence the high street, and this Nautical Barrel Bag is a key holiday piece for fans of the maritime stripe design. Created using a soft brush cotton canvas and fashi",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/0d18ba46/67483f7515b286ee281eec4b/WM688_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM690",
+      "style_name": "EarthAware® organic boat bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 6.95,
+        "max": 6.95
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Natural/Amber",
+        "Natural/Classic Red",
+        "Natural/French Navy",
+        "Natural/Sage Green"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Contains 100% OCS-certified organic cotton, certified by Control Union CU811033",
+        "Premium, heavyweight fabric",
+        "Soft cotton, striped webbing handles",
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Made from 100% certified cotton, this reliable tote design benefits from premium, hardwearing fabric that is also more sustainable. Signature contrast striped handles are available in a choice of four",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/e45949aa/67483f7515b286ee281eec48/WM690_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM825",
+      "style_name": "EarthAware® organic spring purse",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.35,
+        "max": 2.45
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural",
+        "Pastel Blue",
+        "Pastel Pink"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Premium heavyweight fabric",
+        "Zippered closure"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "100% Certified organic cotton\r\nPremium heavyweight fabric\r\nZippered closure",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3f2b9265/67483f7315b286ee281eec1e/WM825_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM691",
+      "style_name": "EarthAware® organic twill tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.94,
+        "max": 3.7
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Apple Green",
+        "Cornflower Blue",
+        "Natural",
+        "Orange",
+        "Raspberry Pink",
+        "Sunflower",
+        "Violet"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "No modern bag collection is complete without a classic tote  and this one comes with rustic charm and comfortable cotton carry handles. Whether youre styling for work or play, its a reliable favour",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/99da3fad/67483f7415b286ee281eec42/WM691_LS00_2025.jpg",
+      "variant_count": 7
+    },
+    {
+      "style_code": "WM695",
+      "style_name": "EarthAware® organic twill shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 4,
+        "max": 4.74
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Apple Green",
+        "Cornflower Blue",
+        "Natural",
+        "Orange",
+        "Raspberry Pink",
+        "Sunflower",
+        "Violet"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Rustic but practical, this twill shopper is designed for those looking for simple functionality that blends with soft, casual styling. Its generous capacity is grocery store-ready, while a diverse ran",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/b7282768/67483f7415b286ee281eec3f/WM695_LS00_2025.jpg",
+      "variant_count": 7
+    },
+    {
+      "style_code": "WM696",
+      "style_name": "Oversized canvas tote bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 5.14,
+        "max": 6.29
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Caramel",
+        "Dusty Blue",
+        "Dusty Green",
+        "French Navy",
+        "Graphite Grey",
+        "Natural",
+        "Olive Green",
+        "Peach"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Durable, canvas construction",
+        "Extra-large capacity",
+        "Soft webbing handles for maximum comfort",
+        "soft",
+        "durable"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Bags",
+        "Corporate"
+      ],
+      "description": "Taking a classic tote bag and supersizing it creates this modern, oversized design with its signature extra large capacity - the perfect bag for day trips, commute essentials or shopping on the go.  T",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/40464fb6/67483f7415b286ee281eec3c/WM696_LS00_2025.jpg",
+      "variant_count": 9
+    },
+    {
+      "style_code": "WM701",
+      "style_name": "Tea towel",
+      "brand": "Westford Mill",
+      "product_type": "Towels",
+      "price_range": {
+        "min": 1.75,
+        "max": 1.79
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural",
+        "Pure Grey",
+        "White"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Designed for ease of decoration",
+        "Luxurious feel",
+        "Colours: White, Black, Pure Grey and Natural"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Towels"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/1d372a96/67483f7415b286ee281eec39/WM701_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM710",
+      "style_name": "Organic cotton tea towel",
+      "brand": "Westford Mill",
+      "product_type": "Towels",
+      "price_range": {
+        "min": 2.3,
+        "max": 2.5
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural",
+        "Pure Grey",
+        "White"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "CutAway label for ease of rebranding",
+        "OCS certified - CU811033",
+        "Hanging loop",
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Towels",
+        "Sustainable"
+      ],
+      "description": "As an everyday essential with premium features, this 100% certified organic cotton tea towel is anything but basic. Finished with a softening treatment, it is soft to the touch, while a relaxed, absor",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/7b481e21/67483f7415b286ee281eec36/WM710_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM801",
+      "style_name": "EarthAware® organic bag for life",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.5,
+        "max": 4.14
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Airforce Blue",
+        "Amber",
+        "Black",
+        "Cappuccino",
+        "Classic Red",
+        "French Navy",
+        "Graphite Grey",
+        "Mushroom",
+        "Natural",
+        "Olive Green",
+        "Orange Rust",
+        "Rose",
+        "Sage Green",
+        "White"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100  Certification",
+        "Premium heavyweight fabric",
+        "Use in hand or over-the-shoulder"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "100% Certified organic cotton\r\nPremium heavyweight fabric\r\nUse in hand or over-the-shoulder",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d04d5667/67483f7415b286ee281eec33/WM801_LS00_2025.jpg",
+      "variant_count": 14
+    },
+    {
+      "style_code": "WM814",
+      "style_name": "EarthAware® organic barrel bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 9.55,
+        "max": 10.55
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "French Navy",
+        "Light Grey",
+        "Natural",
+        "Olive Green",
+        "Pastel Pink"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Premium heavyweight fabric",
+        "Webbing carry handles"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "100% Certified organic cotton\r\nPremium heavyweight fabric\r\nWebbing carry handles",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/34de1266/67483f7315b286ee281eec30/WM814_LS00_2025.jpg",
+      "variant_count": 6
+    },
+    {
+      "style_code": "WM816",
+      "style_name": "EarthAware® organic yoga mat bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 6.8,
+        "max": 7.99
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Amber",
+        "Black",
+        "Light Grey",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Contains 100% OCS-certified organic cotton, certified by Control Union CU811033",
+        "Premium, heavyweight fabric",
+        "Concealed zipped valuables pocket"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "The WM816 is the perfect example of sustainability and durability combined. Made from premium, heavyweight, 100% organic certified cotton, the rope drawcord closure keeps your contents secure, while a",
+      "image": "Not available",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM818",
+      "style_name": "EarthAware® organic yoga tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 6.9,
+        "max": 8.3
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Amber",
+        "Black",
+        "Light Grey",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Contains 100% OCS-certified organic cotton, certified by Control Union CU811033",
+        "Premium, heavyweight fabric",
+        "External sleeve for easy-access yoga mat storage",
+        "durable"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Modern-day living calls for multifunctional design. Spacious, durable and with its external, easy-access yoga mat sleeve, the WM818 is ideal for carrying all of your yoga essentials. As part of the Ea",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/11999bb0/67483f7315b286ee281eec2a/WM818_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM820",
+      "style_name": "EarthAware® organic spring wristlet",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.6,
+        "max": 4.35
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural",
+        "Pastel Lemon",
+        "Pastel Pink"
+      ],
+      "sizes": [
+        "S",
+        "L"
+      ],
+      "size_range": "S to L",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Zippered closure and wristlet strap",
+        "Multi-purpose use"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "100% Certified organic cotton\r\nZippered closure and wristlet strap\r\nMulti-purpose use",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/b744ca32/67483f7315b286ee281eec27/WM820_LS00_2025.jpg",
+      "variant_count": 8
+    },
+    {
+      "style_code": "WM821",
+      "style_name": "EarthAware® organic spring tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 4.8,
+        "max": 6.05
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Premium heavyweight fabric",
+        "Use in hand or over the shoulder"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "100% Certified organic cotton\r\nPremium heavyweight fabric\r\nUse in hand or over the shoulder",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/e0691db2/67483f7315b286ee281eec24/WM821_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "BC905",
+      "style_name": "Morf® ombré",
+      "brand": "Beechfield",
+      "product_type": "Snoods",
+      "price_range": {
+        "min": 2.24,
+        "max": 2.24
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Caribbean Blues",
+        "Candyfloss Pinks",
+        "Sunset Reds",
+        "Storm Greys",
+        "Tropical Greens"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Breathable fabric",
+        "Seam-free for comfort",
+        "Multi-purpose use"
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Snoods"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/420a303c/6748408815b286ee281f022c/BC905_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM830",
+      "style_name": "EarthAware® organic accessory pouch",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.3,
+        "max": 3.3
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "French Navy",
+        "Natural"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "size_range": "S to L",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Premium heavyweight fabric",
+        "Self-coloured zip closure"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Focusing on the popularity of versatile and ethically-made accessories, the EarthAware® organic accessory pouch covers all bases. Available in retail-ready sizes, this certified organic cotton pouch, ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/e69e46ac/67483f7215b286ee281eec1b/WM830_LS00_2025.jpg",
+      "variant_count": 9
+    },
+    {
+      "style_code": "JC092",
+      "style_name": "Cool sliders",
+      "brand": "AWDis Just Cool",
+      "product_type": "Slippers",
+      "price_range": {
+        "min": 6.39,
+        "max": 6.39
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Arctic White",
+        "Grey",
+        "Jet Black"
+      ],
+      "sizes": [
+        "39/40",
+        "41/42",
+        "43/44",
+        "45/46",
+        "31/32",
+        "33/34",
+        "35/36",
+        "37/38"
+      ],
+      "size_range": "3/410/11",
+      "features": [
+        "soft"
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Slippers"
+      ],
+      "description": "These Cool sliders have a soft, synthetic upper with a single footstrap for easy wearing and rebranding. They feature a moulded footbed and have an impact-absorbing outsole for comfort.",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/6718ab71/6748413715b286ee281f0fe8/JC092_LS00_2025.jpg",
+      "variant_count": 14
+    },
+    {
+      "style_code": "WM840",
+      "style_name": "EarthAware® organic accessory bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 0.6,
+        "max": 3.75
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "French Navy",
+        "Natural"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "size_range": "S to L",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Premium heavyweight fabric",
+        "Self-coloured zip closure"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "The demand for more sustainable accessories brings the EarthAware® organic accessory bag to the forefront of retail. Multi-functional and finished with a self-coloured zip and antique brass accents, W",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7215b286ee281eec18/930177ae/WM840_LS00_2025.jpg",
+      "variant_count": 9
+    },
+    {
+      "style_code": "WM845",
+      "style_name": "EarthAware® organic marina mini tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.8,
+        "max": 2.95
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "French Navy",
+        "Natural",
+        "Pure Grey"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Premium heavyweight fabric",
+        "Cotton webbing carry handles",
+        "brushed fabric"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "With the EarthAware® certified organic marina mini tote comes a bag that's simple yet functional. Small in size without compromise on quality, this organic brushed cotton canvas mini tote offers ample",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/652366f2/67483f7215b286ee281eec15/WM845_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "WM850",
+      "style_name": "EarthAware® organic marina tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 4.74,
+        "max": 6.2
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "French Navy",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Natural wooden toggle closure",
+        "Use in hand or over the shoulder"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "100% Certified organic cotton\r\nNatural wooden toggle closure\r\nUse in hand or over the shoulder",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7215b286ee281eec12/afb33a9d/WM850_LS00_2025.jpg",
+      "variant_count": 3
+    },
+    {
+      "style_code": "WM855",
+      "style_name": "EarthAware® organic marina tote XL",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 5.55,
+        "max": 6.75
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "French Navy",
+        "Natural",
+        "Pure Grey"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Organic Content Standard 100 - Certification",
+        "Natural wooden toggle closure",
+        "Use in hand or over the shoulder"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "100% Certified organic cotton\r\nNatural wooden toggle closure\r\nUse in hand or over the shoulder",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/bf12157d/67483f7215b286ee281eec0c/WM855_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "BC15C",
+      "style_name": "Ultimate 5-panel cap - sandwich peak",
+      "brand": "Beechfield",
+      "product_type": "Caps",
+      "price_range": {
+        "min": 3.5,
+        "max": 3.5
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Putty/French Navy",
+        "White/Black",
+        "White/French Navy"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Rip-Strip size adjuster",
+        "Perfect for print and embroidery",
+        "Wide choice of colours"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Caps"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d25b2c10/6748401a15b286ee281ef9ce/BC15C_LS00_2025.jpg",
+      "variant_count": 3
+    },
+    {
+      "style_code": "WM858",
+      "style_name": "EarthAware® organic contrast shopper",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 7.59,
+        "max": 7.59
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black/Natural",
+        "Dark Marine/Natural",
+        "Oxblood/Natural",
+        "Pumpkin/Natural",
+        "Rose/Natural",
+        "Sage Green/Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "The Earthaware® organic contrast shopper merges functionality with eco-friendly design. Crafted from sturdy organic cotton canvas, this two-tone bag features a unique crinkle effect, providing texture",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/33e4d084/67483f7215b286ee281eec09/WM858_LS00_2025.jpg",
+      "variant_count": 6
+    },
+    {
+      "style_code": "WM880",
+      "style_name": "EarthAware® organic rucksack",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 8.7,
+        "max": 10
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Contains 100% OCS-certified organic cotton, certified by Control Union CU811033",
+        "Premium, heavyweight fabric",
+        "Fold-over flap with secure press stud",
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Made from 100% certified, organic cotton canvas, the WM880 is robust, reliable and more sustainable thanks to the premium, heavyweight fabric. The epitome of soft, unstructured style, the WM880 featur",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7115b286ee281eec06/1be5591d/WM880_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "AC004",
+      "style_name": "Academy polo",
+      "brand": "AWDis Academy",
+      "product_type": "Polos",
+      "price_range": {
+        "min": 4.7,
+        "max": 5.1
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Royal Blue",
+        "Sky",
+        "White"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL",
+        "XS"
+      ],
+      "size_range": "XS to 2XL",
+      "features": [
+        "Twin-needle stitching for durability",
+        "Reinforced shoulder seams",
+        "2-button placket"
+      ],
+      "materials": [
+        "Cotton",
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Polos",
+        "Casual"
+      ],
+      "description": "The base of every uniform, the Academy polo has a relaxed fit and is a robust addition to the schoolwear wardrobe.",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/348e1aba/67483f4915b286ee281ee8fd/AC004_LS00_2025.jpg",
+      "variant_count": 17
+    },
+    {
+      "style_code": "WM881",
+      "style_name": "EarthAware® organic mini rucksack",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 7.59,
+        "max": 8.75
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Amber",
+        "French Navy",
+        "Natural",
+        "Pastel Pink",
+        "Sage Green"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Contains 100% OCS-certified organic cotton, certified by Control Union CU811033",
+        "Premium, heavyweight fabric",
+        "Fold-over flap with secure press stud"
+      ],
+      "materials": [
+        "Cotton",
+        "Organic"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "As an adaptation of our WM880 EarthAware® Organic Rucksack, the W881 offers the same more sustainable credentials and functionality, in a more compact silhouette. Made from 100% certified premium orga",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/33200f44/67483f7115b286ee281eec03/WM881_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WM901",
+      "style_name": "Recycled cotton tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.2,
+        "max": 2.6
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Made from 100% pre-consumer recycled cotton",
+        "Contains 100% GRS-certified recycled cotton, certified by Control Union CU811033",
+        "Carry by hand or over the shoulder"
+      ],
+      "materials": [
+        "Cotton",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "With all the multi-purpose properties of a classic tote bag, the WM901 is the perfect way to make any accessory collection more sustainable. Made from 100% pre-consumer recycled cotton, this certified",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/e552e4bf/67483f7115b286ee281eec00/WM901_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM910",
+      "style_name": "Recycled cotton gymsac",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.45,
+        "max": 2.75
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Made from 100% pre-consumer recycled cotton",
+        "Contains 100% GRS-certified recycled cotton, certified by Control Union CU811033",
+        "Recycled cotton drawcords"
+      ],
+      "materials": [
+        "Cotton",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "As well as being a year-round accessory staple, the WM910 also comes as 100% certified, pre-consumer recycled cotton. Available in a choice of two core colourways: Black and Natural, the WM910 is desi",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/ec77b266/67483f7115b286ee281eebfd/WM910_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM915",
+      "style_name": "Recycled cotton stuff bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 1.2,
+        "max": 3.7
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "XXS",
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "size_range": "XXS to XL",
+      "features": [
+        "Made from 100% pre-consumer recycled cotton",
+        "Contains 100% GRS-certified recycled cotton, certified by Control Union CU811033",
+        "Recycled cotton drawcords"
+      ],
+      "materials": [
+        "Cotton",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "This multi-purpose cotton stuff bag comes in an assortment of six different sizes, from XXS to XL. Each features a simple drawcord closure lending itself perfectly to gifting, weddings or as a simple ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/3508f5b8/67483f7115b286ee281eebfa/a1788426/WM915_LS00_2025.jpg",
+      "variant_count": 12
+    },
+    {
+      "style_code": "WM925",
+      "style_name": "Recycled cotton maxi tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.6,
+        "max": 3.3
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Made from 100% pre-consumer recycled cotton",
+        "Contains 100% GRS-certified recycled cotton, certified by Control Union CU811033",
+        "Large capacity",
+        "soft",
+        "durable"
+      ],
+      "materials": [
+        "Cotton",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Made from 100% certified recycled pre-consumer cotton, this soft-touch supersize tote is a versatile addition to any accessory collection. Thanks to its durable 58cm handles, this bag can be carried b",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/2055527c/67483f7115b286ee281eebf7/WM925_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM950",
+      "style_name": "Courtside medium tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 6.39,
+        "max": 6.39
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Soft White/Bottle Green",
+        "Soft White/Caramel",
+        "Soft White/French Navy"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [
+        "Cotton",
+        "Polyester",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "The Courtside medium tote is the perfect companion for those who like to travel light. Made from premium heavyweight cream canvas with subtle coloured trims, this medium tote is designed for hands-fre",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/1c80f173/67483f7115b286ee281eebf4/WM950_LS00_2025.jpg",
+      "variant_count": 3
+    },
+    {
+      "style_code": "WM952",
+      "style_name": "Courtside large tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 8.25,
+        "max": 8.25
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Soft White/Bottle Green",
+        "Soft White/Caramel",
+        "Soft White/French Navy"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [],
+      "materials": [
+        "Cotton",
+        "Polyester",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "The Courtside large tote offers oversized style with effortless ease. Crafted from premium cream canvas with subtle coloured trims, this versatile tote bag offers a chic, minimalistic look. Its spacio",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/f479b524/67483f7015b286ee281eebf1/WM952_LS00_2025.jpg",
+      "variant_count": 3
+    },
+    {
+      "style_code": "WM960",
+      "style_name": "Revive recycled gymsac",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.9,
+        "max": 3.64
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Made from a blend of pre-consumer recycled cotton and post-consumer recycled polyester",
+        "Recycled polyester made from 100% rPET, equivalent to approximately 2.5 post-consumer bottles",
+        "Recycled cotton/polyester-blend drawcords",
+        "lightweight"
+      ],
+      "materials": [
+        "Cotton",
+        "Polyester",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "No bag collection is truly complete without a simple but versatile gymsac - an accessory staple from sports classes or the swimming pool, to adventures that call for a lightweight storage solution. Ma",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/fbc625c5/67483f7015b286ee281eebee/WM960_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM961",
+      "style_name": "Revive recycled tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 2.6,
+        "max": 3.4
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Recycled cotton/polyester blend  270gsm (8oz/yd²)",
+        "Made from a blend of pre-consumer recycled cotton and post-consumer recycled polyester",
+        "Recycled polyester made from 100% rPET, equivalent to approximately 2.5 post-consumer bottles"
+      ],
+      "materials": [
+        "Cotton",
+        "Polyester",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Made from a blend of certified pre-consumer recycled cotton and post-consumer recycled polyester, the WM961 is a timeless style, perfect for everyday use in a more sustainable future.",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/23355620/67483f7015b286ee281eebeb/WM961_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WM965",
+      "style_name": "Revive recycled maxi tote",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 3.3,
+        "max": 3.9
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Made from a blend of pre-consumer recycled cotton and post-consumer recycled polyester",
+        "Recycled polyester made from 100% rPET, equivalent to approximately 3.5 post-consumer bottles",
+        "Large capacity"
+      ],
+      "materials": [
+        "Cotton",
+        "Polyester",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "Made from a blend of certified pre-consumer recycled cotton and post-consumer recycled polyester, this extra-large take on the classic tote is functional and more sustainable. With its 18 litre capaci",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/0ae485ba/67483f7015b286ee281eebe5/WM965_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WB500",
+      "style_name": "Men's shirt",
+      "brand": "Wombat",
+      "product_type": "Shirts",
+      "price_range": {
+        "min": 8.2,
+        "max": 8.59
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Navy/White Aztec",
+        "Solid Navy",
+        "Solid White",
+        "White/Navy Leaf"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "S to 2XL",
+      "features": [
+        "lightweight"
+      ],
+      "materials": [
+        "Cotton",
+        "Viscose"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shirts"
+      ],
+      "description": "Looking to add some fun to your summer wardrobe? Look no further than Wombat's short-sleeve shirt. Perfect for vacations or just lounging in the sun, this shirt features a relaxed fit, lightweight mat",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d494d544/67483f8415b286ee281eed83/5e6df030/WB500_LS00_2025.jpg",
+      "variant_count": 20
+    },
+    {
+      "style_code": "WM966",
+      "style_name": "Revive recycled stuff bag",
+      "brand": "Westford Mill",
+      "product_type": "Bags",
+      "price_range": {
+        "min": 0.45,
+        "max": 3.35
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Natural"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "size_range": "S to XL",
+      "features": [
+        "Made from a blend of pre-consumer recycled cotton and post-consumer recycled polyester",
+        "Recycled cotton/polyester-blend drawcords",
+        "Rope drawcord closure"
+      ],
+      "materials": [
+        "Cotton",
+        "Polyester",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Bags",
+        "Sustainable"
+      ],
+      "description": "This versatile cotton stuff bag comes in a choice of four different sizes and two versatile colourways.  Each features a classic drawcord closure for simple but effective storage.  Made from a blend o",
+      "image": "Not available",
+      "variant_count": 8
+    },
+    {
+      "style_code": "WB900",
+      "style_name": "Men's swim shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 5.5,
+        "max": 6.39
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Black/Red",
+        "Green/Green",
+        "Navy/Mustard",
+        "Navy/White Aztec",
+        "Washed Coral Nautical Design",
+        "White/Navy Leaf"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "StoXL",
+      "features": [
+        "Single pocket at the rear with hook and loop fastening",
+        "Contrast coloured mesh insert and drawcord",
+        "Quick-dry"
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shorts",
+        "Sports"
+      ],
+      "description": "Make a statement this holiday season with Wombat swim shorts. Choose from a variety of bold and playful patterns, each featuring contrast mesh inserts, drawcords, and an elastic waistband. These swim ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/6c437247/67483f8315b286ee281eed80/WB900_LS00_2025.jpg",
+      "variant_count": 30
+    },
+    {
+      "style_code": "WB901",
+      "style_name": "Mens Recycled Jersey shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 11.54,
+        "max": 11.54
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Heather Grey Melange"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "S  2XL",
+      "features": [
+        "Recycled",
+        "Brushed inner fleece",
+        "Fly stitched detailing",
+        "soft"
+      ],
+      "materials": [
+        "Cotton",
+        "Polyester",
+        "Recycled"
+      ],
+      "sustainable": true,
+      "categories": [
+        "Shorts",
+        "Sustainable"
+      ],
+      "description": "Get your laid-back looks sorted with these comfortable, super-soft mens recycled jersey shorts. With a French terry inner and elasticated waistband with chunky tubular drawcord to ensure the perfect ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/d9eee432/67483f8315b286ee281eed7d/WB901_LS00_2025.jpg",
+      "variant_count": 10
+    },
+    {
+      "style_code": "BC171",
+      "style_name": "Teamwear competition cap",
+      "brand": "Beechfield",
+      "product_type": "Caps",
+      "price_range": {
+        "min": 1.25,
+        "max": 3.6
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Bottle/Black/White",
+        "Black/Bright Royal",
+        "Black/Classic Red",
+        "Black/Classic Red/White",
+        "Black/Graphite Grey",
+        "Black/Lime Green",
+        "Black/Orange",
+        "Bright Royal/Black/White",
+        "ClassicRed/Black",
+        "French Navy/Bright Royal/White",
+        "French Navy/Classic Red",
+        "Graphite Grey/Black/Bright Royal",
+        "Olive Green/Black",
+        "Orange/Black/White",
+        "Sky/French Navy"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "Rip-Strip size adjuster",
+        "Perfect for print and embroidery",
+        "Contrast trim"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Caps"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/5a1f2d5c/6748403615b286ee281efc23/BC171_LS00_2025.jpg",
+      "variant_count": 15
+    },
+    {
+      "style_code": "WB902",
+      "style_name": "Mens drawstring chino shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 11.54,
+        "max": 11.54
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Navy",
+        "Olive"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "S  2XL",
+      "features": [
+        "Two swing pockets",
+        "Gunmetal detailing",
+        "Soft finish fabric",
+        "soft",
+        "stretch"
+      ],
+      "materials": [
+        "Cotton",
+        "Stretch"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shorts"
+      ],
+      "description": "Made from soft yet hard-wearing fabric, with a touch of stretch for movement and comfort, these mens drawstring chino shorts are perfect for casual days. There are lots of finishing touches, includin",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/26054032/67483f8315b286ee281eed7a/WB902_LS00_2025.jpg",
+      "variant_count": 15
+    },
+    {
+      "style_code": "WB903",
+      "style_name": "Mens drawstring cargo utility shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 12.84,
+        "max": 12.99
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Navy"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "S  2XL",
+      "features": [
+        "Bellowed pocket detailing",
+        "Zip fly and button fastening",
+        "Belt loops",
+        "soft",
+        "stretch"
+      ],
+      "materials": [
+        "Cotton",
+        "Stretch"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shorts"
+      ],
+      "description": "These mens drawstring cargo utility shorts are perfect for those who like something softer, more comfortable, and practical. Featuring a strong design, lots of pockets and a stretch waistband, theyl",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/0222b66c/67483f8315b286ee281eed77/WB903_LS00_2025.jpg",
+      "variant_count": 10
+    },
+    {
+      "style_code": "WB904",
+      "style_name": "Mens dip-dye shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 11.54,
+        "max": 11.54
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Blue"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "S  2XL",
+      "features": [
+        "Two swing pockets",
+        "Soft finish fabric",
+        "Dip-dye finish",
+        "breathable"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shorts"
+      ],
+      "description": "Step into summer in style with these mens dip-dye shorts. Crafted with breathable and hard-wearing cotton, making them perfect for summer adventures, they feature an array of handy pockets, rollable ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/5586ec4d/67483f8315b286ee281eed74/WB904_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WB905",
+      "style_name": "Mens palm print shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 11.54,
+        "max": 11.54
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Blue"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "S  2XL",
+      "features": [
+        "Two swing pockets",
+        "Palm print",
+        "Belt loops",
+        "soft",
+        "lightweight"
+      ],
+      "materials": [
+        "Cotton",
+        "Stretch"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shorts"
+      ],
+      "description": "Introducing the mens palm print shorts  a timeless style for summer. Crafted from soft and lightweight cotton to keep you cool, they have a comfortable fit and feature a palm print design, zip fly, ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/e48e7f60/67483f8315b286ee281eed71/WB905_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WB906",
+      "style_name": "Mens camo cargo utility shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 11.8,
+        "max": 11.8
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Green"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "S  2XL",
+      "features": [
+        "Two swing pockets",
+        "Elasticated waistband with drawstrings",
+        "Fly stitched detailing",
+        "soft",
+        "durable"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shorts"
+      ],
+      "description": "Made from soft yet durable cotton, these mens camo cargo utility shorts feature multiple pockets and a stretch waistband, making them both practical and comfortable. Perfect for weekend chilling.",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/9862c506/67483f8315b286ee281eed6e/WB906_LS00_2025.jpg",
+      "variant_count": 5
+    },
+    {
+      "style_code": "WB907",
+      "style_name": "Mens denim drawstring shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 11.54,
+        "max": 11.54
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "Blue"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "S  2XL",
+      "features": [
+        "Two swing pockets",
+        "Gunmetal detailing",
+        "Worn denim effect",
+        "stretch"
+      ],
+      "materials": [
+        "Cotton",
+        "Polyester",
+        "Stretch"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shorts"
+      ],
+      "description": "These mens denim drawstring shorts have a comfortable stretch, making them your go-to pair, whatever your plans. Theyre finished with a special wash, for that lived-in look, and have a drawstring wa",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/9f79761f/67483f8215b286ee281eed6b/WB907_LS00_2025.jpg",
+      "variant_count": 10
+    },
+    {
+      "style_code": "YK003",
+      "style_name": "Hi-vis 2-band waistcoat (HVW102)",
+      "brand": "Yoko",
+      "product_type": "Safety Vests",
+      "price_range": {
+        "min": 3.2,
+        "max": 3.2
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Orange",
+        "Yellow"
+      ],
+      "sizes": [
+        "3XL",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "M to 3XL",
+      "features": [
+        "Conforms to EN ISO20471 Class 2",
+        "Polyester fabric with hook and loop fastening",
+        "Two 5cm reflective tapes around the body"
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Safety Vests",
+        "Workwear"
+      ],
+      "description": "A simple 2 Bands waistcoat perfect for decoration and branding as there is a large area on the front & rear for all your logo needs.",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/53ed69c5/67483f6f15b286ee281eebcd/YK003_LS00_2025.jpg",
+      "variant_count": 10
+    },
+    {
+      "style_code": "TS009",
+      "style_name": "Hooded 2-layer softshell jacket",
+      "brand": "2786",
+      "product_type": "Softshells",
+      "price_range": {
+        "min": 21.3,
+        "max": 21.3
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Black"
+      ],
+      "sizes": [
+        "S",
+        "M"
+      ],
+      "size_range": "S3XL",
+      "features": [
+        "soft"
+      ],
+      "materials": [
+        "Polyester",
+        "Stretch"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Softshells"
+      ],
+      "description": "Maintain a smart and professional appearance in this hooded 2-layer softshell jacket  a style inspired by a classic. Suitable for a wide range of work and outdoor environments with its contemporary d",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/688aebf3/67483f9015b286ee281eee85/TS009_LS00_2025.jpg",
+      "variant_count": 2
+    },
+    {
+      "style_code": "WB908",
+      "style_name": "Mens denim shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 11.54,
+        "max": 11.54
+      },
+      "gender": "Male",
+      "age_group": "Adult",
+      "colors": [
+        "Black Denim",
+        "Indigo Denim"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ],
+      "size_range": "S  2XL",
+      "features": [
+        "Brass details",
+        "Contrast stitching",
+        "Washed denim effect"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shorts"
+      ],
+      "description": "What's better than a classic denim short? The fit of these mens denim shorts is easier on the thigh, so you can easily style them rolled up at the hems. Washed for an authentic finish, they feature b",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/12851b2e/67483f8215b286ee281eed65/WB908_LS00_2025.jpg",
+      "variant_count": 10
+    },
+    {
+      "style_code": "WB909",
+      "style_name": "Womens denim shorts",
+      "brand": "Wombat",
+      "product_type": "Shorts",
+      "price_range": {
+        "min": 10.59,
+        "max": 10.59
+      },
+      "gender": "Female",
+      "age_group": "Adult",
+      "colors": [
+        "Black Denim",
+        "Indigo Denim"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "size_range": "XS  XL",
+      "features": [
+        "Brass details",
+        "Contrast stitching",
+        "Washed denim effect"
+      ],
+      "materials": [
+        "Cotton"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Shorts"
+      ],
+      "description": "Packed with classic features, denim shorts have been a trusted staple for many years  and these womens denim shorts are a must for your wardrobe. Roll the hems up or down for a great fit, then pair ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/96255679/67483f8215b286ee281eed62/WB909_LS00_2025.jpg",
+      "variant_count": 10
+    },
+    {
+      "style_code": "YK001",
+      "style_name": "Hi-vis 2-band-and-braces waistcoat (HVW100)",
+      "brand": "Yoko",
+      "product_type": "Safety Vests",
+      "price_range": {
+        "min": 2.8,
+        "max": 4.35
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black Yoke/Yellow",
+        "Black*",
+        "Lime",
+        "Lime Yoke/Yellow",
+        "Maroon",
+        "Navy",
+        "Navy Yoke/Yellow",
+        "Orange*",
+        "Orange Yoke/Yellow",
+        "Paramedic Green/Yellow",
+        "Pink",
+        "Paramedic Green",
+        "Purple",
+        "Purple Yoke/Yellow",
+        "Raspberry",
+        "Raspberry Yoke/Yellow",
+        "Royal Yoke/Yellow",
+        "Red Yoke/Yellow",
+        "Red*",
+        "Royal Blue*",
+        "Sapphire",
+        "Sky Blue",
+        "White",
+        "Yellow*"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL",
+        "3XL",
+        "4XL",
+        "5XL"
+      ],
+      "size_range": "S to 5XL",
+      "features": [
+        "Yellow, Orange and Yellow/Orange - EN ISO20471 Class 2",
+        "All other two-tone colours conform to Class 1",
+        "Other colours provide enhanced visibility"
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Safety Vests",
+        "Workwear"
+      ],
+      "description": "Most popular high visibility waistcoat with hook and loop front fastening and self coloured piping. Available in 24 colours to suit every job role. You always need one for your car when travelling.",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/09dafeed/67483f6f15b286ee281eebd3/YK001_LS00_2025.jpg",
+      "variant_count": 154
+    },
+    {
+      "style_code": "AC04J",
+      "style_name": "Kids Academy polo",
+      "brand": "AWDis Academy",
+      "product_type": "Polos",
+      "price_range": {
+        "min": 3.84,
+        "max": 3.84
+      },
+      "gender": "Unisex",
+      "age_group": "Kids",
+      "colors": [
+        "Red"
+      ],
+      "sizes": [
+        "3/4 Years",
+        "5/6 Years",
+        "7/8 Years",
+        "9/10 Years"
+      ],
+      "size_range": "3/4 to 13",
+      "features": [
+        "Twin-needle stitching for durability",
+        "Reinforced shoulder seams",
+        "2-button placket"
+      ],
+      "materials": [
+        "Cotton",
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Polos",
+        "Casual"
+      ],
+      "description": "The base of every uniform, the Kids Academy polo has a relaxed fit and is a robust addition to the schoolwear wardrobe.",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/84aa0f9c/67483f4a15b286ee281ee912/AC04J_LS00_2025.jpg",
+      "variant_count": 4
+    },
+    {
+      "style_code": "YK002",
+      "style_name": "Multifunctional executive hi-vis waistcoat (HVW801)",
+      "brand": "Yoko",
+      "product_type": "Safety Vests",
+      "price_range": {
+        "min": 5.1,
+        "max": 5.9
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black*",
+        "Lime",
+        "Navy",
+        "Orange*",
+        "Orange/Black",
+        "Orange/Grey",
+        "Orange/Navy",
+        "Orange/Royal Blue",
+        "Orange/Yellow",
+        "Paramedic Green/Yellow",
+        "Pink",
+        "Paramedic Green",
+        "Purple",
+        "Yellow/Royal Blue",
+        "Red/Black",
+        "Red/Yellow",
+        "Red",
+        "Royal Blue",
+        "Sapphire",
+        "Sky",
+        "White",
+        "Yellow/Black",
+        "Yellow/Grey",
+        "Yellow*",
+        "Yellow/Navy",
+        "Yellow/Purple"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL",
+        "3XL",
+        "4XL",
+        "5XL"
+      ],
+      "size_range": "S to 3XL",
+      "features": [
+        "Yellow, Orange and Yellow/Orange - EN ISO20471 Class 2",
+        "All other two-tone colours conform to Class 1",
+        "All other colours provide enhanced visibility"
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Safety Vests",
+        "Workwear"
+      ],
+      "description": "Fantastic multi-Functional Executive Waistcoat with zip front fastening, two front hook and loop fastening pockets also accessible from the side. This waistcoat also has an ID card holder to the right",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/33e90acf/67483f6f15b286ee281eebd0/YK002_LS00_2025.jpg",
+      "variant_count": 162
+    },
+    {
+      "style_code": "YK004",
+      "style_name": "Hi-vis 2-band tabard (HVJ269)",
+      "brand": "Yoko",
+      "product_type": "Tabards",
+      "price_range": {
+        "min": 3.9,
+        "max": 3.9
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Orange",
+        "Yellow"
+      ],
+      "sizes": [
+        "S/M",
+        "L/XL",
+        "2XL/3XL"
+      ],
+      "size_range": "S/M to 2XL/3XL",
+      "features": [
+        "Conforms to EN1150:1999",
+        "Two 5cm reflective bands around the body",
+        "Ideal for cyclists, charity workers, etc."
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Tabards",
+        "Workwear"
+      ],
+      "description": "With fixed elastication on one side and hook and loop fastening on the other side for the perfect fit. Ideal for cyclists, charity workers and event marshalls. The large decoration area makes this a m",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/42f6bc19/67483f6e15b286ee281eebca/YK004_LS00_2025.jpg",
+      "variant_count": 6
+    },
+    {
+      "style_code": "YK006",
+      "style_name": "Top cool open mesh 2-band-and-braces waistcoat (HVW120)",
+      "brand": "Yoko",
+      "product_type": "Safety Vests",
+      "price_range": {
+        "min": 4.35,
+        "max": 4.35
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Grey",
+        "Orange",
+        "Royal Blue",
+        "Yellow"
+      ],
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "2XL",
+        "3XL"
+      ],
+      "size_range": "M to 3XL",
+      "features": [
+        "Conforms to ANSI/ISEA 107-2004 and EN ISO20471 C2",
+        "Breathable lightweight mesh fabric",
+        "Easy to sweat out",
+        "breathable"
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Safety Vests",
+        "Workwear"
+      ],
+      "description": "Top cool Open mesh 2 band & braces waistcoat is ideal for any hot working environment. Made of light breathable fabric to keep the worker comfortable and cool at the same time while still maintaining ",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/cde3b435/67483f6e15b286ee281eebc7/YK006_LS00_2025.jpg",
+      "variant_count": 20
+    },
+    {
+      "style_code": "YK007",
+      "style_name": "Hi-vis long sleeve waistcoat (HVJ200)",
+      "brand": "Yoko",
+      "product_type": "Safety Vests",
+      "price_range": {
+        "min": 5.85,
+        "max": 5.85
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Orange",
+        "Yellow"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL",
+        "3XL"
+      ],
+      "size_range": "S to 3XL",
+      "features": [
+        "Conforms to EN ISO20471:2013 Class 3",
+        "Two 5cm reflective tapes all over",
+        "Touch-and-close front hook and loop fastening",
+        "durable"
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Safety Vests",
+        "Workwear"
+      ],
+      "description": "Long sleeve 2 band & braces waistcoat with a hook and loop front fastening. The perfect waistcoat the any worker that needs to have there arms covered while at work. Strong and durable and perfect for",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/ca3c96ee/67483f6e15b286ee281eebc4/YK007_LS00_2025.jpg",
+      "variant_count": 12
+    },
+    {
+      "style_code": "BC182",
+      "style_name": "Coolmax® flow mesh cap",
+      "brand": "Beechfield",
+      "product_type": "Caps",
+      "price_range": {
+        "min": 4.7,
+        "max": 4.7
+      },
+      "gender": "Unisex",
+      "age_group": "Adult",
+      "colors": [
+        "Black",
+        "White"
+      ],
+      "sizes": [
+        "One size"
+      ],
+      "size_range": "One size",
+      "features": [
+        "100% Polyester Coolmax® sweatband",
+        "Enhanced-vis reflective accents",
+        "Mesh ventilation panels"
+      ],
+      "materials": [
+        "Polyester"
+      ],
+      "sustainable": false,
+      "categories": [
+        "Caps"
+      ],
+      "description": "",
+      "image": "https://cdn.pimber.ly/public/asset/raw/571f95845f13380f0056d06a/5978208d/6748403715b286ee281efc2c/BC182_LS00_2025.jpg",
+      "variant_count": 2
+    }
+  ]
+}
