@@ -3,10 +3,6 @@
 
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Load product summary (cached in memory)
 let productSummary = null;
@@ -14,11 +10,13 @@ let summaryLoadTime = null;
 
 function loadProductSummary() {
   try {
-    // Try multiple possible paths
+    // Try multiple possible paths for Netlify environment
     const possiblePaths = [
-      path.join(__dirname, '..', '..', 'public', 'product-summary.json'),
       path.join(process.cwd(), 'public', 'product-summary.json'),
-      '/var/task/public/product-summary.json', // Netlify production path
+      path.join(process.cwd(), 'build', 'product-summary.json'),
+      '/var/task/public/product-summary.json',
+      '/opt/build/repo/public/product-summary.json',
+      '/opt/build/repo/build/product-summary.json',
     ];
 
     for (const filePath of possiblePaths) {
