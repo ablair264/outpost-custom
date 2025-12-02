@@ -2,7 +2,7 @@
 .product-details {
   background: #fff;
   min-height: 100vh;
-  padding: 20px 0 60px;
+  padding: 76px 0 60px;
 }
 
 .product-details .container {
@@ -139,23 +139,41 @@
   border-color: #78BE20;
 }
 
-.thumbnail img {
+.thumbnail img,
+.thumbnail-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.thumbnail:hover img,
+.thumbnail:hover .thumbnail-image {
+  transform: scale(1.1);
 }
 
 .main-image {
   flex: 1;
   position: relative;
   max-width: 500px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
-.main-image img {
+.main-image img,
+.main-product-image {
   width: 100%;
   height: auto;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+}
+
+.main-image:hover img,
+.main-image:hover .main-product-image {
+  transform: scale(1.05);
 }
 
 .sustainability-badge {

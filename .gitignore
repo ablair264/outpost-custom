@@ -104,3 +104,10 @@ dist-ssr/
 
 # Shadcn admin folder
 /shadcn-admin
+
+# Development and scraping directories
+/scrape-output
+/scripts
+/journal-scrapers
+/reference
+/sql

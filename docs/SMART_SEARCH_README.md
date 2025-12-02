@@ -2,40 +2,25 @@
 
 ## Overview
 
-The Smart Search feature uses AI to help customers find products by describing what they need in natural language. Instead of sending all product data to OpenAI (which would be slow and expensive), we use a **pre-generated product summary** that's optimized for AI search.
+The Smart Search feature uses AI to help customers find products by describing what they need in natural language. The Netlify function now grounds the LLM with **live Supabase metadata** (product_types table, brand/price ranges, sampled products) and then runs a Supabase query to return concrete suggestions alongside filters. A pre-generated product-summary JSON is still supported as a fallback if Supabase is unreachable.
 
 ## How It Works
 
-### 1. Product Summary Generation
+1. User enters a query in the Smart Search modal.
+2. Netlify function loads reference data:
+   - Product types from `product_types` table (authoritative list)
+   - Price min/max and a sample of brands
+   - 60 sampled products for grounding
+3. OpenAI is prompted with the reference data and returns structured filters (product types, price bands, sustainability, etc.).
+4. Filters are validated against the real catalog.
+5. Supabase is queried for matching products; results are grouped by `style_code` and returned to the UI together with the filters.
+6. If OpenAI or Supabase fails, a heuristic fallback generates filters from keywords.
 
-```bash
-npm run generate-product-summary
-```
+## Product Summary (Optional Fallback)
 
-This script:
-- Fetches all products from Supabase
-- Groups variants by style_code (reducing 1000+ variants to ~121 unique products)
-- Extracts only essential searchable fields:
-  - Product name, brand, type
-  - Price range
-  - Key features (brushed fabric, moisture wicking, etc.)
-  - Materials (Cotton, Polyester, Recycled, etc.)
-  - Categories (Workwear, Corporate, Sports, etc.)
-  - Sustainable flag
-- Creates a 127KB JSON file instead of sending 60+ fields per product
+`npm run generate-product-summary`
 
-**File Location:** `public/product-summary.json`
-
-### 2. Smart Search Flow
-
-1. User enters query: *"I need branded polo shirts for a team of 20 office workers"*
-2. Frontend sends query to Netlify function
-3. Function loads product summary (cached in memory)
-4. Creates compact context with ~20-30 sample products
-5. Sends to OpenAI with actual product data
-6. OpenAI returns filters based on **real products** you have in stock
-7. Filters are validated against actual inventory
-8. Results returned to frontend
+This script still generates `public/product-summary.json`. The file is **only used as a fallback** when Supabase metadata cannot be read (e.g., offline dev). You do not need it for production as long as Supabase is reachable.
 
 ## Benefits
 
@@ -68,31 +53,19 @@ npm run generate-product-summary
 - After changing prices or brands
 - Recommended: Weekly or when deploying updates
 
-### Netlify Deployment
-
-The product summary file (`public/product-summary.json`) needs to be deployed with your Netlify site:
-
-1. **Automatic:** The file is in the `public/` folder, so it deploys automatically
-2. **Manual:** Run `npm run generate-product-summary` before deploying
-3. **CI/CD:** Add to your build script:
-
-```json
-{
-  "scripts": {
-    "build": "npm run generate-product-summary && react-scripts build"
-  }
-}
-```
-
 ### Environment Variables
 
 Make sure these are set in Netlify:
 
 ```
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...   # preferred for server-side filtering
+SUPABASE_ANON_KEY=...           # fallback for local dev
 OPENAI_API_KEY=sk-proj-...
-AI_MODEL=gpt-3.5-turbo
+AI_MODEL=gpt-4o-mini
 AI_TEMPERATURE=0.2
 SMART_SEARCH_MODE=ai
+SMART_SEARCH_CACHE_MS=900000    # optional cache TTL for reference metadata
 ```
 
 ## Example Queries
@@ -118,16 +91,14 @@ The new system handles these intelligently:
 
 ## Fallback Mode
 
-If OpenAI API is unavailable or product summary is missing, the system automatically falls back to keyword-based filter generation (no AI needed).
+If OpenAI API is unavailable or Supabase metadata cannot be loaded, the function falls back to keyword-based filters (still validated against whatever metadata is available). If both Supabase and metadata are missing, it returns minimal filters and an empty result list.
 
 ## Monitoring
 
 Check Netlify function logs to see:
 ```
-[smart-search] Product summary loaded from /var/task/public/product-summary.json
-[smart-search] 121 products, 1000 variants
+[smart-search] Loaded fallback summary from /var/task/public/product-summary.json
 [smart-search] Processing query: I need polo shirts for my team
-[smart-search] OpenAI response: {"filters": {...}, "explanation": "..."}
 ```
 
 ## File Structure
@@ -135,45 +106,25 @@ Check Netlify function logs to see:
 ```
 outpost-custom/
 ├── public/
-│   └── product-summary.json          # Generated product summary (127KB)
+│   └── product-summary.json          # Optional fallback summary
 ├── scripts/
-│   └── generate-product-summary.js   # Generator script
+│   └── generate-product-summary.js   # Fallback generator
 ├── netlify/
 │   └── functions/
-│       └── smart-search.js           # AI-powered search function
+│       └── smart-search.js           # AI-powered search function (Supabase + OpenAI)
 └── src/
     └── components/
         └── SmartSearchModal.tsx      # Search UI component
 ```
 
-## Performance
-
-- **Old system:** ~2-3 seconds per search, could timeout
-- **New system:** ~1 second per search, reliable
-- **Product summary:** Loads once, cached in memory
-- **Token usage:** Reduced by ~70% (only send 20-30 products instead of full catalog)
-
 ## Troubleshooting
 
-### "Product summary not found"
-- Run `npm run generate-product-summary`
-- Check that `public/product-summary.json` exists
-- Ensure file is deployed to Netlify
-
 ### "Using fallback filters"
-- Check OpenAI API key is set in Netlify environment variables
-- Check Netlify function logs for errors
-- Verify product summary file is accessible
+- Ensure Supabase env vars are set and reachable from Netlify/Railway
+- Confirm `OPENAI_API_KEY` is configured
+- Check Netlify function logs for Supabase/OpenAI errors
 
 ### Search returns no results
-- Check the filter validation in function logs
-- Product summary might need regeneration
-- Try a more generic query
-
-## Future Improvements
-
-- [ ] Add caching layer to reduce OpenAI calls
-- [ ] Generate product embeddings for semantic search
-- [ ] Add search analytics to improve results
-- [ ] Support for vector similarity search
-- [ ] Automatic summary regeneration on product updates
+- Try a broader query
+- Confirm `product_types` table is populated
+- Verify price ranges on the catalog (extreme price filters will be clamped)

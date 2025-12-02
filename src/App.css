@@ -294,6 +294,29 @@ body {
     font-size: 16px;
 }
 
+.mobile-menu .submenu-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 15px 0;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.mobile-menu .submenu-toggle.active {
+    color: #78BE20;
+}
+
+.mobile-menu .submenu-toggle svg {
+    transition: transform 0.3s ease;
+}
+
 .mobile-menu a:hover {
     color: #78BE20;
 }
@@ -311,6 +334,26 @@ body {
 .mobile-menu .submenu a {
     font-size: 14px;
     padding: 10px 0;
+}
+
+.mobile-menu .mobile-submenu-title {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #78BE20;
+    margin-bottom: 5px;
+}
+
+.mobile-menu .nested-list {
+    list-style: none;
+    padding-left: 15px;
+    border-left: 1px solid #222;
+    margin-top: 5px;
+}
+
+.mobile-menu .nested-list a {
+    font-size: 13px;
+    padding: 8px 0;
 }
 
 /* ============================================

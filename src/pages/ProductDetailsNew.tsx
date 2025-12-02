@@ -7,6 +7,8 @@ import { useCart, cartUtils } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { Button } from '../components/ui/button';
 import LogoCustomizerModal, { LogoOverlayConfig } from '../components/LogoCustomizerModal';
+import ImageModal from '../components/ImageModal';
+import VinylLoader from '../components/VinylLoader';
 
 interface ProductGroup {
   style_code: string;
@@ -37,6 +39,8 @@ const ProductDetailsNew: React.FC = () => {
   const [logoOverlay, setLogoOverlay] = useState<LogoOverlayConfig | null>(null);
   const [addedToCart, setAddedToCart] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'care'>('overview');
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageModalIndex, setImageModalIndex] = useState(0);
 
   const { addToCart, isInCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -123,7 +127,10 @@ const ProductDetailsNew: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-lg">Loading...</div>
+        <div className="flex flex-col items-center gap-6">
+          <VinylLoader size={250} />
+          <p className="text-white/60 text-sm font-medium tracking-wide">Loading product...</p>
+        </div>
       </div>
     );
   }
@@ -223,7 +230,7 @@ const ProductDetailsNew: React.FC = () => {
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section with Full-Page Image */}
-      <div className="relative min-h-screen">
+      <div className="relative min-h-screen pt-14">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
@@ -256,7 +263,7 @@ const ProductDetailsNew: React.FC = () => {
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 z-20 flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-black/30 backdrop-blur-sm px-3 py-2 rounded-lg"
+          className="absolute top-20 left-4 z-20 flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-black/30 backdrop-blur-sm px-3 py-2 rounded-lg"
         >
           <ArrowLeft className="w-5 h-5" />
           Back
@@ -304,16 +311,19 @@ const ProductDetailsNew: React.FC = () => {
                       {currentImages.map((image, index) => (
                         <button
                           key={index}
-                          onClick={() => setSelectedImageIndex(index)}
-                          className={`aspect-square rounded-xl overflow-hidden transition-all ${selectedImageIndex === index
+                          onClick={() => {
+                            setImageModalIndex(index);
+                            setShowImageModal(true);
+                          }}
+                          className={`group aspect-square rounded-xl overflow-hidden transition-all duration-300 ${selectedImageIndex === index
                             ? 'ring-4 ring-[#6da71d] ring-offset-4 ring-offset-black'
-                            : 'hover:opacity-75'
+                            : 'hover:ring-2 hover:ring-white/50 hover:ring-offset-2 hover:ring-offset-black'
                             }`}
                         >
                           <img
                             src={image}
                             alt={`${productGroup.style_name} ${index + 1}`}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                             onError={(e) => {
                               e.currentTarget.src = `https://via.placeholder.com/400x400/1a1a1a/6da71d?text=${index + 1}`;
                             }}
@@ -593,6 +603,15 @@ const ProductDetailsNew: React.FC = () => {
           initialConfig={logoOverlay ?? undefined}
         />
       )}
+
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        images={currentImages}
+        initialIndex={imageModalIndex}
+        alt={productGroup.style_name}
+      />
     </div>
   );
 };

@@ -23,6 +23,7 @@
     "gsap": "^3.13.0",
     "lucide-react": "^0.555.0",
     "openai": "^5.23.0",
+    "playwright": "^1.48.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-intersection-observer": "^9.16.0",
@@ -40,7 +41,8 @@
     "eject": "react-scripts eject",
     "backend": "node backend-example.js",
     "dev": "concurrently \"npm run backend\" \"npm start\"",
-    "generate-product-summary": "node scripts/generate-product-summary.js"
+    "generate-product-summary": "node scripts/generate-product-summary.js",
+    "scrape:urls": "node scripts/scrape-pages.mjs"
   },
   "eslintConfig": {
     "extends": [

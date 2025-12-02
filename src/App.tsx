@@ -21,6 +21,7 @@ import AllSignage from './pages/AllSignage';
 import PavementSigns from './pages/PavementSigns';
 import ProjectingSigns from './pages/ProjectingSigns';
 import VehicleSignwriting from './pages/VehicleSignwriting';
+import LoaderDemo from './pages/LoaderDemo';
 import { CartProvider } from './contexts/CartContext';
 import { WishlistProvider } from './contexts/WishlistContext';
 
@@ -83,6 +84,7 @@ function App() {
               <Route path="/services/pavement-signs" element={<PavementSigns />} />
               <Route path="/services/projecting-signs" element={<ProjectingSigns />} />
               <Route path="/services/vehicle-signwriting" element={<VehicleSignwriting />} />
+              <Route path="/loader-demo" element={<LoaderDemo />} />
             </Routes>
             <Footer />
           </div>

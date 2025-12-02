@@ -4,6 +4,7 @@ import { Product } from '../lib/supabase';
 import { supabase } from '../lib/supabase';
 import './ProductDetails.css';
 import LogoCustomizerModal, { LogoOverlayConfig } from '../components/LogoCustomizerModal';
+import ImageModal from '../components/ImageModal';
 
 interface ProductGroup {
   style_code: string;
@@ -32,6 +33,8 @@ const ProductDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showLogoModal, setShowLogoModal] = useState(false);
   const [logoOverlay, setLogoOverlay] = useState<LogoOverlayConfig | null>(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageModalIndex, setImageModalIndex] = useState(0);
 
   useEffect(() => {
     if (!styleCode) return;
@@ -211,26 +214,34 @@ const ProductDetails: React.FC = () => {
                 <button
                   key={index}
                   className={`thumbnail ${selectedImageIndex === index ? 'active' : ''}`}
-                  onClick={() => setSelectedImageIndex(index)}
+                  onClick={() => {
+                    setImageModalIndex(index);
+                    setShowImageModal(true);
+                  }}
                 >
-                  <img 
-                    src={image} 
+                  <img
+                    src={image}
                     alt={`${productGroup.style_name} view ${index + 1}`}
+                    className="thumbnail-image"
                     onError={(e) => {
-                      e.currentTarget.src = 'https://via.placeholder.com/100x100/1a1a1a/78BE20?text=' + 
+                      e.currentTarget.src = 'https://via.placeholder.com/100x100/1a1a1a/78BE20?text=' +
                         encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P');
                     }}
                   />
                 </button>
               ))}
             </div>
-            <div className="main-image">
-              <img 
-                src={currentImages[selectedImageIndex] || 'https://via.placeholder.com/600x600/1a1a1a/78BE20?text=' + 
+            <div className="main-image" onClick={() => {
+              setImageModalIndex(selectedImageIndex);
+              setShowImageModal(true);
+            }}>
+              <img
+                src={currentImages[selectedImageIndex] || 'https://via.placeholder.com/600x600/1a1a1a/78BE20?text=' +
                   encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}
                 alt={productGroup.style_name}
+                className="main-product-image"
                 onError={(e) => {
-                  e.currentTarget.src = 'https://via.placeholder.com/600x600/1a1a1a/78BE20?text=' + 
+                  e.currentTarget.src = 'https://via.placeholder.com/600x600/1a1a1a/78BE20?text=' +
                     encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P');
                 }}
               />
@@ -403,8 +414,8 @@ const ProductDetails: React.FC = () => {
           onClose={() => setShowLogoModal(false)}
           onApply={(cfg, selectedColorIndex) => {
             if (
-              typeof selectedColorIndex === 'number' && 
-              selectedColorIndex >= 0 && 
+              typeof selectedColorIndex === 'number' &&
+              selectedColorIndex >= 0 &&
               selectedColorIndex < productGroup.colors.length
             ) {
               setSelectedColor(selectedColorIndex);
@@ -418,6 +429,15 @@ const ProductDetails: React.FC = () => {
           initialConfig={logoOverlay ?? undefined}
         />
       )}
+
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        images={currentImages}
+        initialIndex={imageModalIndex}
+        alt={productGroup.style_name}
+      />
     </div>
   );
 };

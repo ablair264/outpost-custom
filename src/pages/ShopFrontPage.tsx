@@ -2,26 +2,30 @@ import React from 'react';
 import ShopHero from '../components/shop/ShopHero';
 import ShopProductCarousel from '../components/shop/ShopProductCarousel';
 import ShopBentoGrid from '../components/shop/ShopBentoGrid';
-import HowToOrder from '../components/shop/HowToOrder';
 import FAQ from '../components/shop/FAQ';
 
 const ShopFrontPage = () => {
   return (
     <div className="min-h-screen" style={{ background: '#ffffff' }}>
       {/* Hero Section with GridMotion */}
-      <ShopHero />
+      <section>
+        <ShopHero />
+      </section>
 
       {/* Product Carousel */}
-      <ShopProductCarousel />
+      <section id="special-offers">
+        <ShopProductCarousel />
+      </section>
 
-      {/* Bento Grid Section - What We Do */}
-      <ShopBentoGrid />
-
-      {/* How to Order Process */}
-      <HowToOrder />
+      {/* Categories + How It Works */}
+      <section id="how-to-order">
+        <ShopBentoGrid />
+      </section>
 
       {/* FAQ Section */}
-      <FAQ />
+      <section id="faq">
+        <FAQ />
+      </section>
     </div>
   );
 };

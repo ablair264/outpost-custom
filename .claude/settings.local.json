@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(npm install:*)",
+      "Skill(frontend-design)",
+      "Bash(npx shadcn@latest init:*)",
+      "Bash(npm start)",
+      "Bash(cat:*)",
+      "Bash(npm run build:*)",
+      "Bash(lynx:*)",
+      "WebFetch(domain:www.figma.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
