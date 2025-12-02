@@ -256,9 +256,6 @@ async function queryProducts(filters, queryText) {
 
   if (orConditions.length) query = query.or(orConditions.join(','));
 
-  if (filters.priceMax && !filters.priceMin) query = query.order('single_price::numeric', { ascending: true });
-  else query = query.order('single_price::numeric', { ascending: true }).order('style_code', { ascending: true });
-
   const { data, error } = await query;
   if (error) throw error;
 
@@ -288,7 +285,13 @@ async function queryProducts(filters, queryText) {
     }
   });
 
-  return Array.from(grouped.values()).slice(0, MAX_RESULTS);
+  const sorted = Array.from(grouped.values()).sort((a, b) => {
+    const aPrice = a.price_min ?? 0;
+    const bPrice = b.price_min ?? 0;
+    return aPrice - bPrice;
+  });
+
+  return sorted.slice(0, MAX_RESULTS);
 }
 
 function buildPrompt(fullQuery, reference) {
