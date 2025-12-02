@@ -235,12 +235,21 @@ async function queryProducts(filters, queryText) {
     .limit(200);
 
   const orConditions = [];
+  const lowerQuery = (queryText || '').toLowerCase();
+  const wantsKids = lowerQuery.includes('kid') || lowerQuery.includes('child') || lowerQuery.includes('youth');
+
   if (filters.productTypes?.length) query = query.in('product_type', filters.productTypes);
   if (filters.brands?.length) query = query.in('brand', filters.brands);
   if (filters.genders?.length) query = query.in('gender', filters.genders);
   if (filters.priceMin !== undefined) query = query.gte('single_price::numeric', filters.priceMin);
   if (filters.priceMax !== undefined) query = query.lte('single_price::numeric', filters.priceMax);
   if (filters.sustainable) query = query.ilike('sustainable_organic', '%yes%');
+  // Default to adult/unisex unless the user explicitly asks for kids/youth
+  if (!wantsKids) {
+    query = query.not('age_group', 'in', ['Kids', 'Youth', 'Child', 'Infant', 'Toddler']);
+    query = query.not('style_name', 'ilike', '%kid%');
+    query = query.not('style_name', 'ilike', '%youth%');
+  }
   if (filters.materials?.length) {
     orConditions.push(...filters.materials.map(m => `fabric.ilike.%${m}%`));
   }
@@ -316,7 +325,8 @@ Return JSON ONLY:
     "priceMax": number or null,
     "genders": ["Male","Female","Unisex"] or null,
     "materials": ["Cotton","Polyester",...],
-    "sustainable": true/false/null
+    "sustainable": true/false/null,
+    "ageGroups": ["Adult","Youth","Kids"] or null
   },
   "explanation": "Why these filters fit",
   "matchedProducts": ["Name or style codes of 2-3 likely matches if obvious"],
@@ -327,6 +337,8 @@ Return JSON ONLY:
 Rules:
 - Use ONLY productTypes from the catalog list.
 - Do not invent brands.
+- Default to Adult/Unisex unless the user explicitly asks for kids/youth.
+- If the query contains "uniform", prioritise Polos, Shirts, and T-Shirts.
 - If user mentions budget/price/quantity, reflect it in priceMin/priceMax and quantity.
 - If they mention printing/branding/embroidery, prefer product types suited to decoration (Polos, T-Shirts, Hoodies, Bags, Caps).
 - If nothing clear, choose 2-3 broad types like Polos, T-Shirts, Bags.`;
