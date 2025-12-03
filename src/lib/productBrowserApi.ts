@@ -27,6 +27,12 @@ export interface ProductsResponse {
   hasPrevPage: boolean;
 }
 
+export interface BrandOption {
+  id: string;
+  name: string;
+  logo_url?: string;
+}
+
 export interface FilterOptions {
   materials: string[];
   categories: string[];
@@ -36,6 +42,7 @@ export interface FilterOptions {
   colors: string[];
   colorShades: string[];
   brands: string[];
+  brandOptions: BrandOption[];
   genders: string[];
   ageGroups: string[];
   accreditations: string[];
@@ -48,120 +55,125 @@ export async function getAllProducts(
 ): Promise<ProductsResponse> {
   try {
     console.log('🗄️ Database query starting with filters:', filters);
-    let query = supabase
-      .from('product_data')
+
+    // Use the optimized product_styles table instead of product_data
+    let stylesQuery = supabase
+      .from('product_styles')
       .select('*', { count: 'exact' });
 
-    // Apply filters
+    // Apply filters - much faster with the aggregated table
     if (filters.searchQuery) {
-      // Extract meaningful keywords from the search query
-      const keywords = filters.searchQuery
+      // Use full-text search instead of ilike
+      const searchTerms = filters.searchQuery
         .toLowerCase()
-        .replace(/[^\w\s]/g, '') // Remove punctuation
-        .split(/\s+/) // Split by whitespace
-        .filter(word => 
-          word.length > 2 && // Keep words longer than 2 characters
-          !['the', 'and', 'for', 'with', 'need', 'want', 'looking'].includes(word) // Remove common stop words
-        );
-      
-      console.log('🔍 Search keywords extracted:', keywords);
-      
-      // Search for each keyword across multiple fields
-      if (keywords.length > 0) {
-        const searchConditions = keywords.map(keyword => 
-          `style_name.ilike.%${keyword}%,brand.ilike.%${keyword}%,retail_description.ilike.%${keyword}%,specification.ilike.%${keyword}%,product_type.ilike.%${keyword}%`
-        ).join(',');
-        query = query.or(searchConditions);
+        .replace(/[^\w\s]/g, ' ')
+        .split(/\s+/)
+        .filter(word => word.length > 2 && !['the', 'and', 'for', 'with', 'need', 'want', 'looking'].includes(word))
+        .join(' & ');
+
+      if (searchTerms) {
+        stylesQuery = stylesQuery.textSearch('search_vector', searchTerms);
       }
     }
 
     if (filters.productTypes?.length) {
-      console.log('🔍 Filtering by product_type:', filters.productTypes);
-      query = query.in('product_type', filters.productTypes);
-    }
-
-    if (filters.sizes?.length) {
-      query = query.in('size_name', filters.sizes);
-    }
-
-    if (filters.colors?.length) {
-      query = query.in('primary_colour', filters.colors);
-    }
-
-    if (filters.colorShades?.length) {
-      query = query.in('colour_shade', filters.colorShades);
+      stylesQuery = stylesQuery.in('product_type', filters.productTypes);
     }
 
     if (filters.brands?.length) {
-      query = query.in('brand', filters.brands);
+      stylesQuery = stylesQuery.in('brand', filters.brands);
     }
 
     if (filters.genders?.length) {
-      console.log('🔍 Filtering by gender:', filters.genders);
-      query = query.in('gender', filters.genders);
+      stylesQuery = stylesQuery.in('gender', filters.genders);
     }
 
     if (filters.ageGroups?.length) {
-      query = query.in('age_group', filters.ageGroups);
+      stylesQuery = stylesQuery.in('age_group', filters.ageGroups);
     }
 
     if (filters.sustainableOrganic?.length) {
-      query = query.in('sustainable_organic', filters.sustainableOrganic);
+      stylesQuery = stylesQuery.in('sustainable_organic', filters.sustainableOrganic);
     }
 
-    // Price range filter - convert to number for proper comparison
+    // Price range filtering on aggregated min/max prices
     if (filters.priceMin !== undefined) {
-      console.log('🔍 Filtering by priceMin:', filters.priceMin);
-      query = query.gte('single_price::numeric', filters.priceMin);
+      stylesQuery = stylesQuery.gte('price_min', filters.priceMin);
     }
     if (filters.priceMax !== undefined) {
-      console.log('🔍 Filtering by priceMax:', filters.priceMax);
-      query = query.lte('single_price::numeric', filters.priceMax);
+      stylesQuery = stylesQuery.lte('price_max', filters.priceMax);
     }
 
-    // Material filter (requires text search in fabric field)
+    // Array containment for sizes and colors (much faster with GIN indexes)
+    if (filters.sizes?.length) {
+      stylesQuery = stylesQuery.overlaps('available_sizes', filters.sizes);
+    }
+
+    if (filters.colors?.length) {
+      stylesQuery = stylesQuery.overlaps('available_colors', filters.colors);
+    }
+
+    if (filters.colorShades?.length) {
+      stylesQuery = stylesQuery.overlaps('color_shades', filters.colorShades);
+    }
+
+    // Text search filters (still using ilike but on fewer rows)
     if (filters.materials?.length) {
-      const materialConditions = filters.materials.map(material => 
+      const materialConditions = filters.materials.map(material =>
         `fabric.ilike.%${material}%`
       ).join(',');
-      query = query.or(materialConditions);
+      stylesQuery = stylesQuery.or(materialConditions);
     }
 
-    // Category filter (requires text search in categorisation field)
     if (filters.categories?.length) {
-      const categoryConditions = filters.categories.map(category => 
+      const categoryConditions = filters.categories.map(category =>
         `categorisation.ilike.%${category}%`
       ).join(',');
-      query = query.or(categoryConditions);
+      stylesQuery = stylesQuery.or(categoryConditions);
     }
 
-    // Accreditations filter
     if (filters.accreditations?.length) {
-      const accredConditions = filters.accreditations.map(accred => 
+      const accredConditions = filters.accreditations.map(accred =>
         `accreditations.ilike.%${accred}%`
       ).join(',');
-      query = query.or(accredConditions);
+      stylesQuery = stylesQuery.or(accredConditions);
     }
 
-    // Simple pagination - let frontend handle grouping
+    // Apply pagination and ordering
     const startIndex = (page - 1) * pageSize;
-    query = query.range(startIndex, startIndex + pageSize - 1);
-    
-    // Order by style_code for better grouping diversity
-    query = query.order('style_code', { ascending: true }).order('id', { ascending: true });
+    stylesQuery = stylesQuery
+      .order('price_min', { ascending: true })
+      .range(startIndex, startIndex + pageSize - 1);
 
-    const { data: products, count, error } = await query;
-
-    console.log('🔍 Supabase query result:', {
-      error: error || 'No error',
-      count: count,
-      productsLength: products?.length || 0,
-      firstProduct: products?.[0]?.sku_code || 'No products'
-    });
+    const { data: styles, count, error } = await stylesQuery;
 
     if (error) {
-      console.error('❌ Error fetching products:', error);
+      console.error('❌ Error fetching styles:', error);
       throw error;
+    }
+
+    console.log('📊 Query result:', {
+      stylesFound: styles?.length || 0,
+      totalCount: count || 0,
+      page,
+      pageSize
+    });
+
+    // Fetch all variants for the matched styles
+    const styleCodesInPage = styles?.map(s => s.style_code) || [];
+
+    let productsQuery = supabase
+      .from('product_data')
+      .select('*')
+      .in('style_code', styleCodesInPage)
+      .order('style_code', { ascending: true })
+      .order('id', { ascending: true });
+
+    const { data: products, error: productsError } = await productsQuery;
+
+    if (productsError) {
+      console.error('❌ Error fetching product variants:', productsError);
+      throw productsError;
     }
 
     const totalPages = Math.ceil((count || 0) / pageSize);
@@ -189,134 +201,146 @@ export async function getAllProducts(
 
 export async function getFilterOptions(): Promise<FilterOptions> {
   try {
-    // Get distinct values for each filter type using aggregation
+    // Use the optimized product_styles table for much faster filter option loading
     const [
       productTypesResult,
-      sizesResult,
-      colorsResult,
       brandsResult,
       gendersResult,
-      priceRangeResult
+      ageGroupsResult,
+      priceRangeResult,
+      sizesResult,
+      colorsResult,
+      colorShadesResult,
+      materialsResult,
+      brandLogosResult
     ] = await Promise.all([
-      supabase.from('product_data').select('product_type').not('product_type', 'is', null).limit(100000),
-      supabase.from('product_data').select('size_name').not('size_name', 'is', null).limit(100000),
-      supabase.from('product_data').select('primary_colour').not('primary_colour', 'is', null).limit(100000),
-      supabase.from('product_data').select('brand').not('brand', 'is', null).limit(100000),
-      supabase.from('product_data').select('gender').not('gender', 'is', null).limit(100000),
-      supabase.from('product_data').select('single_price').not('single_price', 'is', null).limit(100000)
+      // Get distinct values from product_styles (much smaller table)
+      // Using range(0, 9999) to get all rows (product_styles only has ~4K rows)
+      supabase.from('product_styles').select('product_type').not('product_type', 'is', null).range(0, 9999),
+      supabase.from('product_styles').select('brand').not('brand', 'is', null).range(0, 9999),
+      supabase.from('product_styles').select('gender').not('gender', 'is', null).range(0, 9999),
+      supabase.from('product_styles').select('age_group').not('age_group', 'is', null).range(0, 9999),
+      supabase.from('product_styles').select('price_min, price_max').not('price_min', 'is', null).range(0, 9999),
+
+      // Get aggregated arrays from product_styles
+      supabase.from('product_styles').select('available_sizes').not('available_sizes', 'is', null).range(0, 9999),
+      supabase.from('product_styles').select('available_colors').not('available_colors', 'is', null).range(0, 9999),
+      supabase.from('product_styles').select('color_shades').not('color_shades', 'is', null).range(0, 9999),
+      supabase.from('product_styles').select('fabric').not('fabric', 'is', null).limit(500),
+
+      // Get brand logos
+      supabase.from('brand_logos').select('*').order('name')
     ]);
 
-    // Check for errors
-    if (brandsResult.error) {
-      console.error('❌ Error fetching brands:', brandsResult.error);
+    // Extract unique product types
+    const productTypes = Array.from(
+      new Set(productTypesResult.data?.map(p => p.product_type).filter(Boolean) || [])
+    ).sort();
+
+    // Extract unique brands
+    const brandsFromStyles = Array.from(
+      new Set(brandsResult.data?.map(p => p.brand).filter(Boolean) || [])
+    ).sort();
+
+    // Build brand options with logos
+    let brandOptions: BrandOption[] = [];
+    if (brandLogosResult.data && brandLogosResult.data.length > 0) {
+      const logoMap = new Map(
+        brandLogosResult.data.map(b => [b.name, b.logo_url])
+      );
+
+      brandOptions = brandsFromStyles.map((name, index) => ({
+        id: logoMap.has(name) ? `brand-${name}` : `fallback-${index}`,
+        name,
+        logo_url: logoMap.get(name) || undefined
+      }));
+    } else {
+      brandOptions = brandsFromStyles.map((name, index) => ({
+        id: `brand-${index}`,
+        name
+      }));
     }
-    if (productTypesResult.error) {
-      console.error('❌ Error fetching product types:', productTypesResult.error);
-    }
 
-    // Extract unique values
-    const productTypes = Array.from(new Set(productTypesResult.data?.map(p => p.product_type) || [])).sort();
-    const sizes = Array.from(new Set(sizesResult.data?.map(p => p.size_name) || [])).sort();
-    const colors = Array.from(new Set(colorsResult.data?.map(p => p.primary_colour) || [])).sort();
-    const brands = Array.from(new Set(brandsResult.data?.map(p => p.brand) || [])).sort();
-    const genders = Array.from(new Set(gendersResult.data?.map(p => p.gender) || [])).sort();
+    // Extract unique genders and age groups
+    const genders = Array.from(
+      new Set(gendersResult.data?.map(p => p.gender).filter(Boolean) || [])
+    ).sort();
 
-    // Debug logging
-    console.log('📊 Filter options loaded:', {
-      productTypesCount: productTypes.length,
-      sizesCount: sizes.length,
-      colorsCount: colors.length,
-      brandsCount: brands.length,
-      brands: brands,
-      brandDataLength: brandsResult.data?.length,
-      gendersCount: genders.length
-    });
-    
-    // Calculate price range
-    const prices = priceRangeResult.data?.map(p => parseFloat(p.single_price)).filter(p => !isNaN(p)) || [];
-    const priceRange = prices.length > 0 ? {
-      min: Math.floor(Math.min(...prices)),
-      max: Math.ceil(Math.max(...prices))
-    } : { min: 0, max: 1000 };
+    const ageGroups = Array.from(
+      new Set(ageGroupsResult.data?.map(p => p.age_group).filter(Boolean) || [])
+    ).sort();
 
-    // For materials, categories, etc., we need to sample products since they require text parsing
-    const { data: sampleProducts } = await supabase
-      .from('product_data')
-      .select('fabric, categorisation, colour_shade, age_group, accreditations')
-      .limit(500);
+    // Calculate price range from aggregated min/max
+    const priceMin = Math.floor(
+      Math.min(...(priceRangeResult.data?.map(p => p.price_min).filter(Boolean) || [0]))
+    );
+    const priceMax = Math.ceil(
+      Math.max(...(priceRangeResult.data?.map(p => p.price_max).filter(Boolean) || [1000]))
+    );
+    const priceRange = { min: priceMin, max: priceMax };
 
+    // Flatten arrays to get unique sizes, colors, and shades
+    const sizes = Array.from(
+      new Set(
+        sizesResult.data?.flatMap(p => p.available_sizes || []).filter(Boolean) || []
+      )
+    ).sort();
+
+    const colors = Array.from(
+      new Set(
+        colorsResult.data?.flatMap(p => p.available_colors || []).filter(Boolean) || []
+      )
+    ).sort();
+
+    const colorShades = Array.from(
+      new Set(
+        colorShadesResult.data?.flatMap(p => p.color_shades || []).filter(Boolean) || []
+      )
+    ).sort();
+
+    // Extract materials from fabric field (limited sample)
     const materials = new Set<string>();
-    const categories = new Set<string>();
-    const colorShades = new Set<string>();
-    const ageGroups = new Set<string>();
-    const accreditationsSet = new Set<string>();
-    
-    sampleProducts?.forEach(product => {
-      // Extract materials from fabric
+    const commonMaterials = [
+      'Cotton', 'Polyester', 'Wool', 'Denim', 'Fleece', 'Canvas',
+      'Merino', 'Terry Cloth', 'Jersey', 'Teddy', 'Corduroy', 'Leather',
+      'Twill', 'French Terry', 'Silk', 'Linen', 'Nylon', 'Viscose',
+      'Acrylic', 'Spandex', 'Elastane', 'Polyamide', 'Modal', 'Bamboo'
+    ];
+
+    materialsResult.data?.forEach(product => {
       if (product.fabric) {
-        const commonMaterials = [
-          'Cotton', 'Polyester', 'Wool', 'Denim', 'Fleece', 'Canvas',
-          'Merino', 'Terry Cloth', 'Jersey', 'Teddy', 'Corduroy', 'Leather',
-          'Twill', 'French Terry', 'Silk', 'Linen', 'Nylon', 'Viscose',
-          'Acrylic', 'Spandex', 'Elastane', 'Polyamide', 'Modal', 'Bamboo'
-        ];
-        
         commonMaterials.forEach(material => {
           if (product.fabric.toLowerCase().includes(material.toLowerCase())) {
             materials.add(material);
           }
         });
       }
-      
-      // Extract categories
-      if (product.categorisation) {
-        product.categorisation.split('|').forEach((cat: string) => {
-          const trimmedCat = cat.trim();
-          if (trimmedCat && 
-              !trimmedCat.includes('Top 1000') &&
-              !trimmedCat.includes('DM') &&
-              !trimmedCat.includes('Raladeal') &&
-              !trimmedCat.includes('Edge -') &&
-              !trimmedCat.includes('New in') &&
-              !trimmedCat.includes('Must Haves')) {
-            categories.add(trimmedCat);
-          }
-        });
-      }
-
-      // Extract color shades
-      if (product.colour_shade) {
-        colorShades.add(product.colour_shade);
-      }
-
-      // Extract age groups
-      if (product.age_group) {
-        ageGroups.add(product.age_group);
-      }
-      
-      // Extract accreditations
-      if (product.accreditations) {
-        product.accreditations.split('|').forEach((accred: string) => {
-          const trimmed = accred.trim();
-          if (trimmed) {
-            accreditationsSet.add(trimmed);
-          }
-        });
-      }
     });
-    
+
+    console.log('📊 Filter options loaded (optimized):', {
+      productTypesCount: productTypes.length,
+      sizesCount: sizes.length,
+      colorsCount: colors.length,
+      brandsCount: brandsFromStyles.length,
+      brandOptionsCount: brandOptions.length,
+      gendersCount: genders.length,
+      ageGroupsCount: ageGroups.length,
+      materialsCount: materials.size
+    });
+
     return {
       materials: Array.from(materials).sort(),
-      categories: Array.from(categories).sort(),
+      categories: [],
       priceRange,
       productTypes,
       sizes,
       colors,
-      colorShades: Array.from(colorShades).sort(),
-      brands,
+      colorShades,
+      brands: brandsFromStyles,
+      brandOptions,
       genders,
-      ageGroups: Array.from(ageGroups).sort(),
-      accreditations: Array.from(accreditationsSet).sort()
+      ageGroups,
+      accreditations: []
     };
   } catch (error) {
     console.error('Error getting filter options:', error);
@@ -329,6 +353,7 @@ export async function getFilterOptions(): Promise<FilterOptions> {
       colors: [],
       colorShades: [],
       brands: [],
+      brandOptions: [],
       genders: [],
       ageGroups: [],
       accreditations: []

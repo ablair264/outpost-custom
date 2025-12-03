@@ -113,7 +113,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     const hasMore = filteredOptions.length > 6;
 
     return (
-      <div className="border-b border-white/[0.06] last:border-b-0">
+      <div className="border-b border-white/[0.08] last:border-b-0">
         <button
           className="w-full flex items-center justify-between py-4 px-1 text-left group"
           onClick={() => toggleSection(key)}
@@ -207,9 +207,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   };
 
   return (
-    <div className="bg-[#111] border border-white/[0.06] rounded-2xl overflow-hidden">
+    <div className="bg-[#141414] border border-white/[0.1] rounded-2xl overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-white/[0.06] bg-[#141414]">
+      <div className="p-4 border-b border-white/[0.08] bg-[#181818]">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-bold text-white">Filters</h3>
           {getActiveFilters.length > 0 && (
@@ -236,7 +236,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
       {/* Active Filters */}
       {getActiveFilters.length > 0 && (
-        <div className="p-4 border-b border-white/[0.06] bg-[#0d0d0d]">
+        <div className="p-4 border-b border-white/[0.08] bg-[#111]">
           <p className="text-[10px] font-semibold text-[#666] uppercase tracking-wider mb-2">
             Active Filters
           </p>
@@ -255,10 +255,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     removeFilter(filter.key, filter.value);
                   }
                 }}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.05] border border-white/[0.1] rounded-full text-xs text-white hover:border-red-500/50 hover:bg-red-500/10 transition-all group"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#78BE20] rounded-full text-xs text-white font-medium hover:bg-red-500 transition-all group"
               >
                 <span className="truncate max-w-[120px]">{filter.label}</span>
-                <X size={12} className="text-[#666] group-hover:text-red-400 flex-shrink-0" />
+                <X size={12} className="text-white group-hover:text-white flex-shrink-0" />
               </button>
             ))}
           </div>
@@ -268,7 +268,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       {/* Filter Sections */}
       <div className="p-4">
         {/* Price Range - Custom */}
-        <div className="border-b border-white/[0.06]">
+        <div className="border-b border-white/[0.08]">
           <button
             className="w-full flex items-center justify-between py-4 px-1 text-left group"
             onClick={() => toggleSection('price')}
@@ -356,10 +356,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           renderFilterSection('Product Type', 'productTypes', filterOptions.productTypes, true)
         }
 
-        {filterOptions.categories && filterOptions.categories.length > 0 &&
-          renderFilterSection('Category', 'categories', filterOptions.categories, true)
-        }
-
         {filterOptions.brands && filterOptions.brands.length > 0 &&
           renderFilterSection('Brand', 'brands', filterOptions.brands, true)
         }
@@ -384,9 +380,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           renderFilterSection('Age Group', 'ageGroups', filterOptions.ageGroups, false)
         }
 
-        {filterOptions.accreditations && filterOptions.accreditations.length > 0 &&
-          renderFilterSection('Accreditations', 'accreditations', filterOptions.accreditations, false)
-        }
       </div>
     </div>
   );

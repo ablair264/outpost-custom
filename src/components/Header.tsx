@@ -640,6 +640,20 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           {/* Column 2 - Browse By Category */}
           <div className="p-6">
             <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50 mb-4">Browse Categories</h3>
+
+            {/* Featured - All Categories Link */}
+            <a
+              href="/categories"
+              className="group/cat flex items-center justify-between mb-4 px-3 py-2.5 -mx-3 rounded-lg bg-[#6da71d]/10 border border-[#6da71d]/20 hover:bg-[#6da71d]/20 hover:border-[#6da71d]/30 transition-all opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
+              style={{ animationDelay: '80ms' }}
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-3.5 w-3.5 text-[#6da71d]" strokeWidth={2.5} />
+                <span className="text-sm font-semibold text-[#6da71d]">All Categories</span>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-[#6da71d] group-hover/cat:translate-x-0.5 transition-transform" strokeWidth={2} />
+            </a>
+
             <ul className="space-y-0.5">
               {clothingCategories.map((item, index) => (
                 <li

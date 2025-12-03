@@ -53,38 +53,31 @@ async function loadReferenceData() {
     return referenceCache.data;
   }
 
+  // Use optimized product_styles table for much faster reference data loading
   const productTypesPromise = supabase.from('product_types').select('name').order('name');
 
-  const priceMinPromise = supabase
-    .from('product_data')
-    .select('single_price')
-    .order('single_price', { ascending: true })
-    .limit(1);
-
-  const priceMaxPromise = supabase
-    .from('product_data')
-    .select('single_price')
-    .order('single_price', { ascending: false })
-    .limit(1);
+  const priceRangePromise = supabase
+    .from('product_styles')
+    .select('price_min, price_max')
+    .not('price_min', 'is', null)
+    .not('price_max', 'is', null);
 
   const brandsPromise = supabase
-    .from('product_data')
+    .from('product_styles')
     .select('brand')
-    .not('brand', 'is', null)
-    .limit(1500);
+    .not('brand', 'is', null);
 
   const samplePromise = supabase
-    .from('product_data')
+    .from('product_styles')
     .select(
-      'style_code, style_name, brand, product_type, single_price, fabric, categorisation, sustainable_organic, retail_description, primary_product_image_url'
+      'style_code, style_name, brand, product_type, price_min, price_max, fabric, categorisation, sustainable_organic, retail_description, primary_product_image_url'
     )
     .not('product_type', 'is', null)
     .limit(SAMPLE_PRODUCTS_FOR_AI);
 
-  const [typesRes, minRes, maxRes, brandsRes, sampleRes] = await Promise.allSettled([
+  const [typesRes, priceRes, brandsRes, sampleRes] = await Promise.allSettled([
     productTypesPromise,
-    priceMinPromise,
-    priceMaxPromise,
+    priceRangePromise,
     brandsPromise,
     samplePromise
   ]);
@@ -94,24 +87,38 @@ async function loadReferenceData() {
       ? (typesRes.value.data || []).map(t => t.name).filter(Boolean)
       : [];
 
-  const priceRange = {
-    min:
-      minRes.status === 'fulfilled'
-        ? parseFloat(minRes.value.data?.[0]?.single_price) || 0
-        : 0,
-    max:
-      maxRes.status === 'fulfilled'
-        ? parseFloat(maxRes.value.data?.[0]?.single_price) || 0
-        : 0
-  };
+  // Calculate price range from aggregated min/max
+  let priceRange = { min: 0, max: 0 };
+  if (priceRes.status === 'fulfilled' && priceRes.value.data?.length) {
+    const prices = priceRes.value.data;
+    priceRange = {
+      min: Math.floor(Math.min(...prices.map(p => p.price_min).filter(Boolean))),
+      max: Math.ceil(Math.max(...prices.map(p => p.price_max).filter(Boolean)))
+    };
+  }
 
   const brands =
     brandsRes.status === 'fulfilled'
       ? Array.from(new Set((brandsRes.value.data || []).map(b => b.brand).filter(Boolean))).sort()
       : [];
 
+  // Convert product_styles format to match expected sample format
   const sampleProducts =
-    sampleRes.status === 'fulfilled' ? (sampleRes.value.data || []) : [];
+    sampleRes.status === 'fulfilled'
+      ? (sampleRes.value.data || []).map(s => ({
+          style_code: s.style_code,
+          style_name: s.style_name,
+          brand: s.brand,
+          product_type: s.product_type,
+          single_price: s.price_min, // Use minimum price for display
+          price_range: { min: s.price_min, max: s.price_max },
+          fabric: s.fabric,
+          categorisation: s.categorisation,
+          sustainable_organic: s.sustainable_organic,
+          retail_description: s.retail_description,
+          primary_product_image_url: s.primary_product_image_url
+        }))
+      : [];
 
   // Fallback to local summary if Supabase fetch fails
   if ((!productTypes.length || !sampleProducts.length) && loadProductSummaryFallback()) {
@@ -227,80 +234,74 @@ function generateFallbackFilters(query, reference) {
 }
 
 async function queryProducts(filters, queryText) {
+  // Use the optimized product_styles table instead of product_data
   let query = supabase
-    .from('product_data')
+    .from('product_styles')
     .select(
-      'style_code, style_name, brand, product_type, primary_product_image_url, single_price, sustainable_organic, categorisation, retail_description'
+      'style_code, style_name, brand, product_type, primary_product_image_url, price_min, price_max, sustainable_organic, categorisation, retail_description'
     )
-    .limit(200);
+    .limit(MAX_RESULTS);
 
-  const orConditions = [];
   const lowerQuery = (queryText || '').toLowerCase();
   const wantsKids = lowerQuery.includes('kid') || lowerQuery.includes('child') || lowerQuery.includes('youth');
+  const workwearIntent = ['workwear', 'hi vis', 'hi-vis', 'safety', 'construction', 'industrial', 'trade', 'warehouse'].some(
+    kw => lowerQuery.includes(kw)
+  );
 
+  // Apply filters
   if (filters.productTypes?.length) query = query.in('product_type', filters.productTypes);
   if (filters.brands?.length) query = query.in('brand', filters.brands);
   if (filters.genders?.length) query = query.in('gender', filters.genders);
-  if (filters.priceMin !== undefined) query = query.gte('single_price::numeric', filters.priceMin);
-  if (filters.priceMax !== undefined) query = query.lte('single_price::numeric', filters.priceMax);
+  if (filters.priceMin !== undefined) query = query.gte('price_min', filters.priceMin);
+  if (filters.priceMax !== undefined) query = query.lte('price_max', filters.priceMax);
   if (filters.sustainable) query = query.ilike('sustainable_organic', '%yes%');
+
   // Default to adult/unisex unless the user explicitly asks for kids/youth
   if (!wantsKids) {
-    query = query.not('age_group', 'in', ['Kids', 'Youth', 'Child', 'Infant', 'Toddler']);
-    query = query.not('style_name', 'ilike', '%kid%');
-    query = query.not('style_name', 'ilike', '%youth%');
-  }
-  if (filters.materials?.length) {
-    orConditions.push(...filters.materials.map(m => `fabric.ilike.%${m}%`));
+    const kidWords = ['Kids', 'Kid', 'Youth', 'Child', 'Children', 'Childrens', 'Junior', 'Infant', 'Toddler', 'Boys', 'Girls'];
+    kidWords.forEach(word => {
+      query = query.neq('age_group', word);
+    });
   }
 
+  // Use full-text search if we have keywords
   const keywords = extractKeywords(queryText);
   if (keywords.length) {
-    orConditions.push(
-      ...keywords.map(
-        k => `style_name.ilike.%${k}%,brand.ilike.%${k}%,retail_description.ilike.%${k}%,categorisation.ilike.%${k}%`
-      )
-    );
+    // Convert keywords to tsquery format for full-text search
+    const searchTerms = keywords.join(' & ');
+    query = query.textSearch('search_vector', searchTerms);
   }
 
-  if (orConditions.length) query = query.or(orConditions.join(','));
+  // For explicit workwear intent, prefer items tagged workwear/safety
+  if (workwearIntent) {
+    query = query.or('categorisation.ilike.%workwear%,categorisation.ilike.%safety%,categorisation.ilike.%hi vis%,categorisation.ilike.%hi-vis%');
+  }
+
+  // Material filter
+  if (filters.materials?.length) {
+    const materialConditions = filters.materials.map(m => `fabric.ilike.%${m}%`).join(',');
+    query = query.or(materialConditions);
+  }
+
+  // Order by price
+  query = query.order('price_min', { ascending: true });
 
   const { data, error } = await query;
   if (error) throw error;
 
-  // Group variants by style_code so we return unique styles
-  const grouped = new Map();
-  data?.forEach(item => {
-    const price = Number(item.single_price) || 0;
-    if (!grouped.has(item.style_code)) {
-      grouped.set(item.style_code, {
-        style_code: item.style_code,
-        style_name: item.style_name,
-        brand: item.brand,
-        product_type: item.product_type,
-        primary_product_image_url: item.primary_product_image_url,
-        sustainable_organic: item.sustainable_organic,
-        categorisation: item.categorisation,
-        retail_description: item.retail_description,
-        price_min: price,
-        price_max: price,
-        variant_count: 1
-      });
-    } else {
-      const existing = grouped.get(item.style_code);
-      existing.price_min = Math.min(existing.price_min, price);
-      existing.price_max = Math.max(existing.price_max, price);
-      existing.variant_count += 1;
-    }
-  });
-
-  const sorted = Array.from(grouped.values()).sort((a, b) => {
-    const aPrice = a.price_min ?? 0;
-    const bPrice = b.price_min ?? 0;
-    return aPrice - bPrice;
-  });
-
-  return sorted.slice(0, MAX_RESULTS);
+  // Data is already grouped by style_code in product_styles table
+  return (data || []).map(item => ({
+    style_code: item.style_code,
+    style_name: item.style_name,
+    brand: item.brand,
+    product_type: item.product_type,
+    primary_product_image_url: item.primary_product_image_url,
+    sustainable_organic: item.sustainable_organic,
+    categorisation: item.categorisation,
+    retail_description: item.retail_description,
+    price_min: item.price_min,
+    price_max: item.price_max
+  }));
 }
 
 function buildPrompt(fullQuery, reference) {

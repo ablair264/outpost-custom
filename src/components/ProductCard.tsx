@@ -51,7 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ productGroup, viewMode = 'gri
 
   if (viewMode === 'list') {
     return (
-      <div className="group bg-[#141414] border border-white/[0.06] rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/[0.12] hover:bg-[#181818] hover:shadow-xl hover:shadow-black/20">
+      <div className="group bg-[#161616] border border-white/[0.08] rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#78BE20]/30 hover:bg-[#1a1a1a] hover:shadow-xl hover:shadow-[#78BE20]/5">
         <div className="flex">
           {/* Image */}
           <div className="relative w-48 h-48 flex-shrink-0 bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]">
@@ -118,9 +118,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ productGroup, viewMode = 'gri
   }
 
   return (
-    <div className="group bg-[#141414] border border-white/[0.06] rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/[0.12] hover:bg-[#181818] hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30 flex flex-col h-full">
+    <div className="group bg-[#161616] border border-white/[0.08] rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#78BE20]/30 hover:bg-[#1a1a1a] hover:-translate-y-1 hover:shadow-xl hover:shadow-[#78BE20]/10 flex flex-col h-full">
       {/* Image Container - Fixed Height */}
-      <div className="relative aspect-square bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d] overflow-hidden">
+      <div className="relative aspect-square bg-gradient-to-br from-[#1e1e1e] to-[#141414] overflow-hidden">
         <img
           className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-105"
           src={currentImage !== 'Not available' 
