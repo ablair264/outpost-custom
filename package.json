@@ -41,8 +41,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "backend": "node backend-example.js",
-    "kb:index": "node scripts/index-kb.mjs",
-    "kb:chat-backend": "node scripts/chat-backend.mjs",
+    "kb:index": "node backend/index-kb.mjs",
+    "kb:chat-backend": "node backend/chat-backend.mjs",
     "dev": "concurrently \"npm run backend\" \"npm start\"",
     "generate-product-summary": "node scripts/generate-product-summary.js",
     "scrape:urls": "node scripts/scrape-pages.mjs"
