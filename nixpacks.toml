@@ -1,0 +1,9 @@
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+# If data/kb-index.json is committed, no build step is needed.
+cmds = ["true"]
+
+[start]
+cmd = "npm run kb:chat-backend"
