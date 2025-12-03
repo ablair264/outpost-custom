@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Loader2, X, ChevronDown, Lightbulb } from 'lucide-react';
-import { getAllProducts, getFilterOptions, ProductFilters, FilterOptions, BrandOption } from '../lib/productBrowserApi';
+import { Loader2, X, ChevronDown, Lightbulb, Search } from 'lucide-react';
+import { getAllProducts, getFilterOptions, getSizesForProductTypes, ProductFilters, FilterOptions, BrandOption } from '../lib/productBrowserApi';
 import { Product } from '../lib/supabase';
 import SmartSearchModal from '../components/SmartSearchModal';
 import ProductCard from '../components/ProductCard';
@@ -216,10 +216,10 @@ const ProductTypeMegaMenu: React.FC<ProductTypeMegaMenuProps> = ({
           setIsOpen(next);
           if (next) setActiveGroup(null);
         }}
-        className={`h-12 px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
+        className={`h-full px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
           isOpen || hasSelection
             ? 'bg-[#78BE20] text-black'
-            : 'bg-transparent text-white hover:bg-[#202020] hover:text-black'
+            : 'bg-transparent text-white hover:bg-[#78BE20] hover:text-black'
         }`}
       >
         PRODUCT TYPE
@@ -344,7 +344,7 @@ const ColourMegaMenu: React.FC<ColourMegaMenuProps> = ({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`h-10 px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
+        className={`h-full px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
           isOpen || hasSelection
             ? 'bg-[#78BE20] text-black'
             : 'bg-transparent text-white hover:bg-[#78BE20] hover:text-black'
@@ -459,7 +459,7 @@ const BrandMegaMenu: React.FC<BrandMegaMenuProps> = ({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`h-10 px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
+        className={`h-full px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
           isOpen || hasSelection
             ? 'bg-[#78BE20] text-black'
             : 'bg-transparent text-white hover:bg-[#78BE20] hover:text-black'
@@ -541,23 +541,158 @@ const BrandMegaMenu: React.FC<BrandMegaMenuProps> = ({
   );
 };
 
-// Standard Filter Dropdown (for Size)
-interface FilterDropdownProps {
-  label: string;
+// Helper to extract base size from variants
+const extractBaseSize = (size: string): string => {
+  const lower = size.toLowerCase();
+
+  // For adult sizes like "L Long", "2XL Reg" → extract "L", "2XL"
+  if (/^(xxs|xs|s|m|l|xl|\dxl)/i.test(size)) {
+    const match = size.match(/^(xxs|xs|s|m|l|xl|\dxl)/i);
+    return match ? match[1].toUpperCase() : size;
+  }
+
+  // For age ranges like "6/7 Years" → extract first number "6"
+  if (/^(\d+)\/\d+\s*years?$/i.test(size)) {
+    const match = size.match(/^(\d+)/);
+    return match ? `${match[1]} Years` : size;
+  }
+
+  // For women's sizes like "Wom 12/14" → extract base "Wom 12"
+  if (lower.startsWith('wom ')) {
+    const match = size.match(/^(Wom \d+)/i);
+    return match ? match[1] : size;
+  }
+
+  // For numeric sizes like "32 Long" → extract "32"
+  if (/^\d+\s+(long|reg|short|tall|mod)/i.test(size)) {
+    const match = size.match(/^(\d+)/);
+    return match ? match[1] : size;
+  }
+
+  return size;
+};
+
+// Size categorization helper - GROUPED BASE SIZES
+const categorizeSizes = (allSizes: string[]) => {
+  const categoryMap: Record<string, Map<string, string[]>> = {
+    'Baby & Toddler (0-24 months)': new Map(),
+    'Kids (2-5 years)': new Map(),
+    'Youth (6-15 years)': new Map(),
+    'Adult Sizes (XXS-8XL)': new Map(),
+    'Women\'s Numeric': new Map(),
+    'Numeric Sizes': new Map(),
+    'Measurements (Chest/Waist/Collar)': new Map(),
+    'Footwear': new Map(),
+    'One Size / Special': new Map(),
+    'Other': new Map()
+  };
+
+  allSizes.forEach(size => {
+    const lower = size.toLowerCase();
+
+    // Baby & Toddler (months)
+    if (lower.includes('months') || lower === 'new born') {
+      const baseSize = extractBaseSize(size);
+      const map = categoryMap['Baby & Toddler (0-24 months)'];
+      if (!map.has(baseSize)) map.set(baseSize, []);
+      map.get(baseSize)!.push(size);
+    }
+    // Kids Age (2-5 years) - only actual year ranges
+    else if (/^[1-5]\/?\d?\s*years?$/i.test(size) || /^[2-5]\+\s*years?$/i.test(size)) {
+      const baseSize = extractBaseSize(size);
+      const map = categoryMap['Kids (2-5 years)'];
+      if (!map.has(baseSize)) map.set(baseSize, []);
+      map.get(baseSize)!.push(size);
+    }
+    // Youth Age (6-15 years)
+    else if (/^([6-9]|1[0-5])\/?\d*\s*years?$/i.test(size)) {
+      const baseSize = extractBaseSize(size);
+      const map = categoryMap['Youth (6-15 years)'];
+      if (!map.has(baseSize)) map.set(baseSize, []);
+      map.get(baseSize)!.push(size);
+    }
+    // Women's numeric sizes
+    else if (lower.startsWith('wom ')) {
+      const baseSize = extractBaseSize(size);
+      const map = categoryMap['Women\'s Numeric'];
+      if (!map.has(baseSize)) map.set(baseSize, []);
+      map.get(baseSize)!.push(size);
+    }
+    // Footwear (UK) and Socks
+    else if (lower.startsWith('socks ') || (lower.startsWith('uk ') && !lower.includes('chest') && !lower.includes('waist'))) {
+      const baseSize = extractBaseSize(size);
+      const map = categoryMap['Footwear'];
+      if (!map.has(baseSize)) map.set(baseSize, []);
+      map.get(baseSize)!.push(size);
+    }
+    // All measurements: Waist, Chest, Collar
+    else if (lower.includes('waist') || lower.includes('chest') ||
+             (/^\d+\.?\d*$/.test(size) && parseFloat(size) >= 13 && parseFloat(size) <= 23)) {
+      const baseSize = extractBaseSize(size);
+      const map = categoryMap['Measurements (Chest/Waist/Collar)'];
+      if (!map.has(baseSize)) map.set(baseSize, []);
+      map.get(baseSize)!.push(size);
+    }
+    // Adult standard sizes (XXS-8XL) with ALL fit variants
+    else if (/^(xxs|xs|s|m|l|xl|\dxl)/i.test(size) ||
+             (/(youth|boys|ly\/xly)$/i.test(size))) {
+      const baseSize = extractBaseSize(size);
+      const map = categoryMap['Adult Sizes (XXS-8XL)'];
+      if (!map.has(baseSize)) map.set(baseSize, []);
+      map.get(baseSize)!.push(size);
+    }
+    // Numeric sizes (6, 8, 10, 12, etc. with fit variants) - exclude collar sizes
+    else if (/^\d+/.test(size) && !lower.includes('litre') && !lower.includes('mm') && !lower.includes('cm') &&
+             !(parseFloat(size) >= 13 && parseFloat(size) <= 23 && /^\d+\.?\d*$/.test(size))) {
+      const baseSize = extractBaseSize(size);
+      const map = categoryMap['Numeric Sizes'];
+      if (!map.has(baseSize)) map.set(baseSize, []);
+      map.get(baseSize)!.push(size);
+    }
+    // Special sizes
+    else if (['one size', 'child', 'infant', 'junior', 'youth'].includes(lower)) {
+      const map = categoryMap['One Size / Special'];
+      if (!map.has(size)) map.set(size, []);
+      map.get(size)!.push(size);
+    }
+    // Other (paper sizes, dimensions, etc.)
+    else {
+      const map = categoryMap['Other'];
+      if (!map.has(size)) map.set(size, []);
+      map.get(size)!.push(size);
+    }
+  });
+
+  // Convert maps to arrays and sort
+  return Object.entries(categoryMap)
+    .filter(([_, map]) => map.size > 0)
+    .map(([name, map]) => ({
+      name,
+      items: Array.from(map.entries())
+        .map(([baseSize, variants]) => ({
+          baseSize,
+          variants
+        }))
+        .sort((a, b) => a.baseSize.localeCompare(b.baseSize, undefined, { numeric: true, sensitivity: 'base' }))
+    }));
+};
+
+// Grouped Size Mega Menu
+interface SizeMegaMenuProps {
   options: string[];
   selectedValues: string[];
   onToggle: (value: string) => void;
   onClear: () => void;
 }
 
-const FilterDropdown: React.FC<FilterDropdownProps> = ({
-  label,
+const SizeMegaMenu: React.FC<SizeMegaMenuProps> = ({
   options,
   selectedValues,
   onToggle,
   onClear
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -573,22 +708,52 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   }, []);
 
   const hasSelection = selectedValues.length > 0;
+  const sizeGroups = categorizeSizes(options);
+  const activeGroupData = sizeGroups.find(g => g.name === activeGroup);
 
-  const filteredOptions = options.filter(option =>
-    option.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter items in active group by search term
+  const filteredItems = searchTerm && activeGroupData
+    ? activeGroupData.items.filter(item => item.baseSize.toLowerCase().includes(searchTerm.toLowerCase()))
+    : activeGroupData?.items || [];
+
+  // Handle clicking a base size - select all its variants
+  const handleBaseSizeClick = (item: { baseSize: string; variants: string[] }) => {
+    // Toggle all variants of this base size
+    const allVariantsSelected = item.variants.every(v => selectedValues.includes(v));
+
+    item.variants.forEach(variant => {
+      if (allVariantsSelected) {
+        // If all selected, deselect all
+        if (selectedValues.includes(variant)) {
+          onToggle(variant);
+        }
+      } else {
+        // If not all selected, select all
+        if (!selectedValues.includes(variant)) {
+          onToggle(variant);
+        }
+      }
+    });
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`h-10 px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
+        onClick={() => {
+          const next = !isOpen;
+          setIsOpen(next);
+          if (next) {
+            setActiveGroup(null);
+            setSearchTerm('');
+          }
+        }}
+        className={`h-full px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
           isOpen || hasSelection
             ? 'bg-[#78BE20] text-black'
             : 'bg-transparent text-white hover:bg-[#78BE20] hover:text-black'
         }`}
       >
-        {label}
+        SIZE
         <ChevronDown
           size={14}
           className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
@@ -596,62 +761,93 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-0 min-w-[280px] bg-[#212121] shadow-2xl z-50 rounded-b-lg overflow-hidden border border-[#383838]">
-          {options.length > 10 && (
-            <div className="p-3 border-b border-white/10">
-              <input
-                type="text"
-                placeholder={`Search ${label.toLowerCase()}...`}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded text-white placeholder-white/50 text-sm focus:outline-none focus:bg-white/10 focus:border-[#78BE20]/50"
-              />
+        <div className={`absolute top-full left-0 mt-0 bg-[#212121] shadow-2xl z-50 rounded-b-lg overflow-hidden border border-[#383838] ${activeGroupData ? 'min-w-[760px]' : 'min-w-[280px]'}`}>
+          <div className="flex">
+            {/* Left rail - Size categories */}
+            <div className="w-64 bg-[#212121] border-r border-[#383838] max-h-[450px] overflow-y-auto scrollbar-thin">
+              {sizeGroups.map((group) => {
+                const isActive = group.name === activeGroup;
+                const totalVariants = group.items.reduce((sum, item) => sum + item.variants.length, 0);
+                return (
+                  <button
+                    key={group.name}
+                    onClick={() => setActiveGroup(group.name)}
+                    className={`group relative w-full text-left px-4 py-3 text-[13px] font-bold tracking-wide flex items-center justify-between transition-all ${
+                      isActive ? 'bg-[#383838] text-white' : 'text-white/85 hover:bg-[#2b2b2b]'
+                    }`}
+                    title={`${group.items.length} base sizes (${totalVariants} total variants)`}
+                  >
+                    <span className="flex-1">{group.name}</span>
+                    <span className="text-xs text-white/50">({group.items.length})</span>
+                  </button>
+                );
+              })}
             </div>
-          )}
 
-          <div className="max-h-[350px] overflow-y-auto p-2 scrollbar-thin">
-            {filteredOptions.map((option) => {
-              const isSelected = selectedValues.includes(option);
-              return (
-                <button
-                  key={option}
-                  onClick={() => onToggle(option)}
-                  className={`w-full text-left px-3 py-2 text-sm transition-colors rounded ${
-                    isSelected
-                      ? 'bg-white/10 text-white font-semibold ring-2 ring-[#78BE20]'
-                      : 'text-white/90 hover:bg-white/5'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <span className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                      isSelected ? 'bg-[#78BE20] border-[#78BE20]' : 'border-white/30'
-                    }`}>
-                      {isSelected && (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3" className="w-3 h-3">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      )}
-                    </span>
-                    {option}
-                  </span>
-                </button>
-              );
-            })}
+            {/* Right panel - Size options */}
+            {activeGroupData && (
+              <div className="flex-1 bg-[#1a1a1a] p-4 min-h-[320px] max-h-[450px] flex flex-col">
+                {/* Search */}
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    placeholder="Search sizes..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded text-white placeholder-white/50 text-sm focus:outline-none focus:bg-white/10 focus:border-[#78BE20]/50"
+                  />
+                </div>
+
+                {/* Sizes grid */}
+                <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin">
+                  <div className="grid grid-cols-3 gap-2">
+                    {filteredItems.map((item) => {
+                      // Check if any variant of this base size is selected
+                      const hasSelection = item.variants.some(v => selectedValues.includes(v));
+                      const allSelected = item.variants.every(v => selectedValues.includes(v));
+
+                      return (
+                        <button
+                          key={item.baseSize}
+                          onClick={() => handleBaseSizeClick(item)}
+                          className={`px-3 py-2 text-sm text-left rounded transition-colors relative ${
+                            allSelected
+                              ? 'bg-[#78BE20] text-black font-semibold'
+                              : hasSelection
+                              ? 'bg-[#78BE20]/50 text-black font-semibold'
+                              : 'bg-[#212121] text-white hover:bg-[#383838]'
+                          }`}
+                          title={item.variants.length > 1 ? `Includes: ${item.variants.join(', ')}` : item.baseSize}
+                        >
+                          {item.baseSize}
+                          {item.variants.length > 1 && (
+                            <span className="text-xs opacity-60 ml-1">
+                              ({item.variants.length})
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Clear button */}
+                {hasSelection && (
+                  <div className="mt-3 pt-3 border-t border-white/10">
+                    <button
+                      onClick={() => {
+                        onClear();
+                        setIsOpen(false);
+                      }}
+                      className="text-sm font-semibold text-white/80 hover:text-white transition-colors"
+                    >
+                      Clear all selections
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-
-          {hasSelection && (
-            <div className="p-2 border-t border-white/10">
-              <button
-                onClick={() => {
-                  onClear();
-                  setIsOpen(false);
-                }}
-                className="w-full py-2 text-sm font-semibold text-white/80 hover:text-white transition-colors"
-              >
-                Clear selection
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -704,7 +900,7 @@ const MoreFiltersDropdown: React.FC<MoreFiltersDropdownProps> = ({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`h-10 px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
+        className={`h-full px-4 text-sm font-semibold uppercase tracking-wide transition-all duration-200 flex items-center gap-2 ${
           isOpen || hasSelection
             ? 'bg-[#78BE20] text-black'
             : 'bg-transparent text-white hover:bg-[#78BE20] hover:text-black'
@@ -848,6 +1044,8 @@ const ProductBrowser: React.FC = () => {
 
   const [isSmartSearchOpen, setIsSmartSearchOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [relevantSizes, setRelevantSizes] = useState<string[]>([]);
+  const [searchInput, setSearchInput] = useState('');
 
   // Load filter options on mount
   useEffect(() => {
@@ -861,6 +1059,31 @@ const ProductBrowser: React.FC = () => {
     };
     loadFilterOptions();
   }, []);
+
+  // Load relevant sizes when product types change
+  useEffect(() => {
+    const loadRelevantSizes = async () => {
+      if (currentFilters.productTypes && currentFilters.productTypes.length > 0) {
+        const sizes = await getSizesForProductTypes(currentFilters.productTypes);
+        setRelevantSizes(sizes);
+      } else {
+        setRelevantSizes([]);
+      }
+    };
+    loadRelevantSizes();
+  }, [currentFilters.productTypes]);
+
+  // Debounced search - update filters when search input changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleFiltersChange({
+        ...currentFilters,
+        searchQuery: searchInput.trim() || undefined
+      });
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   // Group products by style
   const groupProductsByStyle = useCallback((products: Product[]): ProductGroup[] => {
@@ -979,6 +1202,7 @@ const ProductBrowser: React.FC = () => {
 
   const clearAllFilters = () => {
     setCurrentFilters({});
+    setSearchInput('');
     setCurrentPage(1);
     loadProducts({}, 1);
   };
@@ -986,6 +1210,7 @@ const ProductBrowser: React.FC = () => {
   // Get active filter count
   const getActiveFilterCount = () => {
     let count = 0;
+    if (currentFilters.searchQuery) count++;
     if (currentFilters.productTypes?.length) count += currentFilters.productTypes.length;
     if (currentFilters.brands?.length) count += currentFilters.brands.length;
     if (currentFilters.colors?.length) count += currentFilters.colors.length;
@@ -1094,20 +1319,29 @@ const ProductBrowser: React.FC = () => {
                 </button>
               </span>
             ))}
+
+            {/* Clear All Button */}
+            <button
+              onClick={clearAllFilters}
+              className="inline-flex items-center gap-2 px-3 py-1 bg-red-600 text-white text-sm font-bold uppercase tracking-wide hover:bg-red-700 transition-colors ml-2"
+            >
+              <X size={14} />
+              CLEAR ALL
+            </button>
           </div>
         )}
 
         {/* Filter Bar */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-          <div className="flex items-center">
+        <div className="flex items-center justify-between border-b border-white/10 mb-6">
+          <div className="flex h-12">
             {/* Filters Label */}
-            <span className="flex items-center gap-2 text-white/50 uppercase text-xs font-semibold tracking-wider mr-4">
+            <span className="flex items-center gap-2 text-white/50 uppercase text-xs font-semibold tracking-wider mr-4 px-4">
               <FilterIcon className="w-4 h-4" />
               FILTERS
             </span>
 
             {/* Filter Buttons */}
-            <div className="flex items-center">
+            <div className="flex h-full">
               {/* Product Type */}
               {filterOptions.productTypes.length > 0 && (
                 <ProductTypeMegaMenu
@@ -1163,11 +1397,10 @@ const ProductBrowser: React.FC = () => {
                 />
               )}
 
-              {/* Size */}
-              {filterOptions.sizes.length > 0 && (
-                <FilterDropdown
-                  label="SIZE"
-                  options={filterOptions.sizes}
+              {/* Size - Only show when product type is selected */}
+              {relevantSizes.length > 0 && currentFilters.productTypes && currentFilters.productTypes.length > 0 && (
+                <SizeMegaMenu
+                  options={relevantSizes}
                   selectedValues={currentFilters.sizes || []}
                   onToggle={(value) => {
                     const current = currentFilters.sizes || [];
@@ -1192,8 +1425,29 @@ const ProductBrowser: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Side: Smart Search */}
-          <div className="flex items-center gap-3">
+          {/* Right Side: Search & Smart Search */}
+          <div className="flex items-center gap-4">
+            {/* AJAX Search Input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50" size={18} />
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-10 pr-10 py-2 bg-[#1a1a1a] border border-white/20 rounded text-white placeholder-white/50 text-sm focus:outline-none focus:border-[#78BE20] focus:bg-[#202020] w-64 transition-colors"
+              />
+              {searchInput && (
+                <button
+                  onClick={() => setSearchInput('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                  title="Clear search"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
             <div className="border-l border-white/20 pl-4 flex items-center gap-3">
               <span className="text-xs text-white/50 uppercase tracking-wide">STUCK FOR IDEAS?</span>
               <button

@@ -199,6 +199,38 @@ export async function getAllProducts(
   }
 }
 
+// Get sizes available for specific product types
+export async function getSizesForProductTypes(productTypes: string[]): Promise<string[]> {
+  if (!productTypes || productTypes.length === 0) {
+    return [];
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('product_styles')
+      .select('available_sizes')
+      .in('product_type', productTypes);
+
+    if (error) {
+      console.error('Error fetching sizes for product types:', error);
+      return [];
+    }
+
+    // Flatten and deduplicate all sizes
+    const allSizes = new Set<string>();
+    data?.forEach(row => {
+      if (row.available_sizes) {
+        row.available_sizes.forEach((size: string) => allSizes.add(size));
+      }
+    });
+
+    return Array.from(allSizes).sort();
+  } catch (error) {
+    console.error('Error in getSizesForProductTypes:', error);
+    return [];
+  }
+}
+
 export async function getFilterOptions(): Promise<FilterOptions> {
   try {
     // Use RPC to call the optimized PostgreSQL function for distinct values
