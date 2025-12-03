@@ -1168,13 +1168,28 @@ const ProductBrowser: React.FC = () => {
     });
   }, []);
 
-  const loadProducts = useCallback(async (filters: ProductFilters, page: number = 1) => {
+  const loadProducts = useCallback(async (filters: ProductFilters, page: number = 1, sizeOverride?: number) => {
     try {
       setLoading(true);
-      const response = await getAllProducts(filters, page, pageSize);
+      const effectivePageSize = sizeOverride ?? pageSize;
+      const response = await getAllProducts(filters, page, effectivePageSize);
+
+      console.log('📦 ProductBrowser: Received products from API:', {
+        totalProducts: response.products.length,
+        page,
+        pageSize,
+        totalCount: response.totalCount,
+        totalPages: response.totalPages
+      });
 
       setAllProducts(response.products);
       const groups = groupProductsByStyle(response.products);
+
+      console.log('📦 ProductBrowser: Grouped products:', {
+        totalGroups: groups.length,
+        styleCodes: groups.map(g => g.style_code)
+      });
+
       setProductGroups(groups);
       setCurrentPage(page);
 
@@ -1522,7 +1537,7 @@ const ProductBrowser: React.FC = () => {
                       const size = parseInt(e.target.value, 10);
                       setPageSize(size);
                       setCurrentPage(1);
-                      loadProducts(currentFilters, 1);
+                      loadProducts(currentFilters, 1, size);
                     }}
                     className="bg-[#1a1a1a] text-white border border-white/20 rounded px-2 py-1 text-sm"
                   >

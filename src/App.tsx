@@ -24,6 +24,7 @@ import VehicleSignwriting from './pages/VehicleSignwriting';
 import LoaderDemo from './pages/LoaderDemo';
 import { CartProvider } from './contexts/CartContext';
 import { WishlistProvider } from './contexts/WishlistContext';
+import ChatWidget from './components/ChatWidget';
 
 function HomePage() {
   useEffect(() => {
@@ -87,6 +88,7 @@ function App() {
               <Route path="/loader-demo" element={<LoaderDemo />} />
             </Routes>
             <Footer />
+            <ChatWidget />
           </div>
         </WishlistProvider>
       </CartProvider>
