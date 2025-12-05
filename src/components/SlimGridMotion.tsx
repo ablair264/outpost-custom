@@ -1,19 +1,23 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 
 interface SlimGridMotionProps {
   items?: string[];
   gradientColor?: string;
+  pageKey?: string; // For database-backed pages (e.g., 'shop', 'signage', 'pavement', etc.)
 }
 
-const SlimGridMotion: React.FC<SlimGridMotionProps> = ({ items = [], gradientColor = 'black' }) => {
+const SlimGridMotion: React.FC<SlimGridMotionProps> = ({
+  items = [],
+  gradientColor = 'black',
+  pageKey
+}) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const mouseXRef = useRef(window.innerWidth / 2);
 
-  const totalItems = 21; // 3 rows × 7 columns (reduced from 28)
-  const defaultItems = Array.from({ length: totalItems }, (_, index) => `Item ${index + 1}`);
-  const combinedItems = items.length > 0 ? items.slice(0, totalItems) : defaultItems;
+  const totalItems = 21; // 3 rows × 7 columns
+  const combinedItems = items.length > 0 ? items.slice(0, totalItems) : Array.from({ length: totalItems }, (_, index) => `Item ${index + 1}`);
 
   useEffect(() => {
     gsap.ticker.lagSmoothing(0);

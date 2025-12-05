@@ -39,20 +39,17 @@ const ShopProductCarousel = () => {
   };
 
   return (
-    <section className="w-full py-16 px-4 md:px-8 lg:px-16 xl:px-24" style={{ background: '#ffffff' }}>
+    <section className="w-full py-20 md:py-28 px-4 md:px-8 lg:px-16 xl:px-24" style={{ background: '#ffffff' }}>
       <div className="max-w-[1200px] mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-12">
           {/* Title */}
           <div>
-            <span className="inline-block px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3" style={{ background: '#6da71d', color: '#ffffff' }}>
-              Featured Products
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: '#000000' }}>
-              Browse Our Catalogue
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight" style={{ color: '#000000' }}>
+              Special Offers
             </h2>
-            <p className="text-gray-600 mt-2">
-              High-quality garments perfect for printing and customization
+            <p className="text-gray-600 mt-3 text-lg">
+              Curated selection of our best products at unbeatable prices
             </p>
           </div>
 

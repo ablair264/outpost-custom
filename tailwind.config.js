@@ -17,6 +17,13 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        'hearns': ['Hearns', 'sans-serif'],
+        'aldivaro-rough': ['Aldivaro Rough', 'sans-serif'],
+        'aldivaro-stamp': ['Aldivaro Stamp', 'sans-serif'],
+        'aldivaro': ['Aldivaro', 'sans-serif'],
+        'neuzeit': ['Neuzeit Grotesk', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

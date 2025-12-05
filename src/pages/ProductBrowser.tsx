@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Loader2, X, ChevronDown, Lightbulb, Search } from 'lucide-react';
 import { getAllProducts, getFilterOptions, getSizesForProductTypes, ProductFilters, FilterOptions, BrandOption } from '../lib/productBrowserApi';
 import { Product } from '../lib/supabase';
@@ -172,6 +173,11 @@ const COLOR_MAP: Record<string, string> = {
   'Khaki': '#BDB76B',
 };
 
+const getColorHexValue = (colorName: string): string => {
+  const normalizedName = colorName.charAt(0).toUpperCase() + colorName.slice(1).toLowerCase();
+  return COLOR_MAP[normalizedName] || COLOR_MAP[colorName] || '#CCCCCC';
+};
+
 // Product Type Mega Menu Dropdown
 interface ProductTypeMegaMenuProps {
   options: string[];
@@ -334,12 +340,6 @@ const ColourMegaMenu: React.FC<ColourMegaMenuProps> = ({
 
   const hasSelection = selectedValues.length > 0;
 
-  // Get color hex from name
-  const getColorHex = (colorName: string): string => {
-    const normalizedName = colorName.charAt(0).toUpperCase() + colorName.slice(1).toLowerCase();
-    return COLOR_MAP[normalizedName] || COLOR_MAP[colorName] || '#CCCCCC';
-  };
-
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -362,7 +362,7 @@ const ColourMegaMenu: React.FC<ColourMegaMenuProps> = ({
           <div className="flex flex-wrap gap-2" style={{ maxWidth: '600px' }}>
             {options.map((color) => {
               const isSelected = selectedValues.includes(color);
-              const colorHex = getColorHex(color);
+              const colorHex = getColorHexValue(color);
               const isLight = colorHex === '#FFFFFF' || colorHex === '#FFFDD0';
 
               return (
@@ -1016,6 +1016,7 @@ interface ProductGroup {
 }
 
 const ProductBrowser: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [productGroups, setProductGroups] = useState<ProductGroup[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1046,6 +1047,26 @@ const ProductBrowser: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [relevantSizes, setRelevantSizes] = useState<string[]>([]);
   const [searchInput, setSearchInput] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    const updateIsMobile = () => {
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth < 1024);
+      }
+    };
+
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile);
+    return () => window.removeEventListener('resize', updateIsMobile);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setIsMobileFiltersOpen(false);
+    }
+  }, [isMobile]);
 
   // Load filter options on mount
   useEffect(() => {
@@ -1059,6 +1080,67 @@ const ProductBrowser: React.FC = () => {
     };
     loadFilterOptions();
   }, []);
+
+  // Handle URL parameter for product type filtering
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
+
+  useEffect(() => {
+    // Read all filters from URL parameters
+    const newFilters: ProductFilters = {};
+
+    const productTypesParam = searchParams.get('productTypes') || searchParams.get('type');
+    if (productTypesParam) {
+      newFilters.productTypes = productTypesParam.split(',').map(decodeURIComponent);
+    }
+
+    const brandsParam = searchParams.get('brands');
+    if (brandsParam) {
+      newFilters.brands = brandsParam.split(',').map(decodeURIComponent);
+    }
+
+    const colorsParam = searchParams.get('colors');
+    if (colorsParam) {
+      newFilters.colors = colorsParam.split(',').map(decodeURIComponent);
+    }
+
+    const sizesParam = searchParams.get('sizes');
+    if (sizesParam) {
+      newFilters.sizes = sizesParam.split(',').map(decodeURIComponent);
+    }
+
+    const gendersParam = searchParams.get('genders');
+    if (gendersParam) {
+      newFilters.genders = gendersParam.split(',').map(decodeURIComponent);
+    }
+
+    const materialsParam = searchParams.get('materials');
+    if (materialsParam) {
+      newFilters.materials = materialsParam.split(',').map(decodeURIComponent);
+    }
+
+    const priceMinParam = searchParams.get('priceMin');
+    if (priceMinParam) {
+      newFilters.priceMin = parseFloat(priceMinParam);
+    }
+
+    const priceMaxParam = searchParams.get('priceMax');
+    if (priceMaxParam) {
+      newFilters.priceMax = parseFloat(priceMaxParam);
+    }
+
+    const searchParam = searchParams.get('search');
+    if (searchParam) {
+      newFilters.searchQuery = decodeURIComponent(searchParam);
+      setSearchInput(newFilters.searchQuery);
+    }
+
+    // Apply filters and load products
+    setCurrentFilters(newFilters);
+    loadProducts(newFilters, 1);
+
+    // Mark that we've processed URL params
+    setInitialLoadDone(true);
+  }, []); // Run only once on mount
 
   // Load relevant sizes when product types change
   useEffect(() => {
@@ -1075,6 +1157,9 @@ const ProductBrowser: React.FC = () => {
 
   // Debounced search - update filters when search input changes
   useEffect(() => {
+    // Don't run search until initial URL params have been processed
+    if (!initialLoadDone) return;
+
     const timer = setTimeout(() => {
       handleFiltersChange({
         ...currentFilters,
@@ -1083,7 +1168,7 @@ const ProductBrowser: React.FC = () => {
     }, 500); // 500ms debounce
 
     return () => clearTimeout(timer);
-  }, [searchInput]);
+  }, [searchInput, initialLoadDone]);
 
   // Group products by style
   const groupProductsByStyle = useCallback((products: Product[]): ProductGroup[] => {
@@ -1204,14 +1289,30 @@ const ProductBrowser: React.FC = () => {
     }
   }, [pageSize, groupProductsByStyle]);
 
-  // Initial load
+  // Initial load - wait for URL params to be processed first
   useEffect(() => {
-    loadProducts(currentFilters, 1);
-  }, []);
+    if (initialLoadDone) {
+      loadProducts(currentFilters, 1);
+    }
+  }, [initialLoadDone, currentFilters]);
 
   const handleFiltersChange = (newFilters: ProductFilters) => {
     setCurrentFilters(newFilters);
     setCurrentPage(1);
+
+    // Sync filters to URL
+    const params = new URLSearchParams();
+    if (newFilters.productTypes?.length) params.set('productTypes', newFilters.productTypes.join(','));
+    if (newFilters.brands?.length) params.set('brands', newFilters.brands.join(','));
+    if (newFilters.colors?.length) params.set('colors', newFilters.colors.join(','));
+    if (newFilters.sizes?.length) params.set('sizes', newFilters.sizes.join(','));
+    if (newFilters.genders?.length) params.set('genders', newFilters.genders.join(','));
+    if (newFilters.materials?.length) params.set('materials', newFilters.materials.join(','));
+    if (newFilters.priceMin !== undefined) params.set('priceMin', newFilters.priceMin.toString());
+    if (newFilters.priceMax !== undefined) params.set('priceMax', newFilters.priceMax.toString());
+    if (newFilters.searchQuery) params.set('search', newFilters.searchQuery);
+
+    setSearchParams(params);
     loadProducts(newFilters, 1);
   };
 
@@ -1219,7 +1320,25 @@ const ProductBrowser: React.FC = () => {
     setCurrentFilters({});
     setSearchInput('');
     setCurrentPage(1);
+    setSearchParams(new URLSearchParams()); // Clear URL params
     loadProducts({}, 1);
+  };
+
+  const toggleFilterValue = (key: keyof ProductFilters, value: string) => {
+    const current = (currentFilters[key] as string[]) || [];
+    const newValues = current.includes(value)
+      ? current.filter(v => v !== value)
+      : [...current, value];
+
+    handleFiltersChange({
+      ...currentFilters,
+      [key]: newValues.length > 0 ? newValues : undefined
+    });
+  };
+
+  const isFilterValueSelected = (key: keyof ProductFilters, value: string) => {
+    const current = (currentFilters[key] as string[]) || [];
+    return current.includes(value);
   };
 
   // Get active filter count
@@ -1236,16 +1355,66 @@ const ProductBrowser: React.FC = () => {
     return count;
   };
 
-  const hasActiveFilters = getActiveFilterCount() > 0;
+  const activeFilterCount = getActiveFilterCount();
+  const hasActiveFilters = activeFilterCount > 0;
 
   return (
     <div className="min-h-screen bg-black">
-      <div className="max-w-[1600px] mx-auto px-4 py-4">
+      <div className="max-w-[1600px] mx-auto px-4 py-4 space-y-4">
+
+        {/* Mobile Search + Filter Toggle */}
+        <div className="lg:hidden flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50" size={18} />
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-10 pr-10 py-2.5 bg-[#121212] border border-white/15 rounded-lg text-white placeholder-white/50 text-sm focus:outline-none focus:border-[#78BE20] focus:bg-[#1a1a1a] w-full transition-colors"
+              />
+              {searchInput && (
+                <button
+                  onClick={() => setSearchInput('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                  title="Clear search"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            <button
+              onClick={() => setIsMobileFiltersOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#78BE20] text-black font-bold rounded-lg shadow-lg shadow-[#78BE20]/30 uppercase tracking-wide"
+            >
+              <FilterIcon className="w-4 h-4" />
+              Filters
+              {activeFilterCount > 0 && (
+                <span className="ml-1 inline-flex items-center justify-center rounded-full bg-black/80 text-white text-xs px-2 py-0.5">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-white/50 uppercase tracking-wide">Stuck for ideas?</span>
+            <button
+              onClick={() => setIsSmartSearchOpen(true)}
+              className="px-3 py-2 bg-yellow-400 hover:bg-yellow-300 text-black font-bold text-xs rounded transition-colors flex items-center gap-2"
+            >
+              Use Smartsearch
+              <Lightbulb size={14} fill="currentColor" />
+            </button>
+          </div>
+        </div>
 
         {/* Active Filters Bar */}
         {hasActiveFilters && (
-          <div className="mb-4 flex items-center gap-3 flex-wrap">
-            <span className="text-xs text-white/50 uppercase font-semibold tracking-wider">ACTIVE FILTERS</span>
+          <div className="mb-2 flex items-center gap-3 flex-wrap rounded-lg bg-white/5 border border-white/10 px-3 py-2">
+            <span className="text-xs text-white/50 uppercase font-semibold tracking-wider whitespace-nowrap">ACTIVE FILTERS</span>
 
             {/* Product Type Badges */}
             {currentFilters.productTypes?.map((type) => (
@@ -1346,8 +1515,258 @@ const ProductBrowser: React.FC = () => {
           </div>
         )}
 
+        {/* Mobile Filters Drawer */}
+        {isMobile && (
+          <div className={`fixed inset-0 z-50 transition-all duration-300 ${isMobileFiltersOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+            <div
+              className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${isMobileFiltersOpen ? 'opacity-100' : 'opacity-0'}`}
+              onClick={() => setIsMobileFiltersOpen(false)}
+            />
+            <div className={`absolute bottom-0 left-0 right-0 bg-[#0d0d0d] border-t border-white/10 rounded-t-3xl shadow-2xl transition-transform duration-300 ${isMobileFiltersOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+              <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                <div>
+                  <p className="text-white font-semibold text-lg">Filters</p>
+                  <p className="text-xs text-white/60">Refine the product results</p>
+                </div>
+                <button
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center text-white transition-colors"
+                  aria-label="Close filters"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="px-4 pb-4 space-y-4 max-h-[70vh] overflow-y-auto scrollbar-thin">
+                {/* Product Types */}
+                {filterOptions.productTypes.length > 0 && (
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-semibold text-white">Product Type</p>
+                      <span className="text-xs text-white/50">{currentFilters.productTypes?.length || 0} selected</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {filterOptions.productTypes.map((type) => {
+                        const active = isFilterValueSelected('productTypes', type);
+                        return (
+                          <button
+                            key={type}
+                            onClick={() => toggleFilterValue('productTypes', type)}
+                            className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-all ${
+                              active
+                                ? 'bg-[#78BE20] text-black border-[#78BE20]'
+                                : 'bg-transparent text-white/80 border-white/20'
+                            }`}
+                          >
+                            {type}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Colours */}
+                {filterOptions.colors.length > 0 && (
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-semibold text-white">Colour</p>
+                      <span className="text-xs text-white/50">{currentFilters.colors?.length || 0} selected</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {filterOptions.colors.map((color) => {
+                        const active = isFilterValueSelected('colors', color);
+                        const colorHex = getColorHexValue(color);
+                        const isLight = colorHex === '#FFFFFF' || colorHex === '#FFFDD0';
+                        return (
+                          <button
+                            key={color}
+                            onClick={() => toggleFilterValue('colors', color)}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${
+                              active
+                                ? 'bg-[#78BE20] text-black border-[#78BE20]'
+                                : 'bg-transparent text-white/80 border-white/20'
+                            }`}
+                          >
+                            <span
+                              className={`w-5 h-5 rounded-full border ${isLight ? 'border-gray-400' : 'border-transparent'}`}
+                              style={{ backgroundColor: colorHex }}
+                            />
+                            <span className="text-xs font-semibold">{color}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Brands */}
+                {(filterOptions.brandOptions?.length > 0 || filterOptions.brands?.length > 0) && (
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-semibold text-white">Brand</p>
+                      <span className="text-xs text-white/50">{currentFilters.brands?.length || 0} selected</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {(filterOptions.brandOptions?.length > 0
+                        ? filterOptions.brandOptions
+                        : filterOptions.brands.map((name, i) => ({ id: `brand-${i}`, name })))
+                        .map((brand) => {
+                          const active = isFilterValueSelected('brands', brand.name);
+                          return (
+                            <button
+                              key={brand.id}
+                              onClick={() => toggleFilterValue('brands', brand.name)}
+                              className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-all ${
+                                active
+                                  ? 'bg-[#78BE20] text-black border-[#78BE20]'
+                                  : 'bg-transparent text-white/80 border-white/20'
+                              }`}
+                            >
+                              {brand.name}
+                            </button>
+                          );
+                        })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sizes */}
+                {currentFilters.productTypes?.length && relevantSizes.length > 0 ? (
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-semibold text-white">Sizes</p>
+                      <span className="text-xs text-white/50">{currentFilters.sizes?.length || 0} selected</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {relevantSizes.map((size) => {
+                        const active = isFilterValueSelected('sizes', size);
+                        return (
+                          <button
+                            key={size}
+                            onClick={() => toggleFilterValue('sizes', size)}
+                            className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-all ${
+                              active
+                                ? 'bg-[#78BE20] text-black border-[#78BE20]'
+                                : 'bg-transparent text-white/80 border-white/20'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-3">
+                    <p className="text-sm font-semibold text-white mb-1">Sizes</p>
+                    <p className="text-xs text-white/60">Select a product type to see relevant sizes.</p>
+                  </div>
+                )}
+
+                {/* Price & Misc */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-3 space-y-3">
+                  <div>
+                    <p className="text-sm font-semibold text-white mb-2">Price Range</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        placeholder="Min"
+                        value={currentFilters.priceMin ?? ''}
+                        onChange={(e) => handleFiltersChange({
+                          ...currentFilters,
+                          priceMin: e.target.value ? parseFloat(e.target.value) : undefined
+                        })}
+                        className="flex-1 px-3 py-2 bg-[#1a1a1a] border border-white/15 rounded text-white text-sm placeholder-white/40 focus:outline-none focus:border-[#78BE20]"
+                      />
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        placeholder="Max"
+                        value={currentFilters.priceMax ?? ''}
+                        onChange={(e) => handleFiltersChange({
+                          ...currentFilters,
+                          priceMax: e.target.value ? parseFloat(e.target.value) : undefined
+                        })}
+                        className="flex-1 px-3 py-2 bg-[#1a1a1a] border border-white/15 rounded text-white text-sm placeholder-white/40 focus:outline-none focus:border-[#78BE20]"
+                      />
+                    </div>
+                  </div>
+
+                  {filterOptions.genders.length > 0 && (
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-2">Gender</p>
+                      <div className="flex flex-wrap gap-2">
+                        {filterOptions.genders.map((gender) => {
+                          const active = isFilterValueSelected('genders', gender);
+                          return (
+                            <button
+                              key={gender}
+                              onClick={() => toggleFilterValue('genders', gender)}
+                              className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-all ${
+                                active
+                                  ? 'bg-[#78BE20] text-black border-[#78BE20]'
+                                  : 'bg-transparent text-white/80 border-white/20'
+                              }`}
+                            >
+                              {gender}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {filterOptions.materials.length > 0 && (
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-2">Material</p>
+                      <div className="flex flex-wrap gap-2">
+                        {filterOptions.materials.slice(0, 12).map((material) => {
+                          const active = isFilterValueSelected('materials', material);
+                          return (
+                            <button
+                              key={material}
+                              onClick={() => toggleFilterValue('materials', material)}
+                              className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-all ${
+                                active
+                                  ? 'bg-[#78BE20] text-black border-[#78BE20]'
+                                  : 'bg-transparent text-white/80 border-white/20'
+                              }`}
+                            >
+                              {material}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="px-4 py-3 border-t border-white/10 bg-[#0b0b0b] flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    clearAllFilters();
+                    setIsMobileFiltersOpen(false);
+                  }}
+                  className="px-4 py-3 rounded-xl bg-white/10 text-white text-sm font-semibold flex-1"
+                >
+                  Clear all
+                </button>
+                <button
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                  className="px-4 py-3 rounded-xl bg-[#78BE20] text-black text-sm font-bold flex-1 shadow-lg shadow-[#78BE20]/40"
+                >
+                  Show products
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Filter Bar */}
-        <div className="flex items-center justify-between border-b border-white/10 mb-6">
+        <div className="hidden lg:flex items-center justify-between border-b border-white/10 pb-3">
           <div className="flex h-12">
             {/* Filters Label */}
             <span className="flex items-center gap-2 text-white/50 uppercase text-xs font-semibold tracking-wider mr-4 px-4">

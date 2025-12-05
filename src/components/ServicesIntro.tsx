@@ -25,11 +25,14 @@ const ServicesIntro: React.FC = () => {
   }, []);
 
   return (
-    <section id="services-intro" className="services-intro">
-      <div className="container">
-        <h2 className="animated-title">
+    <section id="services-intro" className="bg-black py-24 px-6 text-center">
+      <div className="max-w-7xl mx-auto">
+        <h2
+          className="text-white text-[50px] md:text-[30px] leading-none tracking-tight min-h-[60px] md:min-h-[40px] inline-block"
+          style={{ fontFamily: "'Aldivaro', sans-serif", fontWeight: 'normal' }}
+        >
           <span>{displayText}</span>
-          <span className="cursor">|</span>
+          <span className="inline-block text-white animate-[blink_1s_infinite]">|</span>
         </h2>
       </div>
     </section>

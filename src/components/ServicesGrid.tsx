@@ -61,37 +61,53 @@ const ServicesGrid: React.FC = () => {
   return (
     <>
       {/* CTA Banner Section */}
-      <section id="cta-banner" className="cta-banner parallax-section">
-        <div className="overlay"></div>
-        <div className="container">
-          <h2 className="cta-title">We're here to help you<br />promote your business</h2>
+      <section
+        id="cta-banner"
+        className="py-48 bg-cover bg-center bg-fixed text-center relative"
+        style={{ backgroundImage: "url('parallax-bg.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <h2 className="text-white text-[clamp(40px,6vw,80px)] leading-tight font-semibold">
+            We're here to help you<br />promote your business
+          </h2>
         </div>
       </section>
 
       {/* Services Grid Section */}
-      <section id="services" className="services-grid-section">
-        <div className="container">
-          <h2 className="section-title accent-color">What we do</h2>
-          <p className="section-lead">We're here to help you promote your business, build your brand or simply just to show your individuality.</p>
-          
-          <div className="services-grid">
+      <section id="services" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-[clamp(40px,6vw,80px)] text-center mb-5 text-[#78BE20] uppercase tracking-wide font-bold">
+            What we do
+          </h2>
+          <p className="text-center mb-10 text-lg text-gray-700 max-w-3xl mx-auto">
+            We're here to help you promote your business, build your brand or simply just to show your individuality.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-16">
             {services.map((service, index) => (
-              <div key={index} className="service-card">
-                <div className="service-icon">
-                  <img src={service.icon} alt={service.title} />
+              <div
+                key={index}
+                className="p-12 shadow-[0_0_20px_rgba(159,164,176,0.3)] text-center transition-all duration-300 hover:shadow-[0_0_30px_rgba(159,164,176,0.5)] bg-white"
+              >
+                <div className="mb-8">
+                  <img src={service.icon} alt={service.title} className="w-20 h-20 mx-auto" />
                 </div>
-                <h3>{service.title}</h3>
-                <p><strong>{service.description}</strong></p>
-                <p>{service.details}</p>
-                <a href="#" className="service-button">
-                  Find out more... <i className="fas fa-angle-double-right"></i>
+                <h3 className="text-[#78BE20] mb-5 text-[22px] font-semibold">{service.title}</h3>
+                <p className="mb-4 text-gray-600 leading-relaxed"><strong>{service.description}</strong></p>
+                <p className="mb-4 text-gray-600 leading-relaxed">{service.details}</p>
+                <a
+                  href="#"
+                  className="inline-block px-8 py-3 bg-[#78BE20] text-white no-underline rounded transition-all duration-300 hover:bg-black hover:text-[#78BE20] text-sm font-semibold tracking-wide"
+                >
+                  Find out more... <i className="fas fa-angle-double-right ml-1"></i>
                 </a>
               </div>
             ))}
           </div>
-          
-          <div className="cta-contact">
-            <h3 className="accent-color">
+
+          <div className="text-center mt-20">
+            <h3 className="text-[25px] leading-relaxed tracking-tight text-[#78BE20]">
               Let's chat about your next project.<br />
               Call or WhatsApp 01562 227 117
             </h3>

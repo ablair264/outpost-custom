@@ -15,7 +15,13 @@
       "mcp__supabase__get_advisors",
       "mcp__supabase__execute_sql",
       "mcp__supabase__apply_migration",
-      "Bash(sudo chown:*)"
+      "Bash(sudo chown:*)",
+      "Bash(npx tsc:*)",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__get_anon_key",
+      "Bash(pkill:*)",
+      "Bash(sudo npm install:*)",
+      "Skill(ui-styling)"
     ],
     "deny": [],
     "ask": []

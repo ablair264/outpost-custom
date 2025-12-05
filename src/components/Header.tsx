@@ -33,43 +33,36 @@ const clothingUseCases = [
   { label: 'Unique Gifts', href: '/categories/unique-gifts' }
 ];
 
-// Clothing mega menu - Product categories (condensed)
+// Clothing mega menu - Product categories (matching ProductBrowser product types)
 const clothingCategories = [
-  { label: 'T-Shirts & Vests', href: '/products?category=t-shirts' },
-  { label: 'Hoodies & Sweatshirts', href: '/products?category=hoodies' },
-  { label: 'Polos & Casual', href: '/products?category=polos' },
-  { label: 'Jackets & Outerwear', href: '/products?category=jackets' },
-  { label: 'Trousers & Shorts', href: '/products?category=trousers' },
-  { label: 'Workwear & Safety', href: '/products?category=workwear' },
-  { label: 'Sportswear', href: '/products?category=sportswear' },
-  { label: 'Bags & Accessories', href: '/products?category=bags' },
-  { label: 'Headwear', href: '/products?category=headwear' },
-  { label: 'Sustainable & Organic', href: '/products?category=organic' }
+  { label: 'Tops', href: '/products?productType=TOPS' },
+  { label: 'Outerwear', href: '/products?productType=OUTERWEAR' },
+  { label: 'Bottoms', href: '/products?productType=BOTTOMS' },
+  { label: 'Workwear', href: '/products?productType=WORKWEAR' },
+  { label: 'Headwear', href: '/products?productType=HEADWEAR' },
+  { label: 'Footwear', href: '/products?productType=FOOTWEAR' },
+  { label: 'Bags & Cases', href: '/products?productType=BAGS%20%26%20CASES' },
+  { label: 'Accessories', href: '/products?productType=ACCESSORIES' },
+  { label: 'Underwear & Sleepwear', href: '/products?productType=UNDERWEAR%20%26%20SLEEPWEAR' },
+  { label: 'Home & Gifts', href: '/products?productType=HOME%20%26%20GIFTS' }
 ];
 
 // Signage mega menu data
 const signageIndoor = [
-  { label: 'Glass Manifestation', href: '/services/all-signage' },
-  { label: 'Window Privacy Film', href: '/services/all-signage' },
-  { label: 'Wall Graphics', href: '/services/all-signage' },
-  { label: 'Floor Graphics', href: '/services/all-signage' },
-  { label: 'Poster Frames', href: '/services/all-signage' }
+  { label: 'Glass Manifestation', href: '/services/glass-manifestation' },
+  { label: 'Window Privacy Film', href: '/services/window-privacy-film' }
 ];
 
 const signageOutdoor = [
-  { label: 'Signboards', href: '/services/pavement-signs' },
+  { label: 'Signboards', href: '/services/signboards' },
   { label: 'Pavement Signs', href: '/services/pavement-signs' },
-  { label: 'Projecting Signs', href: '/services/projecting-signs' },
-  { label: 'Fascia Signs', href: '/services/all-signage' },
-  { label: 'Banner Stands', href: '/services/all-signage' }
+  { label: 'Projecting Signs', href: '/services/projecting-signs' }
 ];
 
 const signageEvents = [
-  { label: 'Gazebos', href: '/services/all-signage' },
-  { label: 'Parasols', href: '/services/all-signage' },
-  { label: 'Tablecloths', href: '/services/all-signage' },
-  { label: 'Flags & Banners', href: '/services/all-signage' },
-  { label: 'Pop-up Displays', href: '/services/all-signage' }
+  { label: 'Gazebos', href: '/services/gazebos' },
+  { label: 'Parasols', href: '/services/parasols' },
+  { label: 'Tablecloths', href: '/services/tablecloths' }
 ];
 
 // Printing mega menu data
@@ -734,7 +727,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   return (
     <>
       <div ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 ${className}`}>
-        <div className="border-b border-black/40 bg-[#6da71d] text-white">
+        <div className="border-b border-black/40 bg-[#64a70b] text-white">
           <div className="max-w-[1600px] mx-auto flex flex-col items-center justify-center gap-2 px-4 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.25em] sm:flex-row sm:gap-4">
             <p className="text-[9px] tracking-[0.3em] sm:text-[10px]">
               - HAVE A QUESTION? GET IN TOUCH AND ONE OF OUR TEAM WILL BE THERE TO HELP
@@ -866,47 +859,182 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
       <nav className={`mobile-nav ${isMobileMenuOpen ? 'active' : ''}`}>
         <ul className="mobile-menu">
           {navigationItems.map((item) => (
-            <li key={`mobile-${item.label}`} className={item.megaSections ? 'has-submenu' : ''}>
-              {item.megaSections ? (
-                <button
-                  type="button"
-                  className={`submenu-toggle ${mobileMenuState[item.label] ? 'active' : ''}`}
-                  onClick={() => toggleMobileSubmenu(item.label)}
-                >
-                  <span>{item.label}</span>
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${mobileMenuState[item.label] ? 'rotate-180' : ''}`}
-                    strokeWidth={2.5}
-                  />
-                </button>
+            <li key={`mobile-${item.label}`} className={item.megaSections || item.customMegaMenu ? 'has-submenu' : ''}>
+              {item.megaSections || item.customMegaMenu ? (
+                <>
+                  <button
+                    type="button"
+                    className={`submenu-toggle ${mobileMenuState[item.label] ? 'active' : ''}`}
+                    onClick={() => toggleMobileSubmenu(item.label)}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${mobileMenuState[item.label] ? 'rotate-180' : ''}`}
+                      strokeWidth={2.5}
+                    />
+                  </button>
+
+                  {/* Standard mega sections */}
+                  {item.megaSections && (
+                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
+                      {item.megaSections.map((section, index) => (
+                        <div key={`${item.label}-section-${section.title ?? index}`} className="py-2">
+                          {section.title && <p className="mobile-submenu-title">{section.title}</p>}
+                          <ul>
+                            {section.items.map((link) => (
+                              <li key={`${item.label}-${link.label}`}>
+                                <a href={link.href}>{link.label}</a>
+                                {link.children && (
+                                  <ul className="nested-list">
+                                    {link.children.map((child) => (
+                                      <li key={`${item.label}-${link.label}-${child.label}`}>
+                                        <a href={child.href}>{child.label}</a>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Custom mega menus */}
+                  {item.customMegaMenu === 'clothing' && (
+                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
+                      <div className="py-2">
+                        <p className="mobile-submenu-title">Shop For</p>
+                        <ul>
+                          {clothingUseCases.map((useCase) => (
+                            <li key={useCase.label}>
+                              <a href={useCase.href}>{useCase.label}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="py-2">
+                        <p className="mobile-submenu-title">Browse Categories</p>
+                        <ul>
+                          <li><a href="/categories">All Categories</a></li>
+                          {clothingCategories.map((category) => (
+                            <li key={category.label}>
+                              <a href={category.href}>{category.label}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="py-2">
+                        <p className="mobile-submenu-title">Quick Links</p>
+                        <ul>
+                          <li><a href="/shop#special-offers">Special Offers</a></li>
+                          <li><a href="/products">Smart Search</a></li>
+                          <li><a href="/products">View All Products</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  {item.customMegaMenu === 'signage' && (
+                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
+                      <div className="py-2">
+                        <p className="mobile-submenu-title">Indoor Signage</p>
+                        <ul>
+                          {signageIndoor.map((sign) => (
+                            <li key={sign.label}>
+                              <a href={sign.href}>{sign.label}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="py-2">
+                        <p className="mobile-submenu-title">Outdoor Signage</p>
+                        <ul>
+                          {signageOutdoor.map((sign) => (
+                            <li key={sign.label}>
+                              <a href={sign.href}>{sign.label}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="py-2">
+                        <p className="mobile-submenu-title">Event Signage</p>
+                        <ul>
+                          {signageEvents.map((sign) => (
+                            <li key={sign.label}>
+                              <a href={sign.href}>{sign.label}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="py-2">
+                        <ul>
+                          <li><a href="/contact">Get A Quote</a></li>
+                          <li><a href="/services/all-signage">View All</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  {item.customMegaMenu === 'printing' && (
+                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
+                      <div className="py-2">
+                        <p className="mobile-submenu-title">Marketing Materials</p>
+                        <ul>
+                          {printingMarketing.map((print) => (
+                            <li key={print.label}>
+                              <a href={print.href}>{print.label}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="py-2">
+                        <p className="mobile-submenu-title">Stationery & Cards</p>
+                        <ul>
+                          {printingStationery.map((print) => (
+                            <li key={print.label}>
+                              <a href={print.href}>{print.label}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="py-2">
+                        <p className="mobile-submenu-title">Print Products</p>
+                        <ul>
+                          {printingProducts.map((print) => (
+                            <li key={print.label}>
+                              <a href={print.href}>{print.label}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="py-2">
+                        <ul>
+                          <li><a href="/contact">Request a Quote</a></li>
+                          <li><a href="/printing">View All Printing</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+
+                  {item.customMegaMenu === 'vehicle' && (
+                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
+                      <div className="py-2">
+                        <ul>
+                          {vehicleServices.map((service) => (
+                            <li key={service.label}>
+                              <a href={service.href}>{service.label}</a>
+                            </li>
+                          ))}
+                          <li><a href="/contact">Free Consultation</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <a href={item.href || '#'}>{item.label}</a>
-              )}
-
-              {item.megaSections && (
-                <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
-                  {item.megaSections.map((section, index) => (
-                    <div key={`${item.label}-section-${section.title ?? index}`} className="py-2">
-                      {section.title && <p className="mobile-submenu-title">{section.title}</p>}
-                      <ul>
-                        {section.items.map((link) => (
-                          <li key={`${item.label}-${link.label}`}>
-                            <a href={link.href}>{link.label}</a>
-                            {link.children && (
-                              <ul className="nested-list">
-                                {link.children.map((child) => (
-                                  <li key={`${item.label}-${link.label}-${child.label}`}>
-                                    <a href={child.href}>{child.label}</a>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
               )}
             </li>
           ))}
