@@ -727,22 +727,6 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   return (
     <>
       <div ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 ${className}`}>
-        <div className="border-b border-black/40 bg-[#64a70b] text-white">
-          <div className="max-w-[1600px] mx-auto flex flex-col items-center justify-center gap-2 px-4 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.25em] sm:flex-row sm:gap-4">
-            <p className="text-[9px] tracking-[0.3em] sm:text-[10px]">
-              - HAVE A QUESTION? GET IN TOUCH AND ONE OF OUR TEAM WILL BE THERE TO HELP
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] tracking-[0.3em]">
-              <a href="mailto:info@outpostcustom.co.uk" className="hover:text-black/80 transition-colors">
-                info@outpostcustom.co.uk
-              </a>
-              <span className="opacity-70">|</span>
-              <a href="tel:01562227117" className="hover:text-black/80 transition-colors">
-                01562 227 117
-              </a>
-            </div>
-          </div>
-        </div>
         {/* Compact Single-Line Header */}
         <header className={`bg-black border-b border-white/10 transition-all ${isScrolled ? 'bg-black/95 backdrop-blur-md' : ''}`}>
           <div className="max-w-[1600px] mx-auto px-4 lg:px-8">

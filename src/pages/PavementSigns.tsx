@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { CheckCircle2, XCircle, Mail, Phone, Palette, Package } from 'lucide-react';
+import { CheckCircle2, XCircle, Mail, Phone, Package, Palette } from 'lucide-react';
 import SlimGridMotion from '../components/SlimGridMotion';
+import CustomisationOptions from '../components/CustomisationOptions';
 
 const PavementSigns: React.FC = () => {
   const headingRef = useRef<HTMLDivElement>(null);
@@ -56,6 +57,27 @@ const PavementSigns: React.FC = () => {
           font-family: 'Aldivaro Stamp', serif;
           font-weight: normal;
         }
+        @font-face {
+          font-family: 'Embossing Tape';
+          src: url('/fonts/embossing_tape/embosst3.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        .embossing-font {
+          font-family: 'Embossing Tape', monospace;
+        }
+        @font-face {
+          font-family: 'Neuzeit Grotesk';
+          src: url('/fonts/neuzeit-grotesk-regular_freefontdownload_org/neuzeit-grotesk-regular.woff2') format('woff2'),
+               url('/fonts/neuzeit-grotesk-regular_freefontdownload_org/neuzeit-grotesk-regular.woff') format('woff');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        .neuzeit-font {
+          font-family: 'Neuzeit Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
       `}</style>
 
       <div className="min-h-screen bg-white">
@@ -64,6 +86,7 @@ const PavementSigns: React.FC = () => {
           <div className="absolute inset-0">
             <SlimGridMotion items={pavementImages} gradientColor="#333333" />
           </div>
+          <div className="absolute inset-0 bg-black/50 z-[4]" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-transparent z-[5]" />
 
           <div className="relative z-10 h-full flex items-center px-6 md:px-12 lg:px-24">
@@ -97,38 +120,50 @@ const PavementSigns: React.FC = () => {
           </div>
         </section>
 
-        {/* Overview Section */}
-        <section className="py-20 px-6 md:px-12 lg:px-24 bg-white relative">
-          <div className="absolute top-10 right-10 opacity-10 pointer-events-none">
-            <img src="/Website Assets/Arrow_Green.png" alt="" className="w-32 h-32 rotate-45" />
-          </div>
-          <div className="max-w-5xl mx-auto">
-            <h2 className="smilecake-font text-5xl md:text-6xl text-[#333333] mb-8 text-center">
-              Stand Out & Get Noticed
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8 text-center">
-              <div>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#64a70b]/10 flex items-center justify-center">
-                  <CheckCircle2 className="w-8 h-8 text-[#64a70b]" />
-                </div>
-                <p className="text-lg text-[#333333]">
-                  Multiple styles, colours, and weather ratings
+        {/* Stand Out & Get Noticed Section */}
+        <section
+          className="relative py-8 overflow-hidden"
+          style={{
+            backgroundImage: 'url(/BlackTextureBackground.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          {/* Secondary texture overlay */}
+          <div
+            className="absolute inset-0 z-[1] opacity-[0.19] pointer-events-none"
+            style={{
+              backgroundImage: 'url(/ConcreteTexture.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+
+          <div className="max-w-[1600px] mx-auto px-8 md:px-16 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_0.5fr_1fr] gap-0 items-center min-h-[240px]">
+              {/* Left Column - Stand Out / Get Noticed */}
+              <div className="flex flex-col items-center justify-center text-center py-6">
+                <h2 className="embossing-font text-[#64a70b] text-4xl md:text-5xl lg:text-6xl leading-tight tracking-wide">
+                  STAND OUT
+                </h2>
+                <p className="embossing-font text-[#c1c6c8] text-3xl md:text-4xl lg:text-5xl leading-tight tracking-wide mt-1">
+                  GET NOTICED
                 </p>
               </div>
-              <div>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#64a70b]/10 flex items-center justify-center">
-                  <CheckCircle2 className="w-8 h-8 text-[#64a70b]" />
-                </div>
-                <p className="text-lg text-[#333333]">
-                  Existing frames can be refurbished with new graphics
-                </p>
+
+              {/* Middle Column - Pavement Sign Image */}
+              <div className="flex items-center justify-center py-4">
+                <img
+                  src="/pavement-signs/Pavement-Sign-Mockup.webp"
+                  alt="Pavement Sign Mockup"
+                  className="w-auto h-[200px] md:h-[220px] object-contain"
+                />
               </div>
-              <div>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#64a70b]/10 flex items-center justify-center">
-                  <CheckCircle2 className="w-8 h-8 text-[#64a70b]" />
-                </div>
-                <p className="text-lg text-[#333333]">
-                  5-10 working days typical production
+
+              {/* Right Column - Description */}
+              <div className="flex items-center justify-start py-6 md:pl-8">
+                <p className="neuzeit-font text-white text-lg md:text-xl lg:text-2xl leading-[1.5] max-w-[500px]">
+                  Free-standing pavement signs are an excellent way of catching the attention of passers by and increasing footfall.
                 </p>
               </div>
             </div>
@@ -311,94 +346,7 @@ const PavementSigns: React.FC = () => {
         </section>
 
         {/* Customisation Options */}
-        <section
-          className="py-24 px-6 md:px-12 lg:px-24 bg-cover bg-center relative"
-          style={{ backgroundImage: 'url(/Website Assets/BlackTextureBackground.jpg)' }}
-        >
-          <div className="absolute inset-0 bg-black/75" />
-          <div className="relative z-10 max-w-7xl mx-auto">
-            <h2 className="hearns-font text-5xl md:text-6xl text-white mb-16 text-center">
-              Customisation Options
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Printed Vinyl */}
-              <div className="bg-white/95 backdrop-blur rounded-2xl p-8">
-                <h3 className="smilecake-font text-3xl text-[#64a70b] mb-6">Printed Vinyl</h3>
-                <p className="text-[#333333] mb-6 font-semibold">
-                  Ideal for multicolour artwork, gradients, textures, and photos
-                </p>
-                <ul className="space-y-3 mb-6">
-                  {[
-                    'Detailed campaigns',
-                    'Metallic finishes',
-                    'Fluorescent effects',
-                    'Glitter & holographic',
-                    'Complex illustrations',
-                    'Photographs'
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0" />
-                      <span className="text-[#333333]">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="bg-[#64a70b]/10 p-4 rounded-lg border-l-4 border-[#64a70b]">
-                  <p className="text-sm text-[#333333]">
-                    <strong>Best for:</strong> Complex art, gradients, and photographs.
-                    Inks print onto vinyl for vibrant, detailed graphics.
-                  </p>
-                </div>
-              </div>
-
-              {/* Cut Vinyl */}
-              <div className="bg-white/95 backdrop-blur rounded-2xl p-8">
-                <h3 className="smilecake-font text-3xl text-[#64a70b] mb-6">Cut Vinyl</h3>
-                <p className="text-[#333333] mb-6 font-semibold">
-                  Crisp lettering/logos without background
-                </p>
-                <ul className="space-y-3 mb-6">
-                  {[
-                    'Solid colours',
-                    'Simple graphics',
-                    'Sharp lettering',
-                    'Long-lasting colour',
-                    'No background needed'
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0" />
-                      <span className="text-[#333333]">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-sm text-[#666] mb-4">Not suitable for:</p>
-                <ul className="space-y-2 mb-6">
-                  {['Very small text', 'Gradients', 'Photos', 'Grunge effects'].map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-3">
-                      <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-                      <span className="text-[#666]">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="bg-[#64a70b]/10 p-4 rounded-lg border-l-4 border-[#64a70b]">
-                  <p className="text-sm text-[#333333]">
-                    <strong>Best for:</strong> Simple, bold designs. Colour runs through
-                    the material for superior durability.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-12 text-center">
-              <p className="smilecake-font text-2xl text-white mb-4">
-                Chalkboard Inserts Available
-              </p>
-              <p className="text-[#c1c6c8] max-w-2xl mx-auto">
-                Optional chalkboard inserts perfect for daily promotions and menu updates
-              </p>
-            </div>
-          </div>
-        </section>
+        <CustomisationOptions />
 
         {/* Build Quality & Support */}
         <section className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8]">

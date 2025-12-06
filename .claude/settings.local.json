@@ -21,7 +21,10 @@
       "mcp__supabase__get_anon_key",
       "Bash(pkill:*)",
       "Bash(sudo npm install:*)",
-      "Skill(ui-styling)"
+      "Skill(ui-styling)",
+      "Bash(npx @anthropic/claude-code mcp add figma:*)",
+      "Skill(frontend-engineer)",
+      "mcp__figma__add_figma_file"
     ],
     "deny": [],
     "ask": []
@@ -29,5 +32,6 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "supabase"
-  ]
+  ],
+  "spinnerTipsEnabled": false
 }
