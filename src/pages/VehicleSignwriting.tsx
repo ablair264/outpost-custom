@@ -1,8 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import SlimGridMotion from '../components/SlimGridMotion';
+import { usePageTheme } from '../contexts/ThemeContext';
+import HowItWorksSection from '../components/HowItWorksSection';
 
 const VehicleSignwriting: React.FC = () => {
+  // Set purple theme for this page
+  usePageTheme('purple');
   const headingRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -107,7 +111,7 @@ const VehicleSignwriting: React.FC = () => {
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white mb-4 leading-[0.95]">
                 Let your vehicle<br />do the talking
               </h1>
-              <div className="h-1 w-20 bg-[#6da71d] rounded-full" />
+              <div className="h-1 w-20 bg-[#383349] rounded-full" />
             </div>
 
             <div ref={contentRef} className="max-w-2xl mb-10">
@@ -119,7 +123,7 @@ const VehicleSignwriting: React.FC = () => {
             <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4">
               <a
                 href="#how-it-works"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#6da71d] text-white font-semibold text-base hover:bg-[#7dbf23] transition-all duration-300 shadow-lg shadow-[#6da71d]/30"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#383349] text-white font-semibold text-base hover:bg-[#4a4460] transition-all duration-300 shadow-lg shadow-[#383349]/30"
               >
                 How It Works
               </a>
@@ -136,61 +140,12 @@ const VehicleSignwriting: React.FC = () => {
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-black z-[6]" />
       </section>
 
-      {/* How It Works Section - White */}
-      <section id="how-it-works" className="py-20 px-6 md:px-12 lg:px-24 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-gray-900 mb-3">
-              How does it work?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mt-6">
-              Our vehicle signwriting service comes in a range of styles and sizes to suit your needs
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">
-            {steps.map((step, idx) => (
-              <div key={idx} className="text-center">
-                {/* Circular Progress Icon */}
-                <div className="relative w-32 h-32 mx-auto mb-6">
-                  <svg className="w-full h-full -rotate-90">
-                    <circle
-                      cx="64"
-                      cy="64"
-                      r="56"
-                      fill="none"
-                      stroke="#e5e7eb"
-                      strokeWidth="8"
-                    />
-                    <circle
-                      cx="64"
-                      cy="64"
-                      r="56"
-                      fill="none"
-                      stroke="#6da71d"
-                      strokeWidth="8"
-                      strokeDasharray={`${((idx + 1) / 4) * 351.86} 351.86`}
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-20 h-20 bg-[#6da71d] rounded-full flex items-center justify-center text-white">
-                      {step.icon}
-                    </div>
-                  </div>
-                </div>
-
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  {idx + 1}. {step.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* How It Works Section with Brush Stroke Animation */}
+      <HowItWorksSection
+        serviceType="vehicle-signwriting"
+        sectionId="how-it-works"
+        subtitle="Our vehicle signwriting service comes in a range of styles and sizes to suit your needs."
+      />
 
       {/* Can't Lose Your Vehicle Section - Gray */}
       <section className="py-20 px-6 md:px-12 lg:px-24 bg-gray-50">
@@ -208,7 +163,7 @@ const VehicleSignwriting: React.FC = () => {
               </p>
               <a
                 href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#6da71d] text-white font-semibold text-base hover:bg-[#7dbf23] transition-all duration-300 shadow-lg shadow-[#6da71d]/30"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#383349] text-white font-semibold text-base hover:bg-[#4a4460] transition-all duration-300 shadow-lg shadow-[#383349]/30"
               >
                 Book a Slot
               </a>
@@ -236,7 +191,7 @@ const VehicleSignwriting: React.FC = () => {
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
               Signwriting pays for itself
             </h2>
-            <div className="h-1 w-20 bg-[#6da71d] mx-auto rounded-full mb-8" />
+            <div className="h-1 w-20 bg-[#383349] mx-auto rounded-full mb-8" />
             <p className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed">
               We offer a wide range of graphic options to suit your budget. Vehicle signage is round-the-clock advertising. Since vinyl decals can last for many years, you will not be replacing yours for quite a while.
             </p>
@@ -253,15 +208,15 @@ const VehicleSignwriting: React.FC = () => {
 
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-4xl font-black text-[#6da71d] mb-3">£500</div>
+              <div className="text-4xl font-black text-[#383349] mb-3">£500</div>
               <div className="text-sm text-white/60">One-time investment</div>
             </div>
             <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-4xl font-black text-[#6da71d] mb-3">365</div>
+              <div className="text-4xl font-black text-[#383349] mb-3">365</div>
               <div className="text-sm text-white/60">Days advertising per year</div>
             </div>
             <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-4xl font-black text-[#6da71d] mb-3">1000s</div>
+              <div className="text-4xl font-black text-[#383349] mb-3">1000s</div>
               <div className="text-sm text-white/60">Impressions daily</div>
             </div>
           </div>
@@ -283,7 +238,7 @@ const VehicleSignwriting: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="border-b-2 border-[#6da71d]">
+                <tr className="border-b-2 border-[#383349]">
                   <th className="text-left py-4 px-6 text-gray-900 font-bold text-lg">Vehicle Type</th>
                   <th className="text-right py-4 px-6 text-gray-900 font-bold text-lg">Price Range</th>
                 </tr>
@@ -292,7 +247,7 @@ const VehicleSignwriting: React.FC = () => {
                 {pricingData.map((item, idx) => (
                   <tr key={idx} className={`border-b border-gray-200 ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
                     <td className="py-6 px-6 text-gray-900 font-medium">{item.vehicle}</td>
-                    <td className="py-6 px-6 text-right text-[#6da71d] font-bold text-xl">{item.price}</td>
+                    <td className="py-6 px-6 text-right text-[#383349] font-bold text-xl">{item.price}</td>
                   </tr>
                 ))}
               </tbody>
@@ -304,7 +259,7 @@ const VehicleSignwriting: React.FC = () => {
               <span className="font-bold text-gray-900">Note:</span> Prices vary depending on the complexity of the design and the amount of coverage required.
             </p>
             <p className="text-gray-700 leading-relaxed">
-              Get a <span className="text-[#6da71d] font-semibold">FREE quote and mockup</span> to see exactly how your vehicle will look before committing.
+              Get a <span className="text-[#383349] font-semibold">FREE quote and mockup</span> to see exactly how your vehicle will look before committing.
             </p>
           </div>
         </div>
@@ -315,7 +270,7 @@ const VehicleSignwriting: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="relative">
-              <div className="aspect-video rounded-3xl bg-gradient-to-br from-[#6da71d]/20 to-[#6da71d]/5 border border-[#6da71d]/30 p-12 flex items-center justify-center">
+              <div className="aspect-video rounded-3xl bg-gradient-to-br from-[#383349]/20 to-[#383349]/5 border border-[#383349]/30 p-12 flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-6xl mb-4">🧲</div>
                   <div className="text-2xl font-bold text-gray-900">Magnetic Signs</div>
@@ -335,7 +290,7 @@ const VehicleSignwriting: React.FC = () => {
               </p>
               <a
                 href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#6da71d] text-white font-semibold text-base hover:bg-[#7dbf23] transition-all duration-300 shadow-lg shadow-[#6da71d]/30"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#383349] text-white font-semibold text-base hover:bg-[#4a4460] transition-all duration-300 shadow-lg shadow-[#383349]/30"
               >
                 Ask About Magnetic Signs
               </a>
@@ -350,7 +305,7 @@ const VehicleSignwriting: React.FC = () => {
           <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
             Professional installation team
           </h2>
-          <div className="h-1 w-20 bg-[#6da71d] mx-auto rounded-full mb-8" />
+          <div className="h-1 w-20 bg-[#383349] mx-auto rounded-full mb-8" />
           <p className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed mb-12">
             Our installation team are professional, fully insured, and experienced in working with all types of vehicles. Whether you come to our unit in Kidderminster or we come to you on-site, you can trust us to deliver exceptional results.
           </p>
@@ -399,19 +354,19 @@ const VehicleSignwriting: React.FC = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Printed Vinyl</h3>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
-                  <span className="text-[#6da71d] text-2xl flex-shrink-0">✓</span>
+                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
                   <span className="text-gray-700">Full colour printing for complex designs and photos</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-[#6da71d] text-2xl flex-shrink-0">✓</span>
+                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
                   <span className="text-gray-700">Perfect for logos with gradients and multiple colours</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-[#6da71d] text-2xl flex-shrink-0">✓</span>
+                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
                   <span className="text-gray-700">Can include photographs and intricate graphics</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-[#6da71d] text-2xl flex-shrink-0">✓</span>
+                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
                   <span className="text-gray-700">Available in gloss or matt finish</span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -422,23 +377,23 @@ const VehicleSignwriting: React.FC = () => {
             </div>
 
             {/* Cut Vinyl */}
-            <div className="bg-[#6da71d]/5 border-2 border-[#6da71d] rounded-3xl p-8">
+            <div className="bg-[#383349]/5 border-2 border-[#383349] rounded-3xl p-8">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Cut Vinyl</h3>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
-                  <span className="text-[#6da71d] text-2xl flex-shrink-0">✓</span>
+                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
                   <span className="text-gray-700">Longest lasting option (5-7 years outdoor)</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-[#6da71d] text-2xl flex-shrink-0">✓</span>
+                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
                   <span className="text-gray-700">Sharp, clean edges for professional lettering</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-[#6da71d] text-2xl flex-shrink-0">✓</span>
+                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
                   <span className="text-gray-700">Available in 100+ solid colours plus special finishes</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-[#6da71d] text-2xl flex-shrink-0">✓</span>
+                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
                   <span className="text-gray-700">Metallic, reflective, and fluorescent options available</span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -466,13 +421,13 @@ const VehicleSignwriting: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6">
             {vinylSpecs.map((spec, idx) => (
               <div key={idx} className="bg-white border border-gray-200 rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-[#6da71d] mb-2">{spec.label}</h3>
+                <h3 className="text-lg font-bold text-[#383349] mb-2">{spec.label}</h3>
                 <p className="text-gray-700 leading-relaxed">{spec.value}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-12 bg-white border-2 border-[#6da71d] rounded-2xl p-8 text-center">
+          <div className="mt-12 bg-white border-2 border-[#383349] rounded-2xl p-8 text-center">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
               Easy removal when needed
             </h3>
@@ -495,7 +450,7 @@ const VehicleSignwriting: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/contact"
-              className="inline-flex items-center justify-center px-10 py-4 rounded-full bg-[#6da71d] text-white font-semibold text-lg hover:bg-[#7dbf23] transition-all duration-300 shadow-lg shadow-[#6da71d]/30"
+              className="inline-flex items-center justify-center px-10 py-4 rounded-full bg-[#383349] text-white font-semibold text-lg hover:bg-[#4a4460] transition-all duration-300 shadow-lg shadow-[#383349]/30"
             >
               Book FREE Consultation
             </a>

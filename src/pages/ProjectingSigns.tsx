@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { CheckCircle2, Hammer, Package, Ruler, Mail, Palette } from 'lucide-react';
+import { CheckCircle2, Hammer, Ruler, Mail, Package } from 'lucide-react';
 import SlimGridMotion from '../components/SlimGridMotion';
+import { usePageTheme } from '../contexts/ThemeContext';
+import HowItWorksSection from '../components/HowItWorksSection';
 
 const ProjectingSigns: React.FC = () => {
+  // Set purple theme for this page
+  usePageTheme('purple');
   const headingRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -135,116 +139,12 @@ const ProjectingSigns: React.FC = () => {
           </div>
         </section>
 
-        {/* How's it work? Section */}
-        <section id="ordering-workflow" className="py-24 px-6 md:px-12 lg:px-24 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="hearns-font text-5xl md:text-6xl text-[#221c35] mb-4">
-                How's it work?
-              </h2>
-              <p className="text-lg text-[#333333] max-w-4xl mx-auto">
-                Our projecting signs come in a range of styles, shapes and sizes. Mix & match your bracket and panel, then chat to our design team who will customise your sign to promote your business in the most eye-catching way.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mt-16">
-              {[
-                {
-                  step: '1',
-                  title: 'Get a FREE quote',
-                  desc: 'Mix & match one of our bracket styles with one of our standard panel sizes, then add customisation.',
-                  progress: 25,
-                  icon: Mail
-                },
-                {
-                  step: '2',
-                  title: 'Design Stage',
-                  desc: 'Already have artwork? Send it to our design team for a proof.\n\nNeed help with the design? Send us your logo and our design team will put together a visual of how your projecting sign could look on your premises.\n\nNeed a logo designed first? Our in-house design team can help with that.',
-                  progress: 50,
-                  icon: Palette
-                },
-                {
-                  step: '3',
-                  title: 'Approve your order',
-                  desc: 'After you approve your order, we\'ll get it into production which usually takes 5-10 working days.\n\nYou can also book our installation team to fit your projecting sign.\n\nGot a deadline and need your order sooner? Chat to our team – We\'ll do our best to make sure you\'ve got everything you need in time!',
-                  progress: 75,
-                  icon: CheckCircle2
-                },
-                {
-                  step: '4',
-                  title: 'Order up!',
-                  desc: 'We\'ll let you know when your order is ready to collect from our shop in Kidderminster or we can arrange posting your order to you (Delivery from £10).\n\nBooked our installers? Our professional and fully insured installation team will meet you on site to apply your projecting sign.',
-                  progress: 100,
-                  icon: Package
-                }
-              ].map((item, idx) => {
-                const Icon = item.icon;
-                return (
-                  <div key={idx} className="flex flex-col items-center text-center">
-                    {/* Animated Progress Circle */}
-                    <div className="relative w-32 h-32 mb-6">
-                      <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                        {/* Background circle */}
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#e5e7eb"
-                          strokeWidth="8"
-                        />
-                        {/* Animated progress circle */}
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#64a70b"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 54}`}
-                          strokeDashoffset={`${2 * Math.PI * 54 * (1 - item.progress / 100)}`}
-                          style={{
-                            transition: 'stroke-dashoffset 1.5s ease-in-out',
-                            transitionDelay: `${idx * 0.2}s`
-                          }}
-                        />
-                      </svg>
-                      {/* Icon in center */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-[#64a70b] flex items-center justify-center">
-                          <Icon className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <h3 className="text-xl font-bold text-[#221c35] mb-3">
-                      {item.step}. {item.title}
-                    </h3>
-                    <p className="text-[#333333] leading-relaxed text-sm whitespace-pre-line">
-                      {item.desc}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-16 flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-base hover:bg-[#75b81c] transition-all duration-300 shadow-lg"
-              >
-                GET SOME ADVICE FROM OUR TEAM
-              </a>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg border-2 border-[#64a70b] bg-transparent text-[#64a70b] font-semibold text-base hover:bg-[#64a70b] hover:text-white transition-all duration-300"
-              >
-                BOOK A FREE CONSULTATION
-              </a>
-            </div>
-          </div>
-        </section>
+        {/* How's it work? Section with Brush Stroke Animation */}
+        <HowItWorksSection
+          serviceType="projecting-signs"
+          sectionId="ordering-workflow"
+          subtitle="Our projecting signs come in a range of styles, shapes and sizes. Mix & match your bracket and panel, then work with our design team to create your perfect sign."
+        />
 
         {/* Bracket & Panel Options */}
         <section className="py-24 px-6 md:px-12 lg:px-24 bg-white">

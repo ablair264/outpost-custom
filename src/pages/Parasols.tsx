@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { CheckCircle2, Umbrella, Package, Palette, Mail } from 'lucide-react';
+import { CheckCircle2, Umbrella, Mail, Palette, Package } from 'lucide-react';
 import SlimGridMotion from '../components/SlimGridMotion';
+import { usePageTheme } from '../contexts/ThemeContext';
+import HowItWorksSection from '../components/HowItWorksSection';
 
 const Parasols: React.FC = () => {
+  // Set purple theme for this page
+  usePageTheme('purple');
   const headingRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -135,116 +139,11 @@ const Parasols: React.FC = () => {
           </div>
         </section>
 
-        {/* How's it work? Section */}
-        <section className="py-24 px-6 md:px-12 lg:px-24 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="hearns-font text-5xl md:text-6xl text-[#221c35] mb-4">
-                How's it work?
-              </h2>
-              <p className="text-lg text-[#333333] max-w-4xl mx-auto">
-                Our branded parasols combine practical shade with high-visibility marketing. Available in multiple sizes with custom printing on up to 6 panels, they're perfect for outdoor markets, hospitality terraces, and events.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mt-16">
-              {[
-                {
-                  step: '1',
-                  title: 'Choose Canvas',
-                  desc: 'Drop off an existing parasol or pick from recommended models.',
-                  progress: 25,
-                  icon: Mail
-                },
-                {
-                  step: '2',
-                  title: 'Free Mockup',
-                  desc: 'Send logos/artwork for visual concepts; in-house team can create logos if required.',
-                  progress: 50,
-                  icon: Palette
-                },
-                {
-                  step: '3',
-                  title: 'Approval',
-                  desc: 'Once artwork is signed off, production takes roughly 5–10 working days (rush options on request).',
-                  progress: 75,
-                  icon: CheckCircle2
-                },
-                {
-                  step: '4',
-                  title: 'Fulfilment',
-                  desc: 'Collect in Kidderminster or arrange delivery; installation guidance provided.',
-                  progress: 100,
-                  icon: Package
-                }
-              ].map((item, idx) => {
-                const Icon = item.icon;
-                return (
-                  <div key={idx} className="flex flex-col items-center text-center">
-                    {/* Animated Progress Circle */}
-                    <div className="relative w-32 h-32 mb-6">
-                      <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                        {/* Background circle */}
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#e5e7eb"
-                          strokeWidth="8"
-                        />
-                        {/* Animated progress circle */}
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#908d9a"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 54}`}
-                          strokeDashoffset={`${2 * Math.PI * 54 * (1 - item.progress / 100)}`}
-                          style={{
-                            transition: 'stroke-dashoffset 1.5s ease-in-out',
-                            transitionDelay: `${idx * 0.2}s`
-                          }}
-                        />
-                      </svg>
-                      {/* Icon in center */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-[#908d9a] flex items-center justify-center">
-                          <Icon className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <h3 className="text-xl font-bold text-[#221c35] mb-3">
-                      {item.step}. {item.title}
-                    </h3>
-                    <p className="text-[#333333] leading-relaxed text-sm whitespace-pre-line">
-                      {item.desc}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-16 flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#908d9a] text-white font-semibold text-base hover:bg-[#a39fa8] transition-all duration-300 shadow-lg"
-              >
-                GET SOME ADVICE FROM OUR TEAM
-              </a>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg border-2 border-[#908d9a] bg-transparent text-[#908d9a] font-semibold text-base hover:bg-[#908d9a] hover:text-white transition-all duration-300"
-              >
-                BOOK A FREE CONSULTATION
-              </a>
-            </div>
-          </div>
-        </section>
+        {/* How's it work? Section with Brush Stroke Animation */}
+        <HowItWorksSection
+          serviceType="parasols"
+          subtitle="Our branded parasols combine practical shade with high-visibility marketing. Available in multiple sizes with custom printing on up to 6 panels."
+        />
 
         {/* Parasol Options */}
         <section id="options" className="py-24 px-6 md:px-12 lg:px-24 bg-white">

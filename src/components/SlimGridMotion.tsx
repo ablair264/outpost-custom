@@ -60,7 +60,7 @@ const SlimGridMotion: React.FC<SlimGridMotionProps> = ({
       <section
         className="w-full h-full overflow-hidden relative flex items-center justify-center"
         style={{
-          background: `radial-gradient(circle, ${gradientColor} 0%, transparent 100%)`
+          background: `radial-gradient(circle, ${gradientColor} 60%, transparent 100%)`
         }}>
         <div className="absolute inset-0 pointer-events-none z-[4] bg-[length:250px]"></div>
         <div

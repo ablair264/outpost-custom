@@ -65,12 +65,12 @@ const Footer = () => {
               </h3>
               <ul className="space-y-3">
                 {[
-                  { label: 'All Products', path: '/products' },
+                  { label: 'All Clothing', path: '/clothing' },
                   { label: 'Collections', path: '/collections' },
-                  { label: 'T-Shirts', path: '/collections/T-Shirts' },
-                  { label: 'Hoodies', path: '/collections/Hoodies' },
-                  { label: 'Bags', path: '/collections/Bags' },
-                  { label: 'Caps', path: '/collections/Caps' },
+                  { label: 'T-Shirts', path: '/clothing?productTypes=T-Shirts' },
+                  { label: 'Hoodies', path: '/clothing?productTypes=Hoodies' },
+                  { label: 'Bags', path: '/clothing?productTypes=Bags' },
+                  { label: 'Caps', path: '/clothing?productTypes=Caps' },
                 ].map((item) => (
                   <li key={item.label}>
                     <button

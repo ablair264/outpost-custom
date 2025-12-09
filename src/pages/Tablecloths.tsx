@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { CheckCircle2, Table2, Package, Palette, Mail, Ruler } from 'lucide-react';
+import { CheckCircle2, Frame, Ruler, Eye, Shield, Mail, Palette, Package, Table2 } from 'lucide-react'
 import SlimGridMotion from '../components/SlimGridMotion';
+import { usePageTheme } from '../contexts/ThemeContext';
+import HowItWorksSection from '../components/HowItWorksSection';
 
 const Tablecloths: React.FC = () => {
+  // Set purple theme for this page
+  usePageTheme('purple');
   const headingRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -72,7 +76,7 @@ const Tablecloths: React.FC = () => {
                 <h1 className="hearns-font text-6xl md:text-7xl lg:text-8xl tracking-tight text-white mb-6 leading-tight">
                   Branded<br />Tablecloths
                 </h1>
-                <div className="h-1.5 w-24 bg-[#64a70b] rounded-full" />
+                <div className="h-1.5 w-24 bg-[#908d9a] rounded-full" />
               </div>
               <div ref={contentRef} className="max-w-2xl mb-10">
                 <p className="text-2xl md:text-3xl text-[#c1c6c8] font-light leading-relaxed">
@@ -82,7 +86,7 @@ const Tablecloths: React.FC = () => {
               <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4">
                 <a
                   href="#fabric-options"
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-base hover:bg-[#75b81c] transition-all duration-300 shadow-lg"
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#908d9a] text-white font-semibold text-base hover:bg-[#4a4460] transition-all duration-300 shadow-lg"
                 >
                   View Options
                 </a>
@@ -108,24 +112,24 @@ const Tablecloths: React.FC = () => {
             </h2>
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#64a70b]/10 flex items-center justify-center">
-                  <Table2 className="w-8 h-8 text-[#64a70b]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#908d9a]/10 flex items-center justify-center">
+                  <Table2 className="w-8 h-8 text-[#908d9a]" />
                 </div>
                 <p className="text-lg text-[#333333]">
                   Dress trestle tables, registration desks, or merch counters
                 </p>
               </div>
               <div>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#64a70b]/10 flex items-center justify-center">
-                  <Palette className="w-8 h-8 text-[#64a70b]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#908d9a]/10 flex items-center justify-center">
+                  <Palette className="w-8 h-8 text-[#908d9a]" />
                 </div>
                 <p className="text-lg text-[#333333]">
                   Highlight logos, slogans, or campaign artwork
                 </p>
               </div>
               <div>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#64a70b]/10 flex items-center justify-center">
-                  <Ruler className="w-8 h-8 text-[#64a70b]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#908d9a]/10 flex items-center justify-center">
+                  <Ruler className="w-8 h-8 text-[#908d9a]" />
                 </div>
                 <p className="text-lg text-[#333333]">
                   Standard or custom sizes to fit any table
@@ -135,116 +139,11 @@ const Tablecloths: React.FC = () => {
           </div>
         </section>
 
-        {/* How's it work? Section */}
-        <section className="py-24 px-6 md:px-12 lg:px-24 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="hearns-font text-5xl md:text-6xl text-[#221c35] mb-4">
-                How's it work?
-              </h2>
-              <p className="text-lg text-[#333333] max-w-4xl mx-auto">
-                Our custom tablecloths transform ordinary tables into branded display spaces. Choose from polyester throw, fitted, or stretch styles, then add your logos and artwork using dye sublimation or heat-applied vinyl.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mt-16">
-              {[
-                {
-                  step: '1',
-                  title: 'Free Quote',
-                  desc: 'Share table dimensions (length, width, height) plus preferred style (loose, fitted, stretch).',
-                  progress: 25,
-                  icon: Mail
-                },
-                {
-                  step: '2',
-                  title: 'Design Stage',
-                  desc: 'Send artwork for proofing or brief the studio for bespoke layouts/logos.',
-                  progress: 50,
-                  icon: Palette
-                },
-                {
-                  step: '3',
-                  title: 'Approval',
-                  desc: 'Once visuals and pricing are signed off, production typically takes 5–10 working days.',
-                  progress: 75,
-                  icon: CheckCircle2
-                },
-                {
-                  step: '4',
-                  title: 'Fulfilment',
-                  desc: 'Collect locally or request delivery; storage and care instructions supplied with each cover.',
-                  progress: 100,
-                  icon: Package
-                }
-              ].map((item, idx) => {
-                const Icon = item.icon;
-                return (
-                  <div key={idx} className="flex flex-col items-center text-center">
-                    {/* Animated Progress Circle */}
-                    <div className="relative w-32 h-32 mb-6">
-                      <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                        {/* Background circle */}
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#e5e7eb"
-                          strokeWidth="8"
-                        />
-                        {/* Animated progress circle */}
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#64a70b"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 54}`}
-                          strokeDashoffset={`${2 * Math.PI * 54 * (1 - item.progress / 100)}`}
-                          style={{
-                            transition: 'stroke-dashoffset 1.5s ease-in-out',
-                            transitionDelay: `${idx * 0.2}s`
-                          }}
-                        />
-                      </svg>
-                      {/* Icon in center */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-[#64a70b] flex items-center justify-center">
-                          <Icon className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <h3 className="text-xl font-bold text-[#221c35] mb-3">
-                      {item.step}. {item.title}
-                    </h3>
-                    <p className="text-[#333333] leading-relaxed text-sm whitespace-pre-line">
-                      {item.desc}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-16 flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-base hover:bg-[#75b81c] transition-all duration-300 shadow-lg"
-              >
-                GET SOME ADVICE FROM OUR TEAM
-              </a>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg border-2 border-[#64a70b] bg-transparent text-[#64a70b] font-semibold text-base hover:bg-[#64a70b] hover:text-white transition-all duration-300"
-              >
-                BOOK A FREE CONSULTATION
-              </a>
-            </div>
-          </div>
-        </section>
+        {/* How's it work? Section with Brush Stroke Animation */}
+        <HowItWorksSection
+          serviceType="tablecloths"
+          subtitle="Our custom tablecloths transform ordinary tables into branded display spaces. Choose from polyester throw, fitted, or stretch styles."
+        />
 
         {/* Fabric & Style Options */}
         <section id="fabric-options" className="py-24 px-6 md:px-12 lg:px-24 bg-white">
@@ -253,7 +152,7 @@ const Tablecloths: React.FC = () => {
               <h2 className="hearns-font text-5xl md:text-6xl text-[#333333] mb-4">
                 Fabric & Style Options
               </h2>
-              <div className="h-1 w-24 bg-[#64a70b] mx-auto" />
+              <div className="h-1 w-24 bg-[#908d9a] mx-auto" />
             </div>
 
             <div className="space-y-8">
@@ -264,28 +163,28 @@ const Tablecloths: React.FC = () => {
                     <h3 className="smilecake-font text-4xl text-[#333333] mb-4">
                       Polyester Throw
                     </h3>
-                    <p className="text-xl font-semibold text-[#64a70b] mb-6">Most Versatile</p>
+                    <p className="text-xl font-semibold text-[#908d9a] mb-6">Most Versatile</p>
                     <p className="text-[#333333] mb-6 leading-relaxed">
                       Drapes over the table with box pleats or rounded corners; can cover 3 or 4 sides depending on access needs.
                     </p>
                     <div className="space-y-3">
                       <div className="flex items-start gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                         <span className="text-[#333333]">Wrinkle-resistant polyester blends</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                         <span className="text-[#333333]">Suited for dye-sublimation printing</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                         <span className="text-[#333333]">Fire-retardant fabrics available on request</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center justify-center">
-                    <div className="w-64 h-64 rounded-full bg-[#64a70b]/10 flex items-center justify-center border-4 border-[#64a70b]/20">
-                      <Table2 className="w-32 h-32 text-[#64a70b]" />
+                    <div className="w-64 h-64 rounded-full bg-[#908d9a]/10 flex items-center justify-center border-4 border-[#908d9a]/20">
+                      <Table2 className="w-32 h-32 text-[#908d9a]" />
                     </div>
                   </div>
                 </div>
@@ -297,17 +196,17 @@ const Tablecloths: React.FC = () => {
                   <h3 className="smilecake-font text-3xl text-[#333333] mb-4">
                     Fitted Cover
                   </h3>
-                  <p className="text-lg font-semibold text-[#64a70b] mb-4">Crisp Silhouette</p>
+                  <p className="text-lg font-semibold text-[#908d9a] mb-4">Crisp Silhouette</p>
                   <p className="text-[#333333] mb-6 leading-relaxed">
                     Sewn corners for a crisp silhouette; ideal for retail or exhibition pods where audiences see multiple sides.
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                       <span className="text-[#333333]">Professional appearance</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                       <span className="text-[#333333]">Custom fit to table dimensions</span>
                     </div>
                   </div>
@@ -318,17 +217,17 @@ const Tablecloths: React.FC = () => {
                   <h3 className="smilecake-font text-3xl text-[#333333] mb-4">
                     Stretch Fabric
                   </h3>
-                  <p className="text-lg font-semibold text-[#64a70b] mb-4">Outdoor Ready</p>
+                  <p className="text-lg font-semibold text-[#908d9a] mb-4">Outdoor Ready</p>
                   <p className="text-[#333333] mb-6 leading-relaxed">
                     Elasticated edges hug cocktail tables or tall displays; works well outdoors in breezy conditions.
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                       <span className="text-[#333333]">Wind-resistant design</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                       <span className="text-[#333333]">Snug fit prevents shifting</span>
                     </div>
                   </div>
@@ -341,16 +240,16 @@ const Tablecloths: React.FC = () => {
                   Standard & Custom Sizing
                 </h3>
                 <div className="grid md:grid-cols-3 gap-6">
-                  <div className="text-center p-6 bg-white rounded-2xl border border-[#64a70b]/20">
-                    <div className="text-2xl font-bold text-[#64a70b] mb-2">4 ft</div>
+                  <div className="text-center p-6 bg-white rounded-2xl border border-[#908d9a]/20">
+                    <div className="text-2xl font-bold text-[#908d9a] mb-2">4 ft</div>
                     <p className="text-[#333333]">Standard trestle</p>
                   </div>
-                  <div className="text-center p-6 bg-white rounded-2xl border border-[#64a70b]/20">
-                    <div className="text-2xl font-bold text-[#64a70b] mb-2">6 ft</div>
+                  <div className="text-center p-6 bg-white rounded-2xl border border-[#908d9a]/20">
+                    <div className="text-2xl font-bold text-[#908d9a] mb-2">6 ft</div>
                     <p className="text-[#333333]">Standard trestle</p>
                   </div>
-                  <div className="text-center p-6 bg-white rounded-2xl border border-[#64a70b]/20">
-                    <div className="text-2xl font-bold text-[#64a70b] mb-2">8 ft</div>
+                  <div className="text-center p-6 bg-white rounded-2xl border border-[#908d9a]/20">
+                    <div className="text-2xl font-bold text-[#908d9a] mb-2">8 ft</div>
                     <p className="text-[#333333]">Standard trestle</p>
                   </div>
                 </div>
@@ -379,7 +278,7 @@ const Tablecloths: React.FC = () => {
                 <p className="text-white/80 leading-relaxed mb-4">
                   Best for all-over coverage, gradients, patterns, and photography.
                 </p>
-                <p className="text-[#64a70b] font-semibold">Long-lasting, saturated colour</p>
+                <p className="text-[#908d9a] font-semibold">Long-lasting, saturated colour</p>
               </div>
 
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 text-center">
@@ -387,7 +286,7 @@ const Tablecloths: React.FC = () => {
                 <p className="text-white/80 leading-relaxed mb-4">
                   Cost-effective for spot logos on stock-colour cloths.
                 </p>
-                <p className="text-[#64a70b] font-semibold">Single or dual colour designs</p>
+                <p className="text-[#908d9a] font-semibold">Single or dual colour designs</p>
               </div>
 
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 text-center">
@@ -395,7 +294,7 @@ const Tablecloths: React.FC = () => {
                 <p className="text-white/80 leading-relaxed mb-4">
                   Combine base colour panels with vinyl overlays.
                 </p>
-                <p className="text-[#64a70b] font-semibold">Seasonal messaging flexibility</p>
+                <p className="text-[#908d9a] font-semibold">Seasonal messaging flexibility</p>
               </div>
             </div>
           </div>
@@ -413,33 +312,33 @@ const Tablecloths: React.FC = () => {
                   Keep your tablecloths looking professional event after event with proper care and storage.
                 </p>
               </div>
-              <div className="bg-white p-8 rounded-2xl shadow-lg border border-[#64a70b]/20">
-                <h3 className="smilecake-font text-3xl text-[#64a70b] mb-6">Care Tips</h3>
+              <div className="bg-white p-8 rounded-2xl shadow-lg border border-[#908d9a]/20">
+                <h3 className="smilecake-font text-3xl text-[#908d9a] mb-6">Care Tips</h3>
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-1" />
                     <span className="text-[#333333]">Machine wash on cool with mild detergent</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-1" />
                     <span className="text-[#333333]">Avoid bleach or fabric softener</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-1" />
                     <span className="text-[#333333]">Air-dry or tumble-dry low</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-1" />
                     <span className="text-[#333333]">Store folded in supplied bags</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-1" />
                     <span className="text-[#333333]">Steam or lightly iron before events if required</span>
                   </li>
                 </ul>
                 <a
                   href="/contact"
-                  className="mt-8 w-full inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold hover:bg-[#75b81c] transition-all duration-300"
+                  className="mt-8 w-full inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#908d9a] text-white font-semibold hover:bg-[#4a4460] transition-all duration-300"
                 >
                   <Mail className="w-5 h-5 mr-2" />
                   Get Free Quote

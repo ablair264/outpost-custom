@@ -13,7 +13,7 @@ import {
   HomeGiftsIcon
 } from './ProductTypeIcons';
 
-// Product Type Groups from ProductBrowser
+// Product Type Groups - matched to actual database product_type values
 const PRODUCT_TYPE_GROUPS = [
   {
     name: 'TOPS',
@@ -28,42 +28,42 @@ const PRODUCT_TYPE_GROUPS = [
   {
     name: 'BOTTOMS',
     Icon: BottomsIcon,
-    items: ['Trousers', 'Shorts', 'Skirts', 'Leggings', 'Joggers', 'Chinos']
+    items: ['Trousers', 'Shorts', 'Skirts', 'Leggings', 'Sweatpants', 'Chinos', 'Jeans', 'Trackwear']
   },
   {
     name: 'WORKWEAR',
     Icon: WorkwearIcon,
-    items: ['Coveralls', 'Overalls', 'Aprons', 'Bibs', 'Reflective Clothing', 'Safety Vests', 'Protective Clothing']
+    items: ['Aprons', 'Tabards', 'Bibs', 'Chef Jackets', 'Safety Vests', 'Coveralls']
   },
   {
     name: 'HEADWEAR',
     Icon: HeadwearIcon,
-    items: ['Caps', 'Beanies', 'Visors', 'Bandanas', 'Headbands', 'Bucket Hats', 'Winter Hats']
+    items: ['Caps', 'Beanies', 'Hats', 'Headbands', 'Snoods']
   },
   {
     name: 'FOOTWEAR',
     Icon: FootwearIcon,
-    items: ['Shoes', 'Boots', 'Trainers', 'Sandals', 'Slippers', 'Safety Footwear']
+    items: ['Shoes', 'Boots', 'Trainers', 'Slippers', 'Socks']
   },
   {
     name: 'BAGS & CASES',
     Icon: BagsIcon,
-    items: ['Backpacks', 'Tote Bags', 'Duffel Bags', 'Laptop Bags', 'Travel Bags', 'Gym Bags', 'Cases', 'Pouches']
+    items: ['Bags', 'Laptop Cases', 'Pencil Cases', 'Document Wallets', 'Wallets']
   },
   {
     name: 'ACCESSORIES',
     Icon: AccessoriesIcon,
-    items: ['Scarves', 'Gloves', 'Belts', 'Ties', 'Socks', 'Sunglasses', 'Wallets', 'Phone Cases']
+    items: ['Accessories', 'Scarves', 'Gloves', 'Belts', 'Ties', 'Umbrellas']
   },
   {
     name: 'UNDERWEAR',
     Icon: UnderwearIcon,
-    items: ['Boxer Shorts', 'Briefs', 'Vests (underwear)', 'Thermal Underwear']
+    items: ['Boxers', 'Bodysuits', 'Bras', 'Robes', 'Pyjamas', 'Loungewear Bottoms']
   },
   {
     name: 'HOME & GIFTS',
     Icon: HomeGiftsIcon,
-    items: ['Towels', 'Blankets', 'Cushions', 'Mugs', 'Bottles', 'Umbrellas', 'Keychains']
+    items: ['Towels', 'Blankets', 'Cushions', 'Cushion Covers', 'Bottles', 'Keyrings', 'Soft Toys']
   }
 ];
 
@@ -72,8 +72,13 @@ const CategoryNavigationBar: React.FC = () => {
   const navigate = useNavigate();
 
   const handleItemClick = (productType: string) => {
-    // Navigate to ProductBrowser with filter
-    navigate(`/products?type=${encodeURIComponent(productType)}`);
+    // Navigate to ClothingBrowser with single filter
+    navigate(`/clothing?productTypes=${encodeURIComponent(productType)}`);
+  };
+
+  const handleGroupClick = (items: string[]) => {
+    // Navigate to ClothingBrowser with all items in the group
+    navigate(`/clothing?productTypes=${items.map(encodeURIComponent).join(',')}`);
   };
 
   return (
@@ -94,7 +99,7 @@ const CategoryNavigationBar: React.FC = () => {
                 {/* Main Button */}
                 <button
                   className="flex flex-col items-center gap-2 px-4 py-4 transition-all duration-300 group min-w-[100px]"
-                  onClick={() => handleItemClick(group.items[0])}
+                  onClick={() => handleGroupClick(group.items)}
                 >
                   {/* Icon Container */}
                   <div className={`relative transition-all duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`}>

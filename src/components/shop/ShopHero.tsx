@@ -180,7 +180,7 @@ const ShopHero = () => {
                 size="lg"
                 className="rounded-full px-12 py-6 text-black hover:bg-white/90 transition-all duration-300 font-semibold text-lg"
                 style={{ background: '#6da71d' }}
-                onClick={() => window.location.href = '/products'}
+                onClick={() => window.location.href = '/clothing'}
               >
                 {currentSlideData.cta1}
               </Button>
@@ -222,7 +222,7 @@ const ShopHero = () => {
                   size="lg"
                   className="rounded-full px-10 text-black transition-all duration-300 font-medium"
                   style={{ background: '#6da71d' }}
-                  onClick={() => window.location.href = '/products'}
+                  onClick={() => window.location.href = '/clothing'}
                 >
                   {currentSlideData.cta1}
                 </Button>
@@ -268,7 +268,7 @@ const ShopHero = () => {
                 size="lg"
                 className="rounded-full px-12 py-6 text-white transition-all duration-300 font-semibold text-lg shadow-lg"
                 style={{ background: '#6da71d', boxShadow: '0 10px 40px rgba(109, 167, 29, 0.3)' }}
-                onClick={() => window.location.href = '/products'}
+                onClick={() => window.location.href = '/clothing'}
               >
                 {currentSlideData.cta1}
               </Button>

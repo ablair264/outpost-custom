@@ -57,9 +57,11 @@ export async function getAllProducts(
     console.log('🗄️ Database query starting with filters:', filters);
 
     // Use the optimized product_styles table instead of product_data
+    // Filter out discontinued products by default
     let stylesQuery = supabase
       .from('product_styles')
-      .select('*', { count: 'exact' });
+      .select('*', { count: 'exact' })
+      .eq('is_live', true);
 
     // Apply filters - much faster with the aggregated table
     if (filters.searchQuery) {
@@ -159,13 +161,14 @@ export async function getAllProducts(
       pageSize
     });
 
-    // Fetch all variants for the matched styles
+    // Fetch all variants for the matched styles (excluding discontinued)
     const styleCodesInPage = styles?.map(s => s.style_code) || [];
 
     let productsQuery = supabase
       .from('product_data')
       .select('*')
       .in('style_code', styleCodesInPage)
+      .neq('sku_status', 'Discontinued')
       .order('style_code', { ascending: true })
       .order('id', { ascending: true });
 

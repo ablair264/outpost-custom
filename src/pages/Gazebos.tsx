@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { CheckCircle2, Tent, Package, Palette, Mail } from 'lucide-react';
+import { CheckCircle2, Tent, Mail, Palette, Package } from 'lucide-react';
 import SlimGridMotion from '../components/SlimGridMotion';
+import { usePageTheme } from '../contexts/ThemeContext';
+import HowItWorksSection from '../components/HowItWorksSection';
 
 const Gazebos: React.FC = () => {
+  // Set purple theme for this page
+  usePageTheme('purple');
   const headingRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -72,7 +76,7 @@ const Gazebos: React.FC = () => {
                 <h1 className="hearns-font text-6xl md:text-7xl lg:text-8xl tracking-tight text-white mb-6 leading-tight">
                   Custom<br />Gazebos
                 </h1>
-                <div className="h-1.5 w-24 bg-[#64a70b] rounded-full" />
+                <div className="h-1.5 w-24 bg-[#908d9a] rounded-full" />
               </div>
               <div ref={contentRef} className="max-w-2xl mb-10">
                 <p className="text-2xl md:text-3xl text-[#c1c6c8] font-light leading-relaxed">
@@ -82,7 +86,7 @@ const Gazebos: React.FC = () => {
               <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4">
                 <a
                   href="#options"
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-base hover:bg-[#75b81c] transition-all duration-300 shadow-lg"
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#908d9a] text-white font-semibold text-base hover:bg-[#4a4460] transition-all duration-300 shadow-lg"
                 >
                   View Options
                 </a>
@@ -108,24 +112,24 @@ const Gazebos: React.FC = () => {
             </h2>
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#64a70b]/10 flex items-center justify-center">
-                  <Tent className="w-8 h-8 text-[#64a70b]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#908d9a]/10 flex items-center justify-center">
+                  <Tent className="w-8 h-8 text-[#908d9a]" />
                 </div>
                 <p className="text-lg text-[#333333]">
                   Supply your own structure or choose from vetted models
                 </p>
               </div>
               <div>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#64a70b]/10 flex items-center justify-center">
-                  <Palette className="w-8 h-8 text-[#64a70b]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#908d9a]/10 flex items-center justify-center">
+                  <Palette className="w-8 h-8 text-[#908d9a]" />
                 </div>
                 <p className="text-lg text-[#333333]">
                   Custom canopies and walls with full-colour printing
                 </p>
               </div>
               <div>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#64a70b]/10 flex items-center justify-center">
-                  <Package className="w-8 h-8 text-[#64a70b]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#908d9a]/10 flex items-center justify-center">
+                  <Package className="w-8 h-8 text-[#908d9a]" />
                 </div>
                 <p className="text-lg text-[#333333]">
                   Replacement canopies available to refresh existing frames
@@ -135,116 +139,11 @@ const Gazebos: React.FC = () => {
           </div>
         </section>
 
-        {/* How's it work? Section */}
-        <section className="py-24 px-6 md:px-12 lg:px-24 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="hearns-font text-5xl md:text-6xl text-[#221c35] mb-4">
-                How's it work?
-              </h2>
-              <p className="text-lg text-[#333333] max-w-4xl mx-auto">
-                Our custom gazebos provide branded shelter for outdoor events and markets. Choose from mid-range or heavy-duty options, then work with our design team to create eye-catching canopies and walls that showcase your brand.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mt-16">
-              {[
-                {
-                  step: '1',
-                  title: 'Select Canvas',
-                  desc: 'Drop off an existing gazebo or pick from vetted models.',
-                  progress: 25,
-                  icon: Mail
-                },
-                {
-                  step: '2',
-                  title: 'Free Mockup',
-                  desc: 'Send logos for visual concepts; in-house designers can build artwork or logos if needed.',
-                  progress: 50,
-                  icon: Palette
-                },
-                {
-                  step: '3',
-                  title: 'Approval',
-                  desc: 'Upon sign-off, production typically takes 5–10 working days (rush timelines on request).',
-                  progress: 75,
-                  icon: CheckCircle2
-                },
-                {
-                  step: '4',
-                  title: 'Fulfilment',
-                  desc: 'Collect from Kidderminster or request delivery.',
-                  progress: 100,
-                  icon: Package
-                }
-              ].map((item, idx) => {
-                const Icon = item.icon;
-                return (
-                  <div key={idx} className="flex flex-col items-center text-center">
-                    {/* Animated Progress Circle */}
-                    <div className="relative w-32 h-32 mb-6">
-                      <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                        {/* Background circle */}
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#e5e7eb"
-                          strokeWidth="8"
-                        />
-                        {/* Animated progress circle */}
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#64a70b"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 54}`}
-                          strokeDashoffset={`${2 * Math.PI * 54 * (1 - item.progress / 100)}`}
-                          style={{
-                            transition: 'stroke-dashoffset 1.5s ease-in-out',
-                            transitionDelay: `${idx * 0.2}s`
-                          }}
-                        />
-                      </svg>
-                      {/* Icon in center */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-[#64a70b] flex items-center justify-center">
-                          <Icon className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <h3 className="text-xl font-bold text-[#221c35] mb-3">
-                      {item.step}. {item.title}
-                    </h3>
-                    <p className="text-[#333333] leading-relaxed text-sm whitespace-pre-line">
-                      {item.desc}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-16 flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-base hover:bg-[#75b81c] transition-all duration-300 shadow-lg"
-              >
-                GET SOME ADVICE FROM OUR TEAM
-              </a>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg border-2 border-[#64a70b] bg-transparent text-[#64a70b] font-semibold text-base hover:bg-[#64a70b] hover:text-white transition-all duration-300"
-              >
-                BOOK A FREE CONSULTATION
-              </a>
-            </div>
-          </div>
-        </section>
+        {/* How's it work? Section with Brush Stroke Animation */}
+        <HowItWorksSection
+          serviceType="gazebos"
+          subtitle="Our custom gazebos provide branded shelter for outdoor events and markets. Choose from mid-range or heavy-duty options, then work with our design team to create eye-catching canopies."
+        />
 
         {/* Gazebo Options */}
         <section id="options" className="py-24 px-6 md:px-12 lg:px-24 bg-white">
@@ -253,7 +152,7 @@ const Gazebos: React.FC = () => {
               <h2 className="hearns-font text-5xl md:text-6xl text-[#333333] mb-4">
                 Gazebo Options
               </h2>
-              <div className="h-1 w-24 bg-[#64a70b] mx-auto" />
+              <div className="h-1 w-24 bg-[#908d9a] mx-auto" />
             </div>
 
             <div className="space-y-12">
@@ -264,21 +163,21 @@ const Gazebos: React.FC = () => {
                     <h3 className="smilecake-font text-4xl text-[#333333] mb-4">
                       Mid-Range Gazebos
                     </h3>
-                    <p className="text-xl font-semibold text-[#64a70b] mb-6">Light Commercial / Markets</p>
+                    <p className="text-xl font-semibold text-[#908d9a] mb-6">Light Commercial / Markets</p>
                     <div className="space-y-4 mb-6">
                       <div>
                         <h4 className="font-bold text-[#333333] mb-2">Sizes & Pricing:</h4>
                         <ul className="space-y-2 text-[#333333]">
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>3×3m: £175 + VAT</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>3×4.5m: £200 + VAT</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>3×6m: £265 + VAT</span>
                           </li>
                         </ul>
@@ -287,23 +186,23 @@ const Gazebos: React.FC = () => {
                         <h4 className="font-bold text-[#333333] mb-2">Features:</h4>
                         <ul className="space-y-2 text-[#333333]">
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>100% waterproof 420D polyester PVC-backed fabric</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>Powder-coated steel frame with 32×32mm legs</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>Heavy-duty wheeled carry case included</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>Optional walls available (solid, windowed, zip doorway)</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>1-year manufacturer warranty</span>
                           </li>
                         </ul>
@@ -311,8 +210,8 @@ const Gazebos: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-center">
-                    <div className="w-64 h-64 rounded-full bg-[#64a70b]/10 flex items-center justify-center border-4 border-[#64a70b]/20">
-                      <Tent className="w-32 h-32 text-[#64a70b]" />
+                    <div className="w-64 h-64 rounded-full bg-[#908d9a]/10 flex items-center justify-center border-4 border-[#908d9a]/20">
+                      <Tent className="w-32 h-32 text-[#908d9a]" />
                     </div>
                   </div>
                 </div>
@@ -322,29 +221,29 @@ const Gazebos: React.FC = () => {
               <div className="bg-gradient-to-br from-[#f8f8f8] to-white rounded-3xl p-8 md:p-12 border-2 border-[#c1c6c8]/30">
                 <div className="grid lg:grid-cols-2 gap-8 items-center">
                   <div className="order-2 lg:order-1 flex items-center justify-center">
-                    <div className="w-64 h-64 rounded-full bg-[#64a70b]/10 flex items-center justify-center border-4 border-[#64a70b]/20">
-                      <Package className="w-32 h-32 text-[#64a70b]" />
+                    <div className="w-64 h-64 rounded-full bg-[#908d9a]/10 flex items-center justify-center border-4 border-[#908d9a]/20">
+                      <Package className="w-32 h-32 text-[#908d9a]" />
                     </div>
                   </div>
                   <div className="order-1 lg:order-2">
                     <h3 className="smilecake-font text-4xl text-[#333333] mb-4">
                       Heavy-Duty Gazebos
                     </h3>
-                    <p className="text-xl font-semibold text-[#64a70b] mb-6">Frequent Outdoor Use</p>
+                    <p className="text-xl font-semibold text-[#908d9a] mb-6">Frequent Outdoor Use</p>
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-bold text-[#333333] mb-2">Sizes & Pricing:</h4>
                         <ul className="space-y-2 text-[#333333]">
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>3×3m: £295 + VAT</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>3×4.5m: £365 + VAT</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>3×6m: £455 + VAT</span>
                           </li>
                         </ul>
@@ -353,15 +252,15 @@ const Gazebos: React.FC = () => {
                         <h4 className="font-bold text-[#333333] mb-2">Features:</h4>
                         <ul className="space-y-2 text-[#333333]">
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>100% waterproof 600D polyester PVC-backed fabric</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>Reinforced construction for regular exposure</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-0.5" />
                             <span>Spare parts available on request</span>
                           </li>
                         </ul>
@@ -428,7 +327,7 @@ const Gazebos: React.FC = () => {
             </p>
             <a
               href="/contact"
-              className="inline-flex items-center justify-center px-10 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-lg hover:bg-[#75b81c] transition-all duration-300 shadow-lg"
+              className="inline-flex items-center justify-center px-10 py-4 rounded-lg bg-[#908d9a] text-white font-semibold text-lg hover:bg-[#4a4460] transition-all duration-300 shadow-lg"
             >
               <Mail className="w-5 h-5 mr-2" />
               Get Free Quote & Mockup

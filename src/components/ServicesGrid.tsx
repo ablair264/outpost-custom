@@ -1,120 +1,181 @@
 import React from 'react';
+import { ExpandableCard } from './ui/expandable-card';
+
+import { Shirt, Users, Gift, Palette, Frame, Shield, Map, ArrowUpRight, Umbrella, Table, Car, FileText, CreditCard, Ticket, BookOpen, Image, Tag, Circle } from 'lucide-react';
+
+const serviceCards = [
+  {
+    title: 'Clothing',
+    image: '/what-we-do/beanie1.jpg',
+    galleryImages: ['/images/beanie1.jpg', '/hero-images/hoodie1.jpg', '/images/sticker.webp', '/hero-images/gillet1.jpg', '/hero-images/jacket1.jpg', '/images/mask.webp'],
+    categoryLink: '/shop',
+    hoverItems: ['Workwear', 'Sports Teams', 'Merch & Retail'],
+    serviceGroups: [
+      {
+        title: 'Clothing',
+        items: [
+          { label: 'Workwear', href: '/shop#how-to-order', icon: Shirt, description: 'Custom uniforms, branded workwear and corporate clothing for your team.' },
+          { label: 'Sports Teams', href: '/shop#special-offers', icon: Users, description: 'Match kits, trainingwear and teamwear for clubs of all sizes.' },
+          { label: 'Merch & Retail', href: '/shop', icon: Palette, description: 'Create your own merchandise line with custom printed apparel.' },
+          { label: 'Events & Gifts', href: '/shop#faq', icon: Gift, description: 'Personalised clothing for weddings, events and unique gifts.' },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Signage',
+    image: '/what-we-do/signage.webp',
+    galleryImages: ['/signboards/signboard1.jpg', '/pavement-signs/pavement1.jpg', '/projecting-signs/projecting2.jpg', '/signboards/signboard4.jpg', '/pavement-signs/pavement3.jpg', '/projecting-signs/projecting4.jpg'],
+    categoryLink: '/services/all-signage',
+    hoverItems: ['Indoor', 'Outdoor', 'Events'],
+    serviceGroups: [
+      {
+        title: 'Signage',
+        items: [
+          { label: 'Glass Manifestation', href: '/services/glass-manifestation', icon: Frame, description: 'Frosted, etched-effect or decorative graphics for glass surfaces.' },
+          { label: 'Window Privacy Film', href: '/services/window-privacy-film', icon: Shield, description: 'Control visibility and light levels with decorative frosted film.' },
+          { label: 'Signboards', href: '/services/signboards', icon: Map, description: 'Premium flat-panel signage for building facades.' },
+          { label: 'Pavement Signs', href: '/services/pavement-signs', icon: Frame, description: 'Free-standing A-boards to catch attention of passers-by.' },
+          { label: 'Projecting Signs', href: '/services/projecting-signs', icon: ArrowUpRight, description: 'Wall-mounted brackets with custom panels, visible from all angles.' },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Vehicle GFX',
+    image: '/what-we-do/vehicle.webp',
+    galleryImages: ['/vehicle-signwriting/vehicle1.jpg', '/vehicle-signwriting/vehicle2.jpg', '/vehicle-signwriting/vehicle3.jpg', '/vehicle-signwriting/vehicle4.jpg', '/vehicle-signwriting/vehicle5.jpg'],
+    categoryLink: '/services/vehicle-signwriting',
+    hoverItems: ['Vehicle Signwriting', 'Fleet Branding'],
+    serviceGroups: [
+      {
+        title: 'Vehicle GFX',
+        items: [
+          { label: 'Vehicle Signwriting', href: '/services/vehicle-signwriting', icon: Car, description: 'Transform your vehicle into a mobile billboard with custom graphics.' },
+          { label: 'Fleet Branding', href: '/services/vehicle-signwriting', icon: Users, description: 'Consistent branding across your entire fleet of vehicles.' },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Printing',
+    image: '/what-we-do/printing.webp',
+    galleryImages: ['/pavement-signs/pavement2.jpg', '/signboards/signboard2.jpg', '/pavement-signs/pavement4.jpg', '/signboards/signboard3.jpg'],
+    categoryLink: '/services/printing',
+    hoverItems: ['Business Cards', 'Flyers & Posters', 'Booklets'],
+    serviceGroups: [
+      {
+        title: 'Marketing Materials',
+        items: [
+          { label: 'Business Cards', href: '/services/printing#business-cards', icon: CreditCard, description: 'Professional business cards in various finishes and stocks.' },
+          { label: 'Flyers', href: '/services/printing#flyers', icon: FileText, description: 'Eye-catching flyers for promotions, events and campaigns.' },
+          { label: 'Posters', href: '/services/printing#posters', icon: Image, description: 'High-quality posters in all sizes for maximum impact.' },
+          { label: 'Table Talkers', href: '/services/printing#table-talkers', icon: Frame, description: 'Tabletop displays perfect for restaurants and retail.' },
+          { label: 'Scratch Cards', href: '/services/printing#scratch-cards', icon: Ticket, description: 'Custom scratch cards for promotions and competitions.' },
+        ],
+      },
+      {
+        title: 'Stationery & Cards',
+        items: [
+          { label: 'Appointment Cards', href: '/services/printing#appointment-cards', icon: CreditCard, description: 'Branded appointment cards for salons, clinics and more.' },
+          { label: 'Loyalty Cards', href: '/services/printing#loyalty-cards', icon: CreditCard, description: 'Custom loyalty cards to reward your customers.' },
+          { label: 'Gift Vouchers', href: '/services/printing#gift-vouchers', icon: Gift, description: 'Beautifully designed gift vouchers for your business.' },
+          { label: 'Greetings Cards', href: '/services/printing#greetings-cards', icon: FileText, description: 'Personalised greetings cards for any occasion.' },
+          { label: 'Funeral Order of Service', href: '/services/printing#funeral', icon: BookOpen, description: 'Respectful, professionally printed memorial booklets.' },
+        ],
+      },
+      {
+        title: 'Print Products',
+        items: [
+          { label: 'Booklets & Brochures', href: '/services/printing#booklets', icon: BookOpen, description: 'Multi-page booklets and brochures for catalogues and guides.' },
+          { label: 'Art Prints', href: '/services/printing#art-prints', icon: Image, description: 'High-quality giclée prints on premium papers.' },
+          { label: 'Product Labels', href: '/services/printing#labels', icon: Tag, description: 'Custom labels and stickers for products and packaging.' },
+          { label: 'Round Sticker Sheets', href: '/services/printing#stickers', icon: Circle, description: 'Die-cut round stickers on easy-peel sheets.' },
+        ],
+      },
+    ],
+  },
+];
 
 const ServicesGrid: React.FC = () => {
-  const services = [
-    {
-      icon: "https://via.placeholder.com/100",
-      title: "Sign boards",
-      description: "Communicate your message with custom signage.",
-      details: "Find the signage style that works best for you – available in a range of materials for internal & exterior use."
-    },
-    {
-      icon: "https://via.placeholder.com/100",
-      title: "Custom Clothing",
-      description: "Premium garments and customisation, all in one place.",
-      details: "Put as much pride into your appearance as you put into your work, use your back as a walking billboard and make your staff look like a team."
-    },
-    {
-      icon: "https://via.placeholder.com/100",
-      title: "Vehicle Signwriting",
-      description: "Turn up to your next job looking professional, on brand and most importantly get noticed.",
-      details: "Turn your vehicle into a promotional tool for your business to get spotted on the road or parked on any job with vinyl decals that are made with premium materials."
-    },
-    {
-      icon: "https://via.placeholder.com/100",
-      title: "Etched Window Privacy Film",
-      description: "Add privacy without sacrificing style or losing natural light in your home or workplace.",
-      details: "The etched finish gives a sandblasted / frosted look to your glass windows and doors where only basic shapes can be seen, hiding valuables, clutter or activity."
-    },
-    {
-      icon: "https://via.placeholder.com/100",
-      title: "Projecting Signs",
-      description: "Mix & Match from our range of wall-mounted brackets and customisable panels.",
-      details: "An excellent way to create signage that can be seen from all angles and improve your high-street visibility."
-    },
-    {
-      icon: "https://via.placeholder.com/100",
-      title: "Pavement Signs",
-      description: "Catch attention of passes by and increase footfall with free-standing pavement signs.",
-      details: "Available in a range of styles, colours and sizes suitable for different weather conditions."
-    },
-    {
-      icon: "https://via.placeholder.com/100",
-      title: "Branded Gazebos",
-      description: "A huge customisable blank canvas to promote your brand!",
-      details: "Our tried and tested Gazebos are available in a range of colours and sizes, or supply your own for customisation."
-    },
-    {
-      icon: "https://via.placeholder.com/100",
-      title: "Branded Parasols",
-      description: "Give your logo plenty of room to make a big impact in your outdoor space.",
-      details: "Our tried and tested Parasols are available in a range of colours and sizes, or supply your own for customisation."
-    },
-    {
-      icon: "https://via.placeholder.com/100",
-      title: "Branded Tablecloths",
-      description: "Turn a simple folding table into a professional trade stand.",
-      details: "Our machine washable table covers are available in a range of colours and sizes, or supply your own for customisation."
-    }
-  ];
-
   return (
-    <>
-      {/* CTA Banner Section */}
-      <section
-        id="cta-banner"
-        className="py-48 bg-cover bg-center bg-fixed text-center relative"
-        style={{ backgroundImage: "url('parallax-bg.jpg')" }}
-      >
-        <div className="absolute inset-0 bg-black/50"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <h2 className="text-white text-[clamp(40px,6vw,80px)] leading-tight font-semibold">
-            We're here to help you<br />promote your business
-          </h2>
-        </div>
-      </section>
+    <section id="services" className="relative bg-[#908d9a] py-12 sm:py-16 md:py-20">
+      <div className="mx-auto w-full max-w-[1450px] rounded-[10px] bg-[#c1c6c8] px-4 pt-8 pb-12 shadow-[0_35px_80px_rgba(26,24,32,0.15)] sm:px-8 sm:pt-10 sm:pb-16 md:px-10 md:pt-[47px] md:pb-[96px] lg:px-[74px]">
+        <style>{`
+          @font-face {
+            font-family: 'Hearns';
+            src: url('/fonts/Hearns/Hearns.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+          }
+          @font-face {
+            font-family: 'Aldivaro';
+            src: url('/fonts/aldivaro/Aldivaro Stamp Demo.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+          }
+          @font-face {
+            font-family: 'Neuzeit Grotesk';
+            src: url('/fonts/neuzeit-grotesk-regular_freefontdownload_org/neuzeit-grotesk-regular.woff2') format('woff2'),
+                 url('/fonts/neuzeit-grotesk-regular_freefontdownload_org/neuzeit-grotesk-regular.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+          }
+          @font-face {
+            font-family: 'Smilecake';
+            src: url('/fonts/smilecake/Smilecake.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+          }
+          .hearns-font { font-family: 'Hearns', Georgia, serif; letter-spacing: 0.16em; }
+          .aldivaro-font { font-family: 'Aldivaro', 'Times New Roman', serif; }
+          .grotesk-font { font-family: 'Neuzeit Grotesk', 'Helvetica Neue', sans-serif; }
+          .smilecake-font { font-family: 'Smilecake', 'Comic Sans MS', cursive; letter-spacing: 0.06em; }
+        `}</style>
 
-      {/* Services Grid Section */}
-      <section id="services" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-[clamp(40px,6vw,80px)] text-center mb-5 text-[#78BE20] uppercase tracking-wide font-bold">
-            What we do
-          </h2>
-          <p className="text-center mb-10 text-lg text-gray-700 max-w-3xl mx-auto">
-            We're here to help you promote your business, build your brand or simply just to show your individuality.
-          </p>
+        <div className="flex flex-col gap-6 sm:gap-8 md:gap-10">
+          {/* Header - Stacked on mobile, side-by-side on desktop */}
+          <div className="flex flex-col gap-3 sm:gap-4 text-[#221C35] lg:flex-row lg:items-end lg:justify-between">
+            {/* Title + Scribble */}
+            <div className="flex flex-col items-center lg:items-start">
+              <p className="hearns-font text-[28px] tracking-[0.04em] sm:text-[36px] md:text-[48px] lg:text-[60px]">
+                WHAT WE DO
+              </p>
+              <img
+                src="/images/Scribble_Purple.png"
+                alt=""
+                className="mt-1 w-[140px] sm:mt-2 sm:w-[180px] md:w-[220px] lg:w-[264px]"
+              />
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-16">
-            {services.map((service, index) => (
-              <div
-                key={index}
-                className="p-12 shadow-[0_0_20px_rgba(159,164,176,0.3)] text-center transition-all duration-300 hover:shadow-[0_0_30px_rgba(159,164,176,0.5)] bg-white"
-              >
-                <div className="mb-8">
-                  <img src={service.icon} alt={service.title} className="w-20 h-20 mx-auto" />
-                </div>
-                <h3 className="text-[#78BE20] mb-5 text-[22px] font-semibold">{service.title}</h3>
-                <p className="mb-4 text-gray-600 leading-relaxed"><strong>{service.description}</strong></p>
-                <p className="mb-4 text-gray-600 leading-relaxed">{service.details}</p>
-                <a
-                  href="#"
-                  className="inline-block px-8 py-3 bg-[#78BE20] text-white no-underline rounded transition-all duration-300 hover:bg-black hover:text-[#78BE20] text-sm font-semibold tracking-wide"
-                >
-                  Find out more... <i className="fas fa-angle-double-right ml-1"></i>
-                </a>
+            {/* Tagline - inline on mobile, separate on desktop */}
+            <p className="smilecake-font text-center text-sm sm:text-base md:text-lg lg:text-[20px] leading-relaxed text-[#221C35]/80 max-w-[320px] mx-auto lg:mx-0 lg:text-right lg:max-w-[260px]">
+              We're here to help you promote your business, build your brand or simply show your individuality.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-4">
+            {serviceCards.map((category) => (
+              <div key={category.title} className="h-[200px] sm:h-[250px] md:h-[300px]">
+                <ExpandableCard
+                  title={category.title}
+                  src={category.image}
+                  serviceGroups={category.serviceGroups}
+                  galleryImages={category.galleryImages || []}
+                  categoryLink={category.categoryLink}
+                  hoverItems={category.hoverItems}
+                  className="h-full"
+                />
               </div>
             ))}
           </div>
-
-          <div className="text-center mt-20">
-            <h3 className="text-[25px] leading-relaxed tracking-tight text-[#78BE20]">
-              Let's chat about your next project.<br />
-              Call or WhatsApp 01562 227 117
-            </h3>
-          </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
 

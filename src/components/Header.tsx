@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, Heart, Send, ChevronDown, Sparkles, ArrowRight } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
+import { useTheme } from '../contexts/ThemeContext';
 import CartDrawer from './CartDrawer';
 import WishlistDrawer from './WishlistDrawer';
 
@@ -23,28 +24,40 @@ interface NavigationItem {
   customMegaMenu?: 'clothing' | 'signage' | 'printing' | 'vehicle';
 }
 
-// Clothing mega menu - Use cases
-const clothingUseCases = [
-  { label: 'Workwear', href: '/categories/workwear' },
-  { label: 'Sports Teams', href: '/categories/sports-teams' },
-  { label: 'Merch', href: '/categories/merch' },
-  { label: 'Weddings', href: '/categories/weddings' },
-  { label: 'Events', href: '/categories/events' },
-  { label: 'Unique Gifts', href: '/categories/unique-gifts' }
+// Clothing mega menu - Tops category
+const clothingTops = [
+  { label: 'T-Shirts', href: '/clothing?productTypes=T-Shirts' },
+  { label: 'Polos', href: '/clothing?productTypes=Polos' },
+  { label: 'Sweatshirts', href: '/clothing?productTypes=Sweatshirts' },
+  { label: 'Hoodies', href: '/clothing?productTypes=Hoodies' },
+  { label: 'Shirts', href: '/clothing?productTypes=Shirts' },
 ];
 
-// Clothing mega menu - Product categories (matching ProductBrowser product types)
+// Clothing mega menu - Outerwear & Workwear
+const clothingOuterwear = [
+  { label: 'Jackets', href: '/clothing?productTypes=Jackets' },
+  { label: 'Gilets', href: '/clothing?productTypes=Gilets%20%26%20Body%20Warmers' },
+  { label: 'Softshells', href: '/clothing?productTypes=Softshells' },
+  { label: 'Aprons', href: '/clothing?productTypes=Aprons' },
+  { label: 'Safety Vests', href: '/clothing?productTypes=Safety%20Vests' },
+];
+
+// Clothing mega menu - Other categories
+const clothingOther = [
+  { label: 'Caps & Hats', href: '/clothing?productTypes=Caps,Hats,Beanies' },
+  { label: 'Bags', href: '/clothing?productTypes=Bags' },
+  { label: 'Accessories', href: '/clothing?productTypes=Accessories' },
+  { label: 'All Clothing', href: '/clothing' },
+];
+
+// Legacy - kept for any remaining references
 const clothingCategories = [
-  { label: 'Tops', href: '/products?productType=TOPS' },
-  { label: 'Outerwear', href: '/products?productType=OUTERWEAR' },
-  { label: 'Bottoms', href: '/products?productType=BOTTOMS' },
-  { label: 'Workwear', href: '/products?productType=WORKWEAR' },
-  { label: 'Headwear', href: '/products?productType=HEADWEAR' },
-  { label: 'Footwear', href: '/products?productType=FOOTWEAR' },
-  { label: 'Bags & Cases', href: '/products?productType=BAGS%20%26%20CASES' },
-  { label: 'Accessories', href: '/products?productType=ACCESSORIES' },
-  { label: 'Underwear & Sleepwear', href: '/products?productType=UNDERWEAR%20%26%20SLEEPWEAR' },
-  { label: 'Home & Gifts', href: '/products?productType=HOME%20%26%20GIFTS' }
+  { label: 'Tops', href: '/clothing?productTypes=T-Shirts,Polos,Sweatshirts,Hoodies' },
+  { label: 'Outerwear', href: '/clothing?productTypes=Jackets,Gilets%20%26%20Body%20Warmers,Softshells' },
+  { label: 'Bottoms', href: '/clothing?productTypes=Trousers,Shorts,Jeans' },
+  { label: 'Workwear', href: '/clothing?productTypes=Aprons,Safety%20Vests,Coveralls' },
+  { label: 'Headwear', href: '/clothing?productTypes=Caps,Beanies,Hats' },
+  { label: 'Bags & Accessories', href: '/clothing?productTypes=Bags,Accessories' },
 ];
 
 // Signage mega menu data
@@ -65,28 +78,28 @@ const signageEvents = [
   { label: 'Tablecloths', href: '/services/tablecloths' }
 ];
 
-// Printing mega menu data
+// Printing mega menu data - organized by product type categories
+const printingCards = [
+  { label: 'Business Cards', href: '/printing/all?type=cards' },
+  { label: 'Appointment Cards', href: '/printing/all?type=cards' },
+  { label: 'Loyalty Cards', href: '/printing/all?type=cards' },
+  { label: 'Gift Vouchers', href: '/printing/all?type=cards' },
+  { label: 'All Cards', href: '/printing/all?type=cards' }
+];
+
 const printingMarketing = [
-  { label: 'Business Cards', href: '/printing/business-cards' },
-  { label: 'Flyers', href: '/printing/flyers' },
-  { label: 'Posters', href: '/printing/posters' },
-  { label: 'Table Talkers', href: '/printing/table-talkers' },
-  { label: 'Scratch Cards', href: '/printing/scratch-cards' }
+  { label: 'Flyers & Leaflets', href: '/printing/all?type=flyers' },
+  { label: 'Posters & Prints', href: '/printing/all?type=posters' },
+  { label: 'Booklets & Brochures', href: '/printing/all?type=booklets' },
+  { label: 'Stickers & Labels', href: '/printing/all?type=stickers' },
+  { label: 'Calendars', href: '/printing/all?type=calendars' }
 ];
 
-const printingStationery = [
-  { label: 'Appointment Cards', href: '/printing/appointment-cards' },
-  { label: 'Loyalty Cards', href: '/printing/loyalty-cards' },
-  { label: 'Gift Vouchers', href: '/printing/gift-vouchers' },
-  { label: 'Greetings Cards', href: '/printing/greetings-cards' },
-  { label: 'Funeral Order of Service', href: '/printing/funeral-booklets' }
-];
-
-const printingProducts = [
-  { label: 'Booklets and Brochures', href: '/printing/booklets' },
-  { label: 'Art Prints', href: '/printing/art-prints' },
-  { label: 'Product Labels', href: '/printing/labels' },
-  { label: 'Round Sticker Sheets', href: '/printing/stickers' }
+const printingOther = [
+  { label: 'Stationery', href: '/printing/all?type=stationery' },
+  { label: 'Packaging & Tags', href: '/printing/all?type=packaging' },
+  { label: 'Specialty Items', href: '/printing/all?type=specialty' },
+  { label: 'All Products', href: '/printing/all' }
 ];
 
 // Vehicle Graphics mega menu data
@@ -121,7 +134,7 @@ const navigationItems: NavigationItem[] = [
               { label: 'Hospitality Garments', href: '/collections/Hospitality%20Garments' }
             ]
           },
-          { label: 'Product Browser', href: '/products' }
+          { label: 'Browse All Clothing', href: '/clothing' }
         ]
       }
     ]
@@ -138,6 +151,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: 'PRINTING',
+    href: '/printing/all',
     customMegaMenu: 'printing'
   }
 ];
@@ -164,6 +178,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
   const { cart } = useCart();
   const { wishlist } = useWishlist();
+  const { colorScheme, colors } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -205,13 +220,13 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   };
 
   const renderMegaMenu = (sections: MegaMenuSection[], parentLabel: string) => (
-    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[1100px] -translate-x-1/2 pt-4 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300">
-      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-950/95 to-black/95 p-6 shadow-[0_25px_80px_rgba(0,0,0,0.65)] backdrop-blur">
+    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[1100px] -translate-x-1/2 pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out">
+      <div className="rounded-xl border border-[#333333]/20 bg-[#c1c6c8] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
         <div className={`grid gap-8 ${getGridColsClass(sections.length)}`}>
           {sections.map((section, sectionIndex) => (
             <div key={`${parentLabel}-${section.title ?? sectionIndex}`} className="space-y-3">
               {section.title && (
-                <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-lime-400">
+                <p className="embossing-font text-[16px] uppercase tracking-[0.15em] text-[#183028]">
                   {section.title}
                 </p>
               )}
@@ -220,17 +235,18 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                   <li key={`${parentLabel}-${item.label}`}>
                     <a
                       href={item.href}
-                      className="block rounded-md px-3 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+                      className="group/link flex items-center justify-between rounded-lg px-3 py-2 grotesk-font text-sm text-[#333333] transition-colors hover:bg-[#183028]/10"
                     >
-                      {item.label}
+                      <span>{item.label}</span>
+                      <ArrowRight className="h-3.5 w-3.5 text-transparent group-hover/link:text-[#64a70b] group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
                     </a>
                     {item.children && (
-                      <ul className="mt-2 space-y-1 border-l border-white/10 pl-4">
+                      <ul className="mt-2 space-y-1 border-l border-[#333333]/20 pl-4">
                         {item.children.map((child) => (
                           <li key={`${parentLabel}-${item.label}-${child.label}`}>
                             <a
                               href={child.href}
-                              className="block rounded px-2 py-1 text-xs font-medium text-white/70 transition-colors hover:text-white"
+                              className="grotesk-font block rounded px-2 py-1 text-sm text-[#333333]/70 transition-colors hover:text-[#64a70b]"
                             >
                               {child.label}
                             </a>
@@ -249,476 +265,436 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   );
 
   const renderPrintingMegaMenu = () => (
-    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[900px] -translate-x-1/2 pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out">
-      <div className="rounded-xl border border-white/15 bg-[#0a0a0a] shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden">
+    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[820px] -translate-x-1/2 pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out">
+      <div className="rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.5)] overflow-hidden" style={{ backgroundColor: colors.megaMenuBg }}>
 
-        <div className="grid grid-cols-[1fr_1fr_1fr] divide-x divide-white/10">
+        <div className="grid grid-cols-[1fr_280px]">
 
-          {/* Column 1 - Marketing Materials */}
-          <div className="p-6">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6da71d] mb-4">Marketing Materials</h3>
-            <ul className="space-y-1">
-              {printingMarketing.map((item, index) => (
-                <li
-                  key={item.label}
-                  className="opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <a
-                    href={item.href}
-                    className="group/link flex items-center justify-between py-2 px-3 -mx-3 rounded-lg text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-white/0 group-hover/link:text-[#6da71d] group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 2 - Stationery & Cards */}
-          <div className="p-6">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6da71d] mb-4">Stationery & Cards</h3>
-            <ul className="space-y-1">
-              {printingStationery.map((item, index) => (
-                <li
-                  key={item.label}
-                  className="opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <a
-                    href={item.href}
-                    className="group/link flex items-center justify-between py-2 px-3 -mx-3 rounded-lg text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-white/0 group-hover/link:text-[#6da71d] group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3 - Print Products */}
-          <div className="p-6">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6da71d] mb-4">Print Products</h3>
-            <ul className="space-y-1">
-              {printingProducts.map((item, index) => (
-                <li
-                  key={item.label}
-                  className="opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <a
-                    href={item.href}
-                    className="group/link flex items-center justify-between py-2 px-3 -mx-3 rounded-lg text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-white/0 group-hover/link:text-[#6da71d] group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-        </div>
-
-        {/* Bottom CTAs Bar */}
-        <div className="border-t border-white/10 bg-white/[0.02] p-4">
-          <div className="flex items-center gap-3">
-            <a
-              href="/contact"
-              className="flex-1 group/quote block rounded-lg bg-gradient-to-br from-[#6da71d] to-[#5a8a18] p-3 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(109,167,29,0.3)] opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-              style={{ animationDelay: '200ms' }}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="h-4 w-4 text-white" strokeWidth={2.5} />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-white/90">Custom Printing</span>
+          {/* Left - Navigation with sections */}
+          <div className="p-5 border-r border-white/10">
+            <div className="grid grid-cols-3 gap-6">
+              {/* Cards */}
+              <div>
+                <h3 className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: colors.accent }}>Cards</h3>
+                <ul className="space-y-0.5">
+                  {printingCards.map((item, index) => (
+                    <li key={item.label} className="opacity-0 animate-[fadeSlideIn_0.25s_ease-out_forwards]" style={{ animationDelay: `${index * 25}ms` }}>
+                      <a href={item.href} className="group/link flex items-center gap-2 py-1.5 grotesk-font text-[13px] text-white/70 hover:text-white transition-colors">
+                        <ArrowRight className="h-3 w-3 text-white/30 group-hover/link:translate-x-0.5 transition-all" style={{ '--tw-text-opacity': 1 } as React.CSSProperties} strokeWidth={2} />
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <p className="text-xs font-semibold text-white">Request a quote</p>
-            </a>
 
-            <a
-              href="/printing"
-              className="flex-1 group/all flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70 hover:border-white/20 hover:text-white transition-all opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-              style={{ animationDelay: '250ms' }}
-            >
-              <span>View All Printing</span>
-              <ArrowRight className="h-4 w-4 group-hover/all:translate-x-0.5 transition-transform" strokeWidth={2} />
-            </a>
+              {/* Marketing & Print */}
+              <div>
+                <h3 className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: colors.accent }}>Marketing</h3>
+                <ul className="space-y-0.5">
+                  {printingMarketing.map((item, index) => (
+                    <li key={item.label} className="opacity-0 animate-[fadeSlideIn_0.25s_ease-out_forwards]" style={{ animationDelay: `${125 + index * 25}ms` }}>
+                      <a href={item.href} className="group/link flex items-center gap-2 py-1.5 grotesk-font text-[13px] text-white/70 hover:text-white transition-colors">
+                        <ArrowRight className="h-3 w-3 text-white/30 group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Other */}
+              <div>
+                <h3 className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: colors.accent }}>More</h3>
+                <ul className="space-y-0.5">
+                  {printingOther.map((item, index) => (
+                    <li key={item.label} className="opacity-0 animate-[fadeSlideIn_0.25s_ease-out_forwards]" style={{ animationDelay: `${250 + index * 25}ms` }}>
+                      <a href={item.href} className="group/link flex items-center gap-2 py-1.5 grotesk-font text-[13px] text-white/70 hover:text-white transition-colors">
+                        <ArrowRight className="h-3 w-3 text-white/30 group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-4 mt-4 border-t border-white/10 opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]" style={{ animationDelay: '350ms' }}>
+              <a href="/printing/all" className="flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 grotesk-font text-[11px] text-white/70 hover:text-white transition-all" style={{ backgroundColor: `${colors.secondary}4d` }}>
+                Browse All Products
+              </a>
+              <a href="/contact" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 grotesk-font text-[11px] font-semibold text-white transition-all" style={{ backgroundColor: colors.buttonPrimary }}>
+                Get Quote <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
+              </a>
+            </div>
           </div>
+
+          {/* Right - Feature Cards */}
+          <div className="p-4">
+            <div className="flex flex-col gap-3">
+              {/* Featured Card - All Printing */}
+              <a
+                href="/printing/all"
+                className="group/card relative rounded-xl overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards] h-[130px]"
+                style={{ animationDelay: '50ms' }}
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
+                  style={{ backgroundImage: 'url(/what-we-do/printing.webp)' }}
+                />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${colors.megaMenuBg}, ${colors.megaMenuBg}b3, transparent)` }} />
+                <div className="relative h-full p-4 flex flex-col justify-end">
+                  <span className="embossing-font text-[9px] uppercase tracking-[0.12em] mb-1" style={{ color: colors.accent }}>Featured</span>
+                  <h4 className="hearns-font text-lg text-white mb-0.5">Print Services</h4>
+                  <p className="grotesk-font text-[11px] text-white/60">Quality printing for your business</p>
+                </div>
+              </a>
+
+              {/* Blog Post Feature Card */}
+              <a
+                href="/printing"
+                className="group/card relative rounded-xl overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards] h-[130px]"
+                style={{ animationDelay: '100ms' }}
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
+                  style={{ backgroundImage: 'url(/images/sticker.webp)' }}
+                />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${colors.megaMenuBg}, ${colors.megaMenuBg}b3, transparent)` }} />
+                <div className="relative h-full p-4 flex flex-col justify-end">
+                  <span className="embossing-font text-[9px] uppercase tracking-[0.12em] text-[#c1c6c8] mb-1">Learn More</span>
+                  <h4 className="hearns-font text-lg text-white mb-0.5">About Printing</h4>
+                  <p className="grotesk-font text-[11px] text-white/60">Discover our print capabilities</p>
+                </div>
+              </a>
+            </div>
+          </div>
+
         </div>
 
       </div>
 
-      {/* CSS for animations */}
       <style>{`
         @keyframes fadeSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-8px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
   );
 
   const renderVehicleMegaMenu = () => (
-    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[700px] -translate-x-1/2 pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out">
-      <div className="rounded-xl border border-white/15 bg-[#0a0a0a] shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden">
+    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[620px] -translate-x-1/2 pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out">
+      <div className="rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.5)] overflow-hidden" style={{ backgroundColor: colors.megaMenuBg }}>
 
-        <div className="grid grid-cols-2 gap-4 p-4">
+        <div className="p-4">
+          <div className="grid grid-cols-2 gap-3">
 
-          {/* Card 1 - Vehicle Signwriting */}
-          <a
-            href="/services/vehicle-signwriting"
-            className="group/card relative h-[240px] rounded-lg overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-            style={{ animationDelay: '0ms' }}
-          >
-            {/* Background Image */}
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
-              style={{ backgroundImage: 'url(/vehicle-signwriting/vehicle1.jpg)' }}
-            />
-
-            {/* Black Overlay */}
-            <div className="absolute inset-0 bg-black/60 transition-all duration-300 group-hover/card:bg-black/50" />
-
-            {/* Content */}
-            <div className="relative h-full p-6 flex flex-col justify-between">
-              {/* Top Badge */}
-              <div className="inline-flex items-center gap-1.5 self-start px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-                <Sparkles className="h-3 w-3 text-[#6da71d]" strokeWidth={2.5} />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-white">Premium</span>
+            {/* Card 1 - Vehicle Signwriting */}
+            <a
+              href="/services/vehicle-signwriting"
+              className="group/card relative rounded-xl overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards] h-[150px]"
+              style={{ animationDelay: '0ms', backgroundColor: colors.megaMenuBg }}
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
+                style={{ backgroundImage: 'url(/vehicle-signwriting/vehicle1.jpg)' }}
+              />
+              <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${colors.megaMenuBg}, ${colors.megaMenuBg}b3, transparent)` }} />
+              <div className="relative h-full p-4 flex flex-col justify-end">
+                <span className="embossing-font text-[9px] uppercase tracking-[0.12em] mb-1" style={{ color: colors.accent }}>Featured</span>
+                <h4 className="hearns-font text-lg text-white mb-1">Vehicle Signwriting</h4>
+                <p className="grotesk-font text-xs text-white/60">Custom graphics for your fleet</p>
               </div>
+            </a>
 
-              {/* Bottom Text */}
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Vehicle Signwriting</h3>
-                <p className="text-xs text-white/80 mb-3">Professional custom graphics for your fleet</p>
-
-                {/* Arrow Button */}
-                <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#6da71d] group-hover/card:gap-3 transition-all">
-                  <span>Learn More</span>
-                  <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
-                </div>
+            {/* Card 2 - Blog Post */}
+            <a
+              href="/blog/vehicle-branding"
+              className="group/card relative rounded-xl overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards] h-[150px]"
+              style={{ animationDelay: '80ms', backgroundColor: colors.megaMenuBg }}
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
+                style={{ backgroundImage: 'url(/vehicle-signwriting/vehicle5.jpg)' }}
+              />
+              <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${colors.megaMenuBg}, ${colors.megaMenuBg}b3, transparent)` }} />
+              <div className="relative h-full p-4 flex flex-col justify-end">
+                <span className="embossing-font text-[9px] uppercase tracking-[0.12em] text-[#c1c6c8] mb-1">From the Blog</span>
+                <h4 className="hearns-font text-lg text-white mb-1">Branding Guide</h4>
+                <p className="grotesk-font text-xs text-white/60">Maximise your mobile advertising</p>
               </div>
-            </div>
-          </a>
+            </a>
 
-          {/* Card 2 - Magnetic Signs */}
-          <a
-            href="/services/vehicle-signwriting"
-            className="group/card relative h-[240px] rounded-lg overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-            style={{ animationDelay: '100ms' }}
-          >
-            {/* Background Image */}
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
-              style={{ backgroundImage: 'url(/vehicle-signwriting/vehicle5.jpg)' }}
-            />
+          </div>
 
-            {/* Black Overlay */}
-            <div className="absolute inset-0 bg-black/60 transition-all duration-300 group-hover/card:bg-black/50" />
-
-            {/* Content */}
-            <div className="relative h-full p-6 flex flex-col justify-between">
-              {/* Top Badge */}
-              <div className="inline-flex items-center gap-1.5 self-start px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-                <Sparkles className="h-3 w-3 text-[#6da71d]" strokeWidth={2.5} />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-white">Flexible</span>
-              </div>
-
-              {/* Bottom Text */}
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">Magnetic Vehicle Signs</h3>
-                <p className="text-xs text-white/80 mb-3">Easy to apply, remove and reuse</p>
-
-                {/* Arrow Button */}
-                <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#6da71d] group-hover/card:gap-3 transition-all">
-                  <span>Learn More</span>
-                  <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
-                </div>
-              </div>
-            </div>
-          </a>
-
-        </div>
-
-        {/* Bottom CTA Bar */}
-        <div className="border-t border-white/10 bg-white/[0.02] p-4">
-          <a
-            href="/contact"
-            className="group/quote flex items-center justify-between rounded-lg bg-gradient-to-br from-[#6da71d] to-[#5a8a18] p-3 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(109,167,29,0.3)] opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-            style={{ animationDelay: '200ms' }}
-          >
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="h-4 w-4 text-white" strokeWidth={2.5} />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-white/90">Get A Quote</span>
-              </div>
-              <p className="text-xs font-semibold text-white">Free vehicle graphics consultation</p>
-            </div>
-            <ArrowRight className="h-5 w-5 text-white group-hover/quote:translate-x-1 transition-transform" strokeWidth={2.5} />
-          </a>
+          {/* Compact Actions */}
+          <div className="flex gap-2 mt-3 opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]" style={{ animationDelay: '150ms' }}>
+            <a
+              href="/services/vehicle-signwriting"
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-white/10 py-2 grotesk-font text-[11px] text-white/70 hover:text-white transition-all"
+              style={{ backgroundColor: `${colors.secondary}4d` }}
+            >
+              Learn More
+            </a>
+            <a
+              href="/contact"
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg py-2 grotesk-font text-[11px] font-semibold text-white transition-all"
+              style={{ backgroundColor: colors.buttonPrimary }}
+            >
+              Get Quote
+              <ArrowRight className="h-3 w-3" strokeWidth={2} />
+            </a>
+          </div>
         </div>
 
       </div>
 
-      {/* CSS for animations */}
       <style>{`
         @keyframes fadeSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-8px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
   );
 
   const renderSignageMegaMenu = () => (
-    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[900px] -translate-x-1/2 pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out">
-      <div className="rounded-xl border border-white/15 bg-[#0a0a0a] shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden">
+    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[820px] -translate-x-1/2 pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out">
+      <div className="rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.5)] overflow-hidden" style={{ backgroundColor: colors.megaMenuBg }}>
 
-        <div className="grid grid-cols-[1fr_1fr_1fr] divide-x divide-white/10">
+        <div className="grid grid-cols-[1fr_280px]">
 
-          {/* Column 1 - Indoor Signage */}
-          <div className="p-6">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6da71d] mb-4">Indoor Signage</h3>
-            <ul className="space-y-1">
-              {signageIndoor.map((item, index) => (
-                <li
-                  key={item.label}
-                  className="opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <a
-                    href={item.href}
-                    className="group/link flex items-center justify-between py-2 px-3 -mx-3 rounded-lg text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-white/0 group-hover/link:text-[#6da71d] group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 2 - Outdoor Signage */}
-          <div className="p-6">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6da71d] mb-4">Outdoor Signage</h3>
-            <ul className="space-y-1">
-              {signageOutdoor.map((item, index) => (
-                <li
-                  key={item.label}
-                  className="opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <a
-                    href={item.href}
-                    className="group/link flex items-center justify-between py-2 px-3 -mx-3 rounded-lg text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-white/0 group-hover/link:text-[#6da71d] group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3 - Event Signage */}
-          <div className="p-6">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6da71d] mb-4">Event Signage</h3>
-            <ul className="space-y-1">
-              {signageEvents.map((item, index) => (
-                <li
-                  key={item.label}
-                  className="opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <a
-                    href={item.href}
-                    className="group/link flex items-center justify-between py-2 px-3 -mx-3 rounded-lg text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-white/0 group-hover/link:text-[#6da71d] group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-        </div>
-
-        {/* Bottom CTAs Bar */}
-        <div className="border-t border-white/10 bg-white/[0.02] p-4">
-          <div className="flex items-center gap-3">
-            <a
-              href="/contact"
-              className="flex-1 group/quote block rounded-lg bg-gradient-to-br from-[#6da71d] to-[#5a8a18] p-3 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(109,167,29,0.3)] opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-              style={{ animationDelay: '200ms' }}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="h-4 w-4 text-white" strokeWidth={2.5} />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-white/90">Get A Quote</span>
+          {/* Left - Navigation with sections */}
+          <div className="p-5 border-r border-white/10">
+            <div className="grid grid-cols-3 gap-6">
+              {/* Indoor */}
+              <div>
+                <h3 className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: colors.accent }}>Indoor</h3>
+                <ul className="space-y-0.5">
+                  {signageIndoor.map((item, index) => (
+                    <li key={item.label} className="opacity-0 animate-[fadeSlideIn_0.25s_ease-out_forwards]" style={{ animationDelay: `${index * 30}ms` }}>
+                      <a href={item.href} className="group/link flex items-center gap-2 py-1.5 grotesk-font text-[13px] text-white/70 hover:text-white transition-colors">
+                        <ArrowRight className="h-3 w-3 text-white/30 group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <p className="text-xs font-semibold text-white">Free design consultation</p>
-            </a>
 
-            <a
-              href="/services/all-signage"
-              className="flex-1 group/all flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70 hover:border-white/20 hover:text-white transition-all opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-              style={{ animationDelay: '250ms' }}
-            >
-              <span>View All</span>
-              <ArrowRight className="h-4 w-4 group-hover/all:translate-x-0.5 transition-transform" strokeWidth={2} />
-            </a>
+              {/* Outdoor */}
+              <div>
+                <h3 className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: colors.accent }}>Outdoor</h3>
+                <ul className="space-y-0.5">
+                  {signageOutdoor.map((item, index) => (
+                    <li key={item.label} className="opacity-0 animate-[fadeSlideIn_0.25s_ease-out_forwards]" style={{ animationDelay: `${60 + index * 30}ms` }}>
+                      <a href={item.href} className="group/link flex items-center gap-2 py-1.5 grotesk-font text-[13px] text-white/70 hover:text-white transition-colors">
+                        <ArrowRight className="h-3 w-3 text-white/30 group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Event */}
+              <div>
+                <h3 className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: colors.accent }}>Event</h3>
+                <ul className="space-y-0.5">
+                  {signageEvents.map((item, index) => (
+                    <li key={item.label} className="opacity-0 animate-[fadeSlideIn_0.25s_ease-out_forwards]" style={{ animationDelay: `${150 + index * 30}ms` }}>
+                      <a href={item.href} className="group/link flex items-center gap-2 py-1.5 grotesk-font text-[13px] text-white/70 hover:text-white transition-colors">
+                        <ArrowRight className="h-3 w-3 text-white/30 group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-4 mt-4 border-t border-white/10 opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]" style={{ animationDelay: '250ms' }}>
+              <a href="/services/all-signage" className="flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 grotesk-font text-[11px] text-white/70 hover:text-white transition-all" style={{ backgroundColor: `${colors.secondary}4d` }}>
+                View All Signage
+              </a>
+              <a href="/contact" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 grotesk-font text-[11px] font-semibold text-white transition-all" style={{ backgroundColor: colors.buttonPrimary }}>
+                Get Quote <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
+              </a>
+            </div>
           </div>
+
+          {/* Right - Feature Cards */}
+          <div className="p-4">
+            <div className="flex flex-col gap-3">
+              {/* Featured Card - All Signage */}
+              <a
+                href="/services/all-signage"
+                className="group/card relative rounded-xl overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards] h-[130px]"
+                style={{ animationDelay: '50ms' }}
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
+                  style={{ backgroundImage: 'url(/signboards/signboard1.jpg)' }}
+                />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${colors.megaMenuBg}, ${colors.megaMenuBg}b3, transparent)` }} />
+                <div className="relative h-full p-4 flex flex-col justify-end">
+                  <span className="embossing-font text-[9px] uppercase tracking-[0.12em] mb-1" style={{ color: colors.accent }}>Featured</span>
+                  <h4 className="hearns-font text-lg text-white mb-0.5">Business Signage</h4>
+                  <p className="grotesk-font text-[11px] text-white/60">Premium signs for your premises</p>
+                </div>
+              </a>
+
+              {/* Blog Post Feature Card */}
+              <a
+                href="/blog"
+                className="group/card relative rounded-xl overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards] h-[130px]"
+                style={{ animationDelay: '100ms' }}
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
+                  style={{ backgroundImage: 'url(/projecting-signs/projecting1.jpg)' }}
+                />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${colors.megaMenuBg}, ${colors.megaMenuBg}b3, transparent)` }} />
+                <div className="relative h-full p-4 flex flex-col justify-end">
+                  <span className="embossing-font text-[9px] uppercase tracking-[0.12em] text-[#c1c6c8] mb-1">From the Blog</span>
+                  <h4 className="hearns-font text-lg text-white mb-0.5">Signage Guide</h4>
+                  <p className="grotesk-font text-[11px] text-white/60">Choosing the right signs for you</p>
+                </div>
+              </a>
+            </div>
+          </div>
+
         </div>
 
       </div>
 
-      {/* CSS for animations */}
       <style>{`
         @keyframes fadeSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-8px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
   );
 
   const renderClothingMegaMenu = () => (
-    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[900px] -translate-x-1/2 pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out">
-      <div className="rounded-xl border border-white/15 bg-[#0a0a0a] shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden">
+    <div className="absolute left-1/2 top-full z-50 w-screen max-w-[820px] -translate-x-1/2 pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300 ease-out">
+      <div className="rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.5)] overflow-hidden" style={{ backgroundColor: colors.megaMenuBg }}>
 
-        <div className="grid grid-cols-[1fr_1fr_1fr] divide-x divide-white/10">
+        <div className="grid grid-cols-[1fr_280px]">
 
-          {/* Column 1 - Shop For */}
-          <div className="p-6">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6da71d] mb-4">Shop For</h3>
-            <ul className="space-y-1">
-              {clothingUseCases.map((item, index) => (
-                <li
-                  key={item.label}
-                  className="opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <a
-                    href={item.href}
-                    className="group/link flex items-center justify-between py-2 px-3 -mx-3 rounded-lg text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-white/0 group-hover/link:text-[#6da71d] group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
-                  </a>
-                </li>
-              ))}
-            </ul>
+          {/* Left - Navigation with sections */}
+          <div className="p-5 border-r border-white/10">
+            <div className="grid grid-cols-3 gap-6">
+              {/* Tops */}
+              <div>
+                <h3 className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: colors.accent }}>Tops</h3>
+                <ul className="space-y-0.5">
+                  {clothingTops.map((item, index) => (
+                    <li key={item.label} className="opacity-0 animate-[fadeSlideIn_0.25s_ease-out_forwards]" style={{ animationDelay: `${index * 25}ms` }}>
+                      <a href={item.href} className="group/link flex items-center gap-2 py-1.5 grotesk-font text-[13px] text-white/70 hover:text-white transition-colors">
+                        <ArrowRight className="h-3 w-3 text-white/30 group-hover/link:translate-x-0.5 transition-all" style={{ '--tw-text-opacity': 1 } as React.CSSProperties} strokeWidth={2} />
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Outerwear & Workwear */}
+              <div>
+                <h3 className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: colors.accent }}>Outerwear</h3>
+                <ul className="space-y-0.5">
+                  {clothingOuterwear.map((item, index) => (
+                    <li key={item.label} className="opacity-0 animate-[fadeSlideIn_0.25s_ease-out_forwards]" style={{ animationDelay: `${125 + index * 25}ms` }}>
+                      <a href={item.href} className="group/link flex items-center gap-2 py-1.5 grotesk-font text-[13px] text-white/70 hover:text-white transition-colors">
+                        <ArrowRight className="h-3 w-3 text-white/30 group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Other */}
+              <div>
+                <h3 className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2" style={{ color: colors.accent }}>More</h3>
+                <ul className="space-y-0.5">
+                  {clothingOther.map((item, index) => (
+                    <li key={item.label} className="opacity-0 animate-[fadeSlideIn_0.25s_ease-out_forwards]" style={{ animationDelay: `${250 + index * 25}ms` }}>
+                      <a href={item.href} className="group/link flex items-center gap-2 py-1.5 grotesk-font text-[13px] text-white/70 hover:text-white transition-colors">
+                        <ArrowRight className="h-3 w-3 text-white/30 group-hover/link:translate-x-0.5 transition-all" strokeWidth={2} />
+                        <span>{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-4 mt-4 border-t border-white/10 opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]" style={{ animationDelay: '350ms' }}>
+              <a href="/clothing" className="flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 grotesk-font text-[11px] text-white/70 hover:text-white transition-all" style={{ backgroundColor: `${colors.secondary}4d` }}>
+                Browse All Clothing
+              </a>
+              <a href="/contact" className="flex items-center justify-center gap-2 rounded-lg px-4 py-2 grotesk-font text-[11px] font-semibold text-white transition-all" style={{ backgroundColor: colors.buttonPrimary }}>
+                Get Quote <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
+              </a>
+            </div>
           </div>
 
-          {/* Column 2 - Browse By Category */}
-          <div className="p-6">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50 mb-4">Browse Categories</h3>
+          {/* Right - Feature Cards */}
+          <div className="p-4">
+            <div className="flex flex-col gap-3">
+              {/* Featured Card - Shop */}
+              <a
+                href="/clothing"
+                className="group/card relative rounded-xl overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards] h-[130px]"
+                style={{ animationDelay: '50ms' }}
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
+                  style={{ backgroundImage: 'url(/what-we-do/beanie1.jpg)' }}
+                />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${colors.megaMenuBg}, ${colors.megaMenuBg}b3, transparent)` }} />
+                <div className="relative h-full p-4 flex flex-col justify-end">
+                  <span className="embossing-font text-[9px] uppercase tracking-[0.12em] mb-1" style={{ color: colors.accent }}>Featured</span>
+                  <h4 className="hearns-font text-lg text-white mb-0.5">Custom Clothing</h4>
+                  <p className="grotesk-font text-[11px] text-white/60">Browse our full range</p>
+                </div>
+              </a>
 
-            {/* Featured - All Categories Link */}
-            <a
-              href="/categories"
-              className="group/cat flex items-center justify-between mb-4 px-3 py-2.5 -mx-3 rounded-lg bg-[#6da71d]/10 border border-[#6da71d]/20 hover:bg-[#6da71d]/20 hover:border-[#6da71d]/30 transition-all opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-              style={{ animationDelay: '80ms' }}
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-[#6da71d]" strokeWidth={2.5} />
-                <span className="text-sm font-semibold text-[#6da71d]">All Categories</span>
-              </div>
-              <ArrowRight className="h-3.5 w-3.5 text-[#6da71d] group-hover/cat:translate-x-0.5 transition-transform" strokeWidth={2} />
-            </a>
-
-            <ul className="space-y-0.5">
-              {clothingCategories.map((item, index) => (
-                <li
-                  key={item.label}
-                  className="opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-                  style={{ animationDelay: `${100 + index * 40}ms` }}
-                >
-                  <a
-                    href={item.href}
-                    className="block py-1.5 text-[13px] text-white/60 hover:text-[#6da71d] transition-colors"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3 - CTAs */}
-          <div className="p-6 bg-white/[0.02] space-y-4">
-            {/* Special Offers */}
-            <a
-              href="/shop#special-offers"
-              className="group/offer block rounded-lg bg-gradient-to-br from-[#6da71d] to-[#5a8a18] p-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgba(109,167,29,0.3)] opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-              style={{ animationDelay: '150ms' }}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-4 w-4 text-white" strokeWidth={2.5} />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-white/90">Special Offers</span>
-              </div>
-              <p className="text-sm font-semibold text-white">Bundle & save on bulk orders</p>
-            </a>
-
-            {/* Smart Search */}
-            <a
-              href="/products"
-              className="group/search block rounded-lg border border-white/10 bg-white/5 p-4 transition-all duration-200 hover:border-[#6da71d]/50 hover:bg-white/10 opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-              style={{ animationDelay: '200ms' }}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-4 w-4 text-[#6da71d]" strokeWidth={2} />
-                <span className="text-[9px] font-semibold uppercase tracking-wider text-white/50">Smart Search</span>
-              </div>
-              <p className="text-sm text-white/80">Find the perfect product</p>
-            </a>
-
-            {/* View All Products */}
-            <a
-              href="/products"
-              className="group/all flex items-center justify-between rounded-lg border border-white/10 px-4 py-3 text-sm text-white/70 hover:border-white/20 hover:text-white transition-all opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards]"
-              style={{ animationDelay: '250ms' }}
-            >
-              <span>View All Products</span>
-              <ArrowRight className="h-4 w-4 group-hover/all:translate-x-0.5 transition-transform" strokeWidth={2} />
-            </a>
+              {/* Blog Post Feature Card - Placeholder */}
+              <a
+                href="/shop"
+                className="group/card relative rounded-xl overflow-hidden opacity-0 animate-[fadeSlideIn_0.3s_ease-out_forwards] h-[130px]"
+                style={{ animationDelay: '100ms' }}
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
+                  style={{ backgroundImage: 'url(/hero-images/hoodie1.jpg)' }}
+                />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${colors.megaMenuBg}, ${colors.megaMenuBg}b3, transparent)` }} />
+                <div className="relative h-full p-4 flex flex-col justify-end">
+                  <span className="embossing-font text-[9px] uppercase tracking-[0.12em] text-[#c1c6c8] mb-1">Shop Page</span>
+                  <h4 className="hearns-font text-lg text-white mb-0.5">Featured Products</h4>
+                  <p className="grotesk-font text-[11px] text-white/60">Curated collections</p>
+                </div>
+              </a>
+            </div>
           </div>
 
         </div>
 
       </div>
 
-      {/* CSS for animations */}
       <style>{`
         @keyframes fadeSlideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-8px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
@@ -726,9 +702,59 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
   return (
     <>
+      {/* Font declarations for mega menus */}
+      <style>{`
+        @font-face {
+          font-family: 'Embossing Tape';
+          src: url('/fonts/embossing_tape/embosst3.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        @font-face {
+          font-family: 'Neuzeit Grotesk';
+          src: url('/fonts/font/NeuzeitGro-Reg.ttf') format('truetype');
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+        }
+        @font-face {
+          font-family: 'Hearns';
+          src: url('/fonts/Hearns/Hearns.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        @font-face {
+          font-family: 'Aldivaro Stamp';
+          src: url('/fonts/aldivaro/Aldivaro Stamp Demo.otf') format('opentype');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        .embossing-font {
+          font-family: 'Embossing Tape', monospace;
+          letter-spacing: 0.12em;
+        }
+        .grotesk-font {
+          font-family: 'Neuzeit Grotesk', 'Helvetica Neue', sans-serif;
+        }
+        .hearns-font {
+          font-family: 'Hearns', Georgia, serif;
+        }
+        .aldivaro-font {
+          font-family: 'Aldivaro Stamp', serif;
+        }
+      `}</style>
+
       <div ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 ${className}`}>
         {/* Compact Single-Line Header */}
-        <header className={`bg-black border-b border-white/10 transition-all ${isScrolled ? 'bg-black/95 backdrop-blur-md' : ''}`}>
+        <header
+          className={`border-b border-white/10 transition-all ${isScrolled ? 'backdrop-blur-md' : ''}`}
+          style={{
+            backgroundColor: isScrolled ? `${colors.headerBg}f2` : colors.headerBg
+          }}
+        >
           <div className="max-w-[1600px] mx-auto px-4 lg:px-8">
             <div className="flex items-center justify-between h-14">
 
@@ -790,9 +816,20 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                   className="relative p-2 hover:bg-white/5 rounded-lg transition-colors"
                   aria-label="Wishlist"
                 >
-                  <Heart className={`w-5 h-5 transition-colors ${wishlist.length > 0 ? 'text-[#6da71d] fill-current' : 'text-white/50'}`} />
+                  <Heart
+                    className="w-5 h-5 transition-colors"
+                    style={{
+                      color: wishlist.length > 0
+                        ? (colorScheme === 'purple' ? colors.iconColor : '#6da71d')
+                        : (colorScheme === 'purple' ? colors.iconColor : 'rgba(255,255,255,0.5)')
+                    }}
+                    fill={wishlist.length > 0 ? 'currentColor' : 'none'}
+                  />
                   {wishlist.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#6da71d] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    <span
+                      className="absolute -top-1 -right-1 w-4 h-4 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: colorScheme === 'purple' ? colors.secondary : '#6da71d' }}
+                    >
                       {wishlist.length}
                     </span>
                   )}
@@ -803,9 +840,19 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
                   className="relative p-2 hover:bg-white/5 rounded-lg transition-colors"
                   aria-label="Cart"
                 >
-                  <ShoppingCart className={`w-5 h-5 transition-colors ${cart.length > 0 ? 'text-[#6da71d]' : 'text-white/50'}`} />
+                  <ShoppingCart
+                    className="w-5 h-5 transition-colors"
+                    style={{
+                      color: cart.length > 0
+                        ? (colorScheme === 'purple' ? colors.iconColor : '#6da71d')
+                        : (colorScheme === 'purple' ? colors.iconColor : 'rgba(255,255,255,0.5)')
+                    }}
+                  />
                   {cart.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#6da71d] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    <span
+                      className="absolute -top-1 -right-1 w-4 h-4 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: colorScheme === 'purple' ? colors.secondary : '#6da71d' }}
+                    >
                       {cart.length}
                     </span>
                   )}
@@ -815,7 +862,13 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               {/* Contact CTA */}
               <a
                 href="/contact"
-                className="hidden lg:inline-flex items-center gap-2 rounded-[5px] border border-[#4a6c17] bg-gradient-to-b from-[#8ad33b] via-[#6fb125] to-[#4d7311] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-white shadow-[0_6px_16px_rgba(0,0,0,0.45)] transition-all hover:from-[#9fe84a] hover:via-[#7ec632] hover:to-[#5d8e19] hover:shadow-[0_10px_22px_rgba(0,0,0,0.55)] active:translate-y-[1px]"
+                className="hidden lg:inline-flex items-center gap-2 rounded-[5px] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-white shadow-[0_6px_16px_rgba(0,0,0,0.45)] transition-all hover:shadow-[0_10px_22px_rgba(0,0,0,0.55)] active:translate-y-[1px]"
+                style={{
+                  borderColor: colors.contactButtonGradient.border,
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                  background: `linear-gradient(to bottom, ${colors.contactButtonGradient.from}, ${colors.contactButtonGradient.via}, ${colors.contactButtonGradient.to})`
+                }}
               >
                 CONTACT
                 <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -840,199 +893,353 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
     </div>
 
       {/* Mobile Navigation */}
-      <nav className={`mobile-nav ${isMobileMenuOpen ? 'active' : ''}`}>
-        <ul className="mobile-menu">
-          {navigationItems.map((item) => (
-            <li key={`mobile-${item.label}`} className={item.megaSections || item.customMegaMenu ? 'has-submenu' : ''}>
-              {item.megaSections || item.customMegaMenu ? (
-                <>
-                  <button
-                    type="button"
-                    className={`submenu-toggle ${mobileMenuState[item.label] ? 'active' : ''}`}
-                    onClick={() => toggleMobileSubmenu(item.label)}
-                  >
-                    <span>{item.label}</span>
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${mobileMenuState[item.label] ? 'rotate-180' : ''}`}
-                      strokeWidth={2.5}
-                    />
-                  </button>
+      <div
+        className={`fixed inset-0 z-40 transition-all duration-300 lg:hidden ${
+          isMobileMenuOpen
+            ? 'opacity-100 visible'
+            : 'opacity-0 invisible pointer-events-none'
+        }`}
+        style={{ top: `${headerHeight}px`, backgroundColor: colors.headerBg }}
+      >
+        <div className="h-full overflow-y-auto pb-8">
+          <div className="px-4 py-4">
+            {/* Navigation Items */}
+            <ul className="space-y-1">
+              {navigationItems.map((item) => (
+                <li key={`mobile-${item.label}`}>
+                  {item.megaSections || item.customMegaMenu ? (
+                    <div className="rounded-xl overflow-hidden">
+                      {/* Accordion Header */}
+                      <button
+                        type="button"
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-colors`}
+                        style={{
+                          backgroundColor: mobileMenuState[item.label]
+                            ? `${colors.secondary}66`
+                            : `${colors.secondary}33`
+                        }}
+                        onClick={() => toggleMobileSubmenu(item.label)}
+                      >
+                        <span className="hearns-font text-lg uppercase tracking-[0.1em] text-white">
+                          {item.label}
+                        </span>
+                        <ChevronDown
+                          className={`h-5 w-5 transition-transform duration-200 ${
+                            mobileMenuState[item.label] ? 'rotate-180' : ''
+                          }`}
+                          style={{ color: colors.accent }}
+                          strokeWidth={2}
+                        />
+                      </button>
 
-                  {/* Standard mega sections */}
-                  {item.megaSections && (
-                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
-                      {item.megaSections.map((section, index) => (
-                        <div key={`${item.label}-section-${section.title ?? index}`} className="py-2">
-                          {section.title && <p className="mobile-submenu-title">{section.title}</p>}
-                          <ul>
-                            {section.items.map((link) => (
-                              <li key={`${item.label}-${link.label}`}>
-                                <a href={link.href}>{link.label}</a>
-                                {link.children && (
-                                  <ul className="nested-list">
-                                    {link.children.map((child) => (
-                                      <li key={`${item.label}-${link.label}-${child.label}`}>
-                                        <a href={child.href}>{child.label}</a>
-                                      </li>
+                      {/* Accordion Content */}
+                      <div
+                        className={`overflow-hidden transition-all duration-300 ${
+                          mobileMenuState[item.label]
+                            ? 'max-h-[2000px] opacity-100'
+                            : 'max-h-0 opacity-0'
+                        }`}
+                      >
+                        <div className="px-2 py-3 space-y-4">
+                          {/* Clothing Menu */}
+                          {item.customMegaMenu === 'clothing' && (
+                            <div className="space-y-4">
+                              {/* Tops */}
+                              <div>
+                                <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                  Tops
+                                </p>
+                                <div className="space-y-1">
+                                  {clothingTops.map((item) => (
+                                    <a
+                                      key={item.label}
+                                      href={item.href}
+                                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                      <span className="grotesk-font text-sm">{item.label}</span>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Outerwear */}
+                              <div>
+                                <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                  Outerwear
+                                </p>
+                                <div className="space-y-1">
+                                  {clothingOuterwear.map((item) => (
+                                    <a
+                                      key={item.label}
+                                      href={item.href}
+                                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                      <span className="grotesk-font text-sm">{item.label}</span>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* More */}
+                              <div>
+                                <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                  More
+                                </p>
+                                <div className="space-y-1">
+                                  {clothingOther.map((item) => (
+                                    <a
+                                      key={item.label}
+                                      href={item.href}
+                                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                      <span className="grotesk-font text-sm">{item.label}</span>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Signage Menu */}
+                          {item.customMegaMenu === 'signage' && (
+                            <div className="space-y-4">
+                              {/* Indoor */}
+                              <div>
+                                <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                  Indoor
+                                </p>
+                                <div className="space-y-1">
+                                  {signageIndoor.map((sign) => (
+                                    <a
+                                      key={sign.label}
+                                      href={sign.href}
+                                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                      <span className="grotesk-font text-sm">{sign.label}</span>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Outdoor */}
+                              <div>
+                                <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                  Outdoor
+                                </p>
+                                <div className="space-y-1">
+                                  {signageOutdoor.map((sign) => (
+                                    <a
+                                      key={sign.label}
+                                      href={sign.href}
+                                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                      <span className="grotesk-font text-sm">{sign.label}</span>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Event */}
+                              <div>
+                                <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                  Event
+                                </p>
+                                <div className="space-y-1">
+                                  {signageEvents.map((sign) => (
+                                    <a
+                                      key={sign.label}
+                                      href={sign.href}
+                                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                      <span className="grotesk-font text-sm">{sign.label}</span>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Printing Menu */}
+                          {item.customMegaMenu === 'printing' && (
+                            <div className="space-y-4">
+                              {/* Cards */}
+                              <div>
+                                <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                  Cards
+                                </p>
+                                <div className="space-y-1">
+                                  {printingCards.map((print) => (
+                                    <a
+                                      key={print.label}
+                                      href={print.href}
+                                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                      <span className="grotesk-font text-sm">{print.label}</span>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Marketing */}
+                              <div>
+                                <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                  Marketing
+                                </p>
+                                <div className="space-y-1">
+                                  {printingMarketing.map((print) => (
+                                    <a
+                                      key={print.label}
+                                      href={print.href}
+                                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                      <span className="grotesk-font text-sm">{print.label}</span>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* More */}
+                              <div>
+                                <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                  More
+                                </p>
+                                <div className="space-y-1">
+                                  {printingOther.map((print) => (
+                                    <a
+                                      key={print.label}
+                                      href={print.href}
+                                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                    >
+                                      <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                      <span className="grotesk-font text-sm">{print.label}</span>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Vehicle Menu */}
+                          {item.customMegaMenu === 'vehicle' && (
+                            <div>
+                              <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                Our Services
+                              </p>
+                              <div className="space-y-1">
+                                {vehicleServices.map((service) => (
+                                  <a
+                                    key={service.label}
+                                    href={service.href}
+                                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                  >
+                                    <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                    <span className="grotesk-font text-sm">{service.label}</span>
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Standard mega sections */}
+                          {item.megaSections && (
+                            <div className="space-y-3">
+                              {item.megaSections.map((section, index) => (
+                                <div key={`${item.label}-section-${section.title ?? index}`}>
+                                  {section.title && (
+                                    <p className="embossing-font text-[10px] uppercase tracking-[0.15em] mb-2 px-2" style={{ color: colors.accent }}>
+                                      {section.title}
+                                    </p>
+                                  )}
+                                  <div className="space-y-1">
+                                    {section.items.map((link) => (
+                                      <a
+                                        key={`${item.label}-${link.label}`}
+                                        href={link.href}
+                                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                      >
+                                        <ArrowRight className="h-3 w-3" style={{ color: colors.accent }} strokeWidth={2} />
+                                        <span className="grotesk-font text-sm">{link.label}</span>
+                                      </a>
                                     ))}
-                                  </ul>
-                                )}
-                              </li>
-                            ))}
-                          </ul>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      ))}
+                      </div>
                     </div>
+                  ) : (
+                    <a
+                      href={item.href || '#'}
+                      className="flex items-center px-4 py-3 rounded-xl transition-colors"
+                      style={{ backgroundColor: `${colors.secondary}33` }}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <span className="hearns-font text-lg uppercase tracking-[0.1em] text-white">
+                        {item.label}
+                      </span>
+                    </a>
                   )}
+                </li>
+              ))}
+            </ul>
 
-                  {/* Custom mega menus */}
-                  {item.customMegaMenu === 'clothing' && (
-                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
-                      <div className="py-2">
-                        <p className="mobile-submenu-title">Shop For</p>
-                        <ul>
-                          {clothingUseCases.map((useCase) => (
-                            <li key={useCase.label}>
-                              <a href={useCase.href}>{useCase.label}</a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="py-2">
-                        <p className="mobile-submenu-title">Browse Categories</p>
-                        <ul>
-                          <li><a href="/categories">All Categories</a></li>
-                          {clothingCategories.map((category) => (
-                            <li key={category.label}>
-                              <a href={category.href}>{category.label}</a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="py-2">
-                        <p className="mobile-submenu-title">Quick Links</p>
-                        <ul>
-                          <li><a href="/shop#special-offers">Special Offers</a></li>
-                          <li><a href="/products">Smart Search</a></li>
-                          <li><a href="/products">View All Products</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  )}
+            {/* Contact CTA */}
+            <div className="mt-6 px-2">
+              <a
+                href="/contact"
+                className="flex w-full items-center justify-center gap-2 rounded-xl px-5 py-4 hearns-font text-base uppercase tracking-[0.12em] text-white shadow-lg transition-all active:scale-[0.98]"
+                style={{ backgroundColor: colors.buttonPrimary }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Get In Touch
+                <Send className="h-4 w-4" strokeWidth={2} />
+              </a>
+            </div>
 
-                  {item.customMegaMenu === 'signage' && (
-                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
-                      <div className="py-2">
-                        <p className="mobile-submenu-title">Indoor Signage</p>
-                        <ul>
-                          {signageIndoor.map((sign) => (
-                            <li key={sign.label}>
-                              <a href={sign.href}>{sign.label}</a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="py-2">
-                        <p className="mobile-submenu-title">Outdoor Signage</p>
-                        <ul>
-                          {signageOutdoor.map((sign) => (
-                            <li key={sign.label}>
-                              <a href={sign.href}>{sign.label}</a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="py-2">
-                        <p className="mobile-submenu-title">Event Signage</p>
-                        <ul>
-                          {signageEvents.map((sign) => (
-                            <li key={sign.label}>
-                              <a href={sign.href}>{sign.label}</a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="py-2">
-                        <ul>
-                          <li><a href="/contact">Get A Quote</a></li>
-                          <li><a href="/services/all-signage">View All</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-
-                  {item.customMegaMenu === 'printing' && (
-                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
-                      <div className="py-2">
-                        <p className="mobile-submenu-title">Marketing Materials</p>
-                        <ul>
-                          {printingMarketing.map((print) => (
-                            <li key={print.label}>
-                              <a href={print.href}>{print.label}</a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="py-2">
-                        <p className="mobile-submenu-title">Stationery & Cards</p>
-                        <ul>
-                          {printingStationery.map((print) => (
-                            <li key={print.label}>
-                              <a href={print.href}>{print.label}</a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="py-2">
-                        <p className="mobile-submenu-title">Print Products</p>
-                        <ul>
-                          {printingProducts.map((print) => (
-                            <li key={print.label}>
-                              <a href={print.href}>{print.label}</a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="py-2">
-                        <ul>
-                          <li><a href="/contact">Request a Quote</a></li>
-                          <li><a href="/printing">View All Printing</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-
-                  {item.customMegaMenu === 'vehicle' && (
-                    <div className={`submenu ${mobileMenuState[item.label] ? 'active' : ''}`}>
-                      <div className="py-2">
-                        <ul>
-                          {vehicleServices.map((service) => (
-                            <li key={service.label}>
-                              <a href={service.href}>{service.label}</a>
-                            </li>
-                          ))}
-                          <li><a href="/contact">Free Consultation</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <a href={item.href || '#'}>{item.label}</a>
-              )}
-            </li>
-          ))}
-          <li className="pt-4">
-            <a
-              href="/contact"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#4a6c17] bg-gradient-to-b from-[#8ad33b] via-[#6fb125] to-[#4d7311] px-5 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white shadow-[0_12px_28px_rgba(0,0,0,0.45)] transition-all hover:from-[#9fe84a] hover:via-[#7ec632] hover:to-[#5d8e19] active:translate-y-[1px]"
-            >
-              CONTACT
-              <Send className="h-4 w-4" strokeWidth={2.5} />
-            </a>
-          </li>
-        </ul>
-      </nav>
+            {/* Quick Actions */}
+            <div className="mt-4 flex gap-2 px-2">
+              <a
+                href="/clothing"
+                className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-3 grotesk-font text-xs text-white/70 hover:text-white transition-all"
+                style={{ backgroundColor: `${colors.secondary}4d` }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Sparkles className="h-4 w-4" style={{ color: colors.accent }} strokeWidth={2} />
+                Browse Clothing
+              </a>
+              <a
+                href="/services/all-signage"
+                className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-3 grotesk-font text-xs text-white/70 hover:text-white transition-all"
+                style={{ backgroundColor: `${colors.secondary}4d` }}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                All Services
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Cart Drawer */}
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

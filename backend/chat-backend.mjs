@@ -136,8 +136,39 @@ Remember: You're here to be helpful and build rapport, not just recite informati
   }
 });
 
+// Smart Search Chat endpoint - for conversational product search
+app.post('/api/smart-search-chat', async (req, res) => {
+  try {
+    const { messages = [], systemPrompt } = req.body || {};
+
+    if (!messages.length) {
+      return res.status(400).json({ error: 'Missing messages' });
+    }
+
+    const chatMessages = [
+      { role: 'system', content: systemPrompt || 'You are a helpful product search assistant.' },
+      ...messages.map(m => ({ role: m.role, content: m.content })),
+    ];
+
+    const completion = await openai.chat.completions.create({
+      model: CHAT_MODEL,
+      messages: chatMessages,
+      temperature: 0.7,
+      max_tokens: 500,
+    });
+
+    const reply = completion.choices[0].message.content;
+
+    res.json({ message: reply });
+  } catch (err) {
+    console.error('Smart search chat error:', err);
+    res.status(500).json({ error: 'Smart search chat failed', detail: err.message });
+  }
+});
+
 app.listen(PORT, async () => {
   await loadIndex();
   console.log(`KB chat backend running on port ${PORT}`);
   console.log(`POST http://localhost:${PORT}/api/chat`);
+  console.log(`POST http://localhost:${PORT}/api/smart-search-chat`);
 });

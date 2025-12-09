@@ -12,9 +12,7 @@ import PrintAndInstagram from './components/PrintAndInstagram';
 import CategoryGrid from './pages/CategoryGrid';
 import AdminCategories from './pages/AdminCategories';
 import ProductListing from './pages/ProductListing';
-import ProductBrowser from './pages/ProductBrowser';
 import ProductDetailsNew from './pages/ProductDetailsNew';
-import ShopFrontPage from './pages/ShopFrontPage';
 import NewShopFrontPage from './pages/NewShopFrontPage';
 import Collections from './pages/Collections';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -32,17 +30,24 @@ import Gazebos from './pages/Gazebos';
 import Parasols from './pages/Parasols';
 import Tablecloths from './pages/Tablecloths';
 import LoaderDemo from './pages/LoaderDemo';
+import PrintingLandingPage from './pages/PrintingLandingPage';
+import PrintingCategoryPage from './pages/PrintingCategoryPage';
+import PrintingProductPage from './pages/PrintingProductPage';
+import PrintingBrowserPage from './pages/PrintingBrowserPage';
+import { ClothingBrowser } from './components/clothing';
 import { CartProvider } from './contexts/CartContext';
 import { WishlistProvider } from './contexts/WishlistContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import ChatWidget from './components/ChatWidget';
 import PageLoader from './components/PageLoader';
+import ScrollToTop from './components/ScrollToTop';
 import Lenis from 'lenis';
 
 function HomePage() {
   useEffect(() => {
     // Initialize Lenis smooth scroll
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 0.6,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
@@ -78,9 +83,9 @@ function HomePage() {
   return (
     <>
       <HeroSection />
-      <AboutSection />
       <FeaturesSection />
       <ServicesGrid />
+      <AboutSection />
       <PrintAndInstagram />
     </>
   );
@@ -89,8 +94,10 @@ function HomePage() {
 function App() {
   return (
     <Router>
-      <CartProvider>
-        <WishlistProvider>
+      <ScrollToTop />
+      <ThemeProvider>
+        <CartProvider>
+          <WishlistProvider>
           <Routes>
             {/* Admin Routes - No Header/Footer */}
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -109,12 +116,10 @@ function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/shop" element={<NewShopFrontPage />} />
-                  <Route path="/shop-old" element={<ShopFrontPage />} />
                   <Route path="/categories" element={<CategoryGrid />} />
                   <Route path="/categories/:categoryId" element={<ProductListing />} />
                   <Route path="/collections" element={<Collections />} />
                   <Route path="/collections/:type" element={<Collection />} />
-                  <Route path="/products" element={<ProductBrowser />} />
                   <Route path="/products/:styleCode" element={<ProductDetailsNew />} />
                   <Route path="/admin/categories" element={<AdminCategories />} />
                   <Route path="/services/all-signage" element={<AllSignage />} />
@@ -128,14 +133,24 @@ function App() {
                   <Route path="/services/tablecloths" element={<Tablecloths />} />
                   <Route path="/services/vehicle-signwriting" element={<VehicleSignwriting />} />
                   <Route path="/loader-demo" element={<LoaderDemo />} />
+                  {/* Printing Routes */}
+                  <Route path="/printing" element={<PrintingLandingPage />} />
+                  <Route path="/printing/all" element={<PrintingBrowserPage />} />
+                  <Route path="/printing/all/:slug" element={<PrintingBrowserPage />} />
+                  <Route path="/printing/:category" element={<PrintingCategoryPage />} />
+                  <Route path="/printing/:category/:slug" element={<PrintingProductPage />} />
+                  {/* Clothing Routes */}
+                  <Route path="/clothing" element={<ClothingBrowser />} />
+                  <Route path="/clothing/all" element={<ClothingBrowser />} />
                 </Routes>
                 <Footer />
                 <ChatWidget />
               </div>
             } />
           </Routes>
-        </WishlistProvider>
-      </CartProvider>
+          </WishlistProvider>
+        </CartProvider>
+      </ThemeProvider>
     </Router>
   );
 }

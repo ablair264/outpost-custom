@@ -55,7 +55,7 @@ const ShopProductCarousel = () => {
 
           {/* View All Button - Desktop */}
           <Button
-            onClick={() => navigate('/products')}
+            onClick={() => navigate('/clothing')}
             className="hidden md:flex rounded-full px-8 py-6 text-white font-semibold hover:opacity-90 transition-all"
             style={{ background: '#000000' }}
           >
@@ -168,7 +168,7 @@ const ShopProductCarousel = () => {
         {/* View All Button - Mobile */}
         <div className="mt-8 md:hidden text-center">
           <Button
-            onClick={() => navigate('/products')}
+            onClick={() => navigate('/clothing')}
             className="rounded-full px-8 py-6 text-white font-semibold hover:opacity-90 transition-all w-full"
             style={{ background: '#000000' }}
           >

@@ -33,6 +33,20 @@ export interface Product {
   sustainable_organic?: string;
   specification?: string;
   retail_description?: string;
+  // Care and features
+  washing_instructions?: string;
+  product_feature_1?: string;
+  product_feature_2?: string;
+  product_feature_3?: string;
+  tag?: string;
+  weight_gsm?: string;
+  // Sizing details
+  sizing_to_fit?: string;
+  size_exclusions?: string;
+  jacket_length?: string;
+  leg_length?: string;
+  // Status
+  sku_status?: string;
 }
 
 // Category management types
@@ -171,13 +185,14 @@ export const getActiveCategories = async (): Promise<CategoryData[]> => {
   }
 };
 
-// Get products by category
+// Get products by category (excludes discontinued products)
 export const getProductsByCategory = async (category: string) => {
   try {
     const { data, error } = await supabase
       .from('product_data')
       .select('*')
       .eq('product_type', category)
+      .neq('sku_status', 'Discontinued')
       .limit(50);
 
     if (error) throw error;
@@ -295,7 +310,7 @@ export const groupProductVariants = (products: Product[]): GroupedProduct[] => {
   return Array.from(grouped.values());
 };
 
-// Fetch and group products for carousel
+// Fetch and group products for carousel (excludes discontinued products)
 export const getGroupedProductsForCarousel = async (limit: number = 12): Promise<GroupedProduct[]> => {
   try {
     // Fetch a large sample to ensure we get enough unique style codes
@@ -303,6 +318,7 @@ export const getGroupedProductsForCarousel = async (limit: number = 12): Promise
     const { data, error } = await supabase
       .from('product_data')
       .select('*')
+      .neq('sku_status', 'Discontinued')
       .limit(200); // Fetch 200 rows to ensure variety
 
     if (error) throw error;
@@ -325,13 +341,14 @@ export interface ProductType {
   total_variants: number;
 }
 
-// Get all unique product types with counts
+// Get all unique product types with counts (excludes discontinued products)
 export const getProductTypes = async (): Promise<ProductType[]> => {
   try {
-    // Fetch all products
+    // Fetch all live products
     const { data, error } = await supabase
       .from('product_data')
-      .select('product_type, style_code');
+      .select('product_type, style_code, sku_status')
+      .neq('sku_status', 'Discontinued');
 
     if (error) throw error;
 
@@ -365,13 +382,14 @@ export const getProductTypes = async (): Promise<ProductType[]> => {
   }
 };
 
-// Get grouped products by product type/collection
+// Get grouped products by product type/collection (excludes discontinued products)
 export const getGroupedProductsByType = async (productType: string): Promise<GroupedProduct[]> => {
   try {
     const { data, error } = await supabase
       .from('product_data')
       .select('*')
-      .eq('product_type', productType);
+      .eq('product_type', productType)
+      .neq('sku_status', 'Discontinued');
 
     if (error) throw error;
 

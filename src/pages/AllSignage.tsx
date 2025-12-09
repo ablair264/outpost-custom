@@ -1,9 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { motion } from 'motion/react';
 import { Frame, Shield, Map, ArrowUpRight, Palette, Hammer, Umbrella, Table } from 'lucide-react';
 import SlimGridMotion from '../components/SlimGridMotion';
+import { ExpandableCard } from '../components/ui/expandable-card';
+import { usePageTheme } from '../contexts/ThemeContext';
 
 const AllSignage: React.FC = () => {
+  // Set purple theme for this page
+  usePageTheme('purple');
   const headingRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -39,72 +44,113 @@ const AllSignage: React.FC = () => {
     .fromTo(ctaRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 }, '-=0.4');
   }, []);
 
-  const indoorServices = [
+  // Category card data with modals
+  const signageCategories = [
     {
-      title: 'Glass Manifestation',
-      description: 'Frosted, etched-effect or decorative graphics for glass surfaces, meeting building regulations and enhancing branding.',
-      link: '/services/glass-manifestation',
-      Icon: Frame,
-      category: 'Indoor'
+      title: 'Indoor',
+      image: '/signboards/signboard1.jpg',
+      galleryImages: [
+        '/signboards/signboard1.jpg',
+        '/signboards/signboard2.jpg',
+        '/signboards/signboard3.jpg',
+        '/signboards/signboard4.jpg',
+      ],
+      hoverItems: ['Glass Manifestation', 'Window Privacy Film'],
+      serviceGroups: [
+        {
+          title: 'Indoor',
+          items: [
+            {
+              label: 'Glass Manifestation',
+              href: '/services/glass-manifestation',
+              icon: Frame,
+              description: 'Frosted, etched-effect or decorative graphics for glass surfaces. Meets building regulations while enhancing your brand.'
+            },
+            {
+              label: 'Window Privacy Film',
+              href: '/services/window-privacy-film',
+              icon: Shield,
+              description: 'Control visibility and light levels with decorative frosted film. Perfect for offices and commercial spaces.'
+            },
+          ],
+        },
+      ],
     },
     {
-      title: 'Window Privacy Film',
-      description: 'Control visibility and light levels with decorative frosted film, perfect for offices and commercial spaces.',
-      link: '/services/window-privacy-film',
-      Icon: Shield,
-      category: 'Indoor'
-    }
+      title: 'Outdoor',
+      image: '/pavement-signs/pavement1.jpg',
+      galleryImages: [
+        '/pavement-signs/pavement1.jpg',
+        '/pavement-signs/pavement2.jpg',
+        '/projecting-signs/projecting1.jpg',
+        '/projecting-signs/projecting2.jpg',
+        '/signboards/signboard1.jpg',
+        '/signboards/signboard2.jpg',
+      ],
+      hoverItems: ['Signboards', 'Pavement Signs', 'Projecting Signs'],
+      serviceGroups: [
+        {
+          title: 'Outdoor',
+          items: [
+            {
+              label: 'Signboards',
+              href: '/services/signboards',
+              icon: Map,
+              description: 'Premium flat-panel signage for building facades. Available in aluminium composite or built-up acrylic letters.'
+            },
+            {
+              label: 'Pavement Signs',
+              href: '/services/pavement-signs',
+              icon: Frame,
+              description: 'Catch attention of passers-by with free-standing A-boards. From budget eco-swing to premium chalkboard options.'
+            },
+            {
+              label: 'Projecting Signs',
+              href: '/services/projecting-signs',
+              icon: ArrowUpRight,
+              description: 'Wall-mounted brackets with custom panels, visible from all angles. Mix and match from 5 bracket styles.'
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Events',
+      image: '/what-we-do/printing.webp',
+      galleryImages: [
+        '/pavement-signs/pavement3.jpg',
+        '/projecting-signs/projecting3.jpg',
+        '/signboards/signboard3.jpg',
+        '/pavement-signs/pavement4.jpg',
+      ],
+      hoverItems: ['Gazebos', 'Parasols', 'Tablecloths'],
+      serviceGroups: [
+        {
+          title: 'Events',
+          items: [
+            {
+              label: 'Gazebos',
+              href: '/services/gazebos',
+              icon: Umbrella,
+              description: 'Branded pop-up gazebos for events and outdoor promotions. Available in multiple sizes with custom printing.'
+            },
+            {
+              label: 'Parasols',
+              href: '/services/parasols',
+              icon: Umbrella,
+              description: 'Custom-printed outdoor parasols for cafes, bars, and events. Durable, weather-resistant branding.'
+            },
+            {
+              label: 'Tablecloths',
+              href: '/services/tablecloths',
+              icon: Table,
+              description: 'Printed tablecloths for exhibitions, events, and trade shows. Professional presentation with full-colour printing.'
+            },
+          ],
+        },
+      ],
+    },
   ];
-
-  const outdoorServices = [
-    {
-      title: 'Signboards',
-      description: 'Premium flat-panel signage for building facades, available in aluminium composite or built-up acrylic letters.',
-      link: '/services/signboards',
-      Icon: Map,
-      category: 'Outdoor'
-    },
-    {
-      title: 'Pavement Signs',
-      description: 'Catch attention of passers by with free-standing A-boards, from budget eco-swing to premium chalkboard options.',
-      link: '/services/pavement-signs',
-      Icon: ArrowUpRight,
-      category: 'Outdoor'
-    },
-    {
-      title: 'Projecting Signs',
-      description: 'Wall-mounted brackets with custom panels, visible from all angles. Mix and match from 5 bracket styles.',
-      link: '/services/projecting-signs',
-      Icon: Hammer,
-      category: 'Outdoor'
-    }
-  ];
-
-  const eventServices = [
-    {
-      title: 'Gazebos',
-      description: 'Branded pop-up gazebos for events and outdoor promotions, available in multiple sizes with custom printing.',
-      link: '/services/gazebos',
-      Icon: Umbrella,
-      category: 'Events'
-    },
-    {
-      title: 'Parasols',
-      description: 'Custom-printed outdoor parasols for cafés, bars, and events. Durable, weather-resistant branding.',
-      link: '/services/parasols',
-      Icon: Umbrella,
-      category: 'Events'
-    },
-    {
-      title: 'Tablecloths',
-      description: 'Printed tablecloths for exhibitions, events, and trade shows. Professional presentation with full-color printing.',
-      link: '/services/tablecloths',
-      Icon: Table,
-      category: 'Events'
-    }
-  ];
-
-  const allServices = [...indoorServices, ...outdoorServices, ...eventServices];
 
   return (
     <>
@@ -130,6 +176,21 @@ const AllSignage: React.FC = () => {
           font-style: normal;
           font-display: swap;
         }
+        @font-face {
+          font-family: 'Neuzeit Grotesk Bold';
+          src: url('/fonts/font/NeuzeitGro-Bol.ttf') format('truetype');
+          font-weight: bold;
+          font-style: normal;
+          font-display: swap;
+        }
+        @font-face {
+          font-family: 'Neuzeit Grotesk';
+          src: url('/fonts/neuzeit-grotesk-regular_freefontdownload_org/neuzeit-grotesk-regular.woff2') format('woff2'),
+               url('/fonts/neuzeit-grotesk-regular_freefontdownload_org/neuzeit-grotesk-regular.woff') format('woff');
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+        }
         .hearns-font {
           font-family: 'Hearns', Georgia, serif;
           font-weight: normal;
@@ -142,259 +203,152 @@ const AllSignage: React.FC = () => {
           font-family: 'Aldivaro Stamp', serif;
           font-weight: normal;
         }
+        .neuzeit-bold {
+          font-family: 'Neuzeit Grotesk Bold', 'Helvetica Neue', sans-serif;
+          font-weight: bold;
+        }
+        .grotesk-font {
+          font-family: 'Neuzeit Grotesk', 'Helvetica Neue', sans-serif;
+        }
+        @font-face {
+          font-family: 'Embossing Tape';
+          src: url('/fonts/embossing_tape/embosst3.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        .embossing-font {
+          font-family: 'Embossing Tape', monospace;
+          letter-spacing: 0.2em;
+        }
       `}</style>
 
       <div className="min-h-screen bg-white">
-        {/* Hero Section - Palette A */}
-        <section className="relative h-[70vh] w-full overflow-hidden bg-[#333333]">
-          <div className="absolute inset-0">
-            <SlimGridMotion items={signageImages} gradientColor="#333333" />
+        {/* Hero Section - flows into categories */}
+        <section className="relative min-h-[70vh] w-full overflow-hidden bg-[#908d9a] pb-0">
+          {/* Background grid - extends behind categories */}
+          <div className="absolute inset-0 h-[85%]">
+            <SlimGridMotion items={signageImages} gradientColor="#221c35" />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-b from-[#333333]/80 via-[#333333]/50 to-transparent z-[5]" />
+          {/* Overlay with gradient fade to grey */}
+          <div
+            className="absolute inset-0 z-[5]"
+            style={{
+              background: 'linear-gradient(to bottom, #383349 0%, rgba(34,28,53,0.7) 80%, #221c35 50%)'
+            }}
+          />
 
-          <div className="relative z-10 h-full flex items-center px-6 md:px-12 lg:px-24">
-            <div className="max-w-6xl mx-auto w-full">
-              <div ref={headingRef} className="mb-8">
-                <h1 className="hearns-font text-6xl md:text-7xl lg:text-8xl tracking-tight text-white mb-6 leading-tight">
-                  All Signage<br />Services
-                </h1>
-                <div className="h-1.5 w-24 bg-[#64a70b] rounded-full" />
+          <div className="relative z-10 flex flex-col">
+            {/* Hero content */}
+            <div className="flex-1 flex items-center px-6 md:px-12 lg:px-24 py-20 md:py-28">
+              <div className="max-w-6xl mx-auto w-full">
+                <div ref={headingRef} className="mb-8">
+                  <h1 className="hearns-font text-6xl md:text-7xl lg:text-9xl tracking-tight text-white mb-4 leading-none">
+                    Signage
+                  </h1>
+                  <div className="h-1 w-20 bg-[#908d9a] rounded-full" />
+                </div>
+                <div ref={contentRef} className="max-w-2xl mb-8">
+                  <p className="neuzeit-bold text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed">
+                    From indoor graphics to outdoor signage and event branding - We're here to help you promote your business, build your brand or simply just to show your individuality.
+                  </p>
+                </div>
+                <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="#categories"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#221c35] text-white font-semibold text-sm hover:bg-[#383349] transition-all duration-300 shadow-lg"
+                  >
+                    Explore Categories
+                  </a>
+                  <a
+                    href="/contact"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-lg border-2 border-white/80 bg-transparent text-white font-semibold text-sm hover:bg-white/10 transition-all duration-300"
+                  >
+                    Get Free Quote
+                  </a>
+                </div>
               </div>
-              <div ref={contentRef} className="max-w-2xl mb-10">
-                <p className="text-2xl md:text-3xl text-[#c1c6c8] font-light leading-relaxed">
-                  From indoor graphics to outdoor signage and event branding
-                </p>
+            </div>
+
+            {/* Categories Section - part of same visual flow */}
+            <div id="categories" className="px-4 sm:px-6 md:px-8 pb-12 md:pb-20">
+              <div className="mx-auto w-full max-w-[1450px] rounded-[10px] bg-[#c1c6c8] px-4 pt-8 pb-10 shadow-[0_35px_80px_rgba(26,24,32,0.25)] sm:px-8 sm:pt-10 sm:pb-14 md:px-10 md:pt-[40px] md:pb-[60px] lg:px-[60px]">
+                <div className="flex flex-col gap-5 md:gap-6">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
+                    {signageCategories.map((category) => (
+                      <div key={category.title} className="h-[240px] sm:h-[280px] md:h-[300px]">
+                        <ExpandableCard
+                          title={category.title}
+                          src={category.image}
+                          serviceGroups={category.serviceGroups}
+                          galleryImages={category.galleryImages}
+                          hoverItems={category.hoverItems}
+                          className="h-full"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4">
-                <a
-                  href="#services"
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-base hover:bg-[#75b81c] transition-all duration-300 shadow-lg"
+            </div>
+          </div>
+        </section>
+
+        {/* Why Choose Us Section */}
+        <section className="bg-[#221c35] py-20 md:py-24 overflow-hidden">
+          <div className="max-w-6xl mx-auto px-6 md:px-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {[
+                { icon: Palette, title: 'FREE DESIGN', body: "Our in-house design team creates mockups and visuals at no extra cost. We'll bring your vision to life before production begins." },
+                { icon: Shield, title: 'PRO INSTALL', body: 'Fully insured team with years of experience installing all types of signage. We handle everything from survey to fitting.' },
+                { icon: Hammer, title: 'FAST TURNAROUND', body: 'Most projects completed within 5-10 working days from approval. Express service available when you need it.' },
+              ].map((item, index) => (
+                <motion.div
+                  key={item.title}
+                  className="text-center text-white flex flex-col items-center"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: index * 0.15, ease: "easeOut" }}
                 >
-                  Explore Services
-                </a>
-                <a
-                  href="/contact"
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-lg border-2 border-white bg-transparent text-white font-semibold text-base hover:bg-white/10 transition-all duration-300"
-                >
-                  Get Free Quote
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Indoor Signage */}
-        <section className="py-20 px-6 md:px-12 lg:px-24 bg-white relative">
-          <div className="absolute top-10 right-10 opacity-10 pointer-events-none">
-            <img src="/Website Assets/Circle_Grey.png" alt="" className="w-40 h-40" />
-          </div>
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-12">
-              <h2 className="smilecake-font text-5xl md:text-6xl text-[#333333] mb-4">
-                Indoor Signage
-              </h2>
-              <div className="h-1 w-20 bg-[#64a70b]" />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {indoorServices.map((service, index) => {
-                const Icon = service.Icon;
-                return (
-                  <a
-                    key={index}
-                    href={service.link}
-                    className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#f8f8f8] to-white p-8 md:p-10 border-2 border-[#c1c6c8]/30 transition-all duration-300 hover:border-[#64a70b] hover:shadow-xl hover:-translate-y-1"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#64a70b]/0 to-[#64a70b]/0 group-hover:from-[#64a70b]/5 group-hover:to-[#64a70b]/10 transition-all duration-300" />
-
-                    <div className="relative">
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="w-16 h-16 rounded-full bg-[#64a70b]/10 flex items-center justify-center group-hover:bg-[#64a70b]/20 transition-all duration-300">
-                          <Icon className="w-8 h-8 text-[#64a70b]" />
-                        </div>
-                        <span className="aldivaro-stamp text-5xl text-[#333333]/10 group-hover:text-[#64a70b]/20 transition-all duration-300">
-                          0{index + 1}
-                        </span>
-                      </div>
-
-                      <h3 className="smilecake-font text-3xl text-[#333333] mb-4 group-hover:text-[#64a70b] transition-colors">
-                        {service.title}
-                      </h3>
-
-                      <p className="text-lg text-[#333333]/80 leading-relaxed mb-6">
-                        {service.description}
-                      </p>
-
-                      <div className="flex items-center text-[#64a70b] font-semibold">
-                        Learn More
-                        <ArrowUpRight className="w-5 h-5 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </div>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Outdoor Signage - Textured Background */}
-        <section
-          className="py-20 px-6 md:px-12 lg:px-24 bg-cover bg-center relative"
-          style={{ backgroundImage: 'url(/Website Assets/ConcreteTexture.jpg)' }}
-        >
-          <div className="absolute inset-0 bg-[#183028]/90" />
-          <div className="relative z-10 max-w-7xl mx-auto">
-            <div className="mb-12">
-              <h2 className="hearns-font text-5xl md:text-6xl text-white mb-4">
-                Outdoor Signage
-              </h2>
-              <div className="h-1 w-20 bg-[#64a70b]" />
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {outdoorServices.map((service, index) => {
-                const Icon = service.Icon;
-                return (
-                  <a
-                    key={index}
-                    href={service.link}
-                    className="group relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-sm p-8 border-2 border-white/10 transition-all duration-300 hover:border-[#64a70b] hover:bg-white/10 hover:-translate-y-1"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#64a70b]/0 to-[#64a70b]/0 group-hover:from-[#64a70b]/10 group-hover:to-[#64a70b]/20 transition-all duration-300" />
-
-                    <div className="relative">
-                      <div className="w-14 h-14 rounded-full bg-[#64a70b]/20 flex items-center justify-center mb-6 group-hover:bg-[#64a70b]/30 transition-all duration-300">
-                        <Icon className="w-7 h-7 text-[#64a70b]" />
-                      </div>
-
-                      <h3 className="smilecake-font text-2xl text-white mb-4 group-hover:text-[#64a70b] transition-colors">
-                        {service.title}
-                      </h3>
-
-                      <p className="text-[#c1c6c8] leading-relaxed mb-6">
-                        {service.description}
-                      </p>
-
-                      <div className="flex items-center text-[#64a70b] font-semibold">
-                        Learn More
-                        <ArrowUpRight className="w-5 h-5 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </div>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Event Signage */}
-        <section className="py-20 px-6 md:px-12 lg:px-24 bg-white relative">
-          <div className="absolute bottom-10 left-10 opacity-10 pointer-events-none">
-            <img src="/Website Assets/Arrow_Green.png" alt="" className="w-32 h-32 rotate-45" />
-          </div>
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-12">
-              <h2 className="smilecake-font text-5xl md:text-6xl text-[#333333] mb-4">
-                Event Signage
-              </h2>
-              <div className="h-1 w-20 bg-[#64a70b]" />
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {eventServices.map((service, index) => {
-                const Icon = service.Icon;
-                return (
-                  <a
-                    key={index}
-                    href={service.link}
-                    className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#f8f8f8] to-white p-8 border-2 border-[#c1c6c8]/30 transition-all duration-300 hover:border-[#64a70b] hover:shadow-xl hover:-translate-y-1"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#64a70b]/0 to-[#64a70b]/0 group-hover:from-[#64a70b]/5 group-hover:to-[#64a70b]/10 transition-all duration-300" />
-
-                    <div className="relative">
-                      <div className="w-14 h-14 rounded-full bg-[#64a70b]/10 flex items-center justify-center mb-6 group-hover:bg-[#64a70b]/20 transition-all duration-300">
-                        <Icon className="w-7 h-7 text-[#64a70b]" />
-                      </div>
-
-                      <h3 className="smilecake-font text-2xl text-[#333333] mb-4 group-hover:text-[#64a70b] transition-colors">
-                        {service.title}
-                      </h3>
-
-                      <p className="text-[#333333]/80 leading-relaxed mb-6">
-                        {service.description}
-                      </p>
-
-                      <div className="flex items-center text-[#64a70b] font-semibold">
-                        Learn More
-                        <ArrowUpRight className="w-5 h-5 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </div>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Why Choose Us - Textured Background */}
-        <section
-          className="py-24 px-6 md:px-12 lg:px-24 bg-cover bg-center relative"
-          style={{ backgroundImage: 'url(/Website Assets/BlackTextureBackground.jpg)' }}
-        >
-          <div className="absolute inset-0 bg-black/85" />
-          <div className="relative z-10 max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="hearns-font text-5xl md:text-6xl text-white mb-6">
-                Why Choose Outpost Signs?
-              </h2>
-              <div className="h-1 w-24 bg-[#64a70b] mx-auto" />
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#64a70b]/20 flex items-center justify-center">
-                  <Palette className="w-8 h-8 text-[#64a70b]" />
-                </div>
-                <h3 className="smilecake-font text-2xl text-white mb-4">Free Design Service</h3>
-                <p className="text-[#c1c6c8] leading-relaxed">
-                  Our in-house design team creates mockups and visuals at no extra cost
-                </p>
-              </div>
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#64a70b]/20 flex items-center justify-center">
-                  <Shield className="w-8 h-8 text-[#64a70b]" />
-                </div>
-                <h3 className="smilecake-font text-2xl text-white mb-4">Professional Installation</h3>
-                <p className="text-[#c1c6c8] leading-relaxed">
-                  Fully insured team with years of experience installing all types of signage
-                </p>
-              </div>
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#64a70b]/20 flex items-center justify-center">
-                  <Hammer className="w-8 h-8 text-[#64a70b]" />
-                </div>
-                <h3 className="smilecake-font text-2xl text-white mb-4">Fast Turnaround</h3>
-                <p className="text-[#c1c6c8] leading-relaxed">
-                  Most projects completed within 5-10 working days from approval
-                </p>
-              </div>
+                  <item.icon className="h-12 w-12 text-white" strokeWidth={1.5} />
+                  <h3 className="embossing-font text-2xl md:text-[26px] uppercase mt-5 text-white">
+                    {item.title}
+                  </h3>
+                  <p className="grotesk-font text-base md:text-[16px] leading-relaxed mt-4 max-w-xs text-white">
+                    {item.body}
+                  </p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* Contact CTA */}
-        <section className="py-20 px-6 md:px-12 lg:px-24 bg-white">
-          <div className="max-w-4xl mx-auto text-center">
+        <section className="py-20 px-6 md:px-12 lg:px-24 bg-white overflow-hidden">
+          <motion.div
+            className="max-w-4xl mx-auto text-center"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <h2 className="hearns-font text-5xl md:text-6xl text-[#333333] mb-6 leading-tight">
               Let's Chat About Your Next Project
             </h2>
-            <p className="text-xl text-[#333333]/70 mb-10">
+            <p className="grotesk-font text-xl text-[#333333]/70 mb-10">
               Get a free quote and design mockup for any of our signage services
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+            >
               <a
                 href="/contact"
-                className="inline-flex items-center justify-center px-10 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-lg hover:bg-[#75b81c] transition-all duration-300 shadow-lg"
+                className="inline-flex items-center justify-center px-10 py-4 rounded-lg bg-[#221c35] text-white font-semibold text-lg hover:bg-[#383349] transition-all duration-300 shadow-lg"
               >
                 Book FREE Consultation
               </a>
@@ -404,8 +358,8 @@ const AllSignage: React.FC = () => {
               >
                 Call 01562 227 117
               </a>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </section>
       </div>
     </>

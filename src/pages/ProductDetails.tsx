@@ -6,6 +6,60 @@ import './ProductDetails.css';
 import LogoCustomizerModal, { LogoOverlayConfig } from '../components/LogoCustomizerModal';
 import ImageModal from '../components/ImageModal';
 
+// Brand name to domain mapping for Brandfetch API
+const BRAND_DOMAINS: Record<string, string> = {
+  'adidas®': 'adidas.com',
+  'Nike': 'nike.com',
+  'Under Armour': 'underarmour.com',
+  'Under Armour Golf': 'underarmour.com',
+  'New Era': 'neweracap.com',
+  'Fruit of the Loom': 'fruitoftheloom.com',
+  'Gildan': 'gildan.com',
+  'Bella Canvas': 'bellacanvas.com',
+  'Comfort Colors®': 'comfortcolors.com',
+  'Jack Wolfskin': 'jack-wolfskin.com',
+  'Craghoppers': 'craghoppers.com',
+  'Regatta Professional': 'regatta.com',
+  'Regatta Junior': 'regatta.com',
+  'Regatta Honestly Made': 'regatta.com',
+  'Regatta High Visibility': 'regatta.com',
+  'Regatta Safety Footwear': 'regatta.com',
+  'Stanley/Stella': 'stanleystella.com',
+  'Stormtech': 'stormtech.ca',
+  'AWDis': 'awdis.com',
+  'AWDis Academy': 'awdis.com',
+  'AWDis Ecologie': 'awdis.com',
+  'AWDis Just Cool': 'awdis.com',
+  'AWDis Just Hoods': 'awdis.com',
+  "AWDis Just Polo's": 'awdis.com',
+  "AWDis Just T's": 'awdis.com',
+  'AWDis So Denim': 'awdis.com',
+  'Russell Collection': 'russelleurope.com',
+  'Russell Europe': 'russelleurope.com',
+  'B&C Collection': 'bc-collection.eu',
+  'Callaway': 'callawaygolf.com',
+  'OGIO': 'ogio.com',
+  'Snickers': 'snickersworkwear.com',
+  'Portwest': 'portwest.com',
+  'Result': 'resultclothing.com',
+  'Result Core': 'resultclothing.com',
+  'Result Genuine Recycled': 'resultclothing.com',
+  'Result Headwear': 'resultclothing.com',
+  'Result Safeguard': 'resultclothing.com',
+  'Result Urban Outdoor': 'resultclothing.com',
+  'Result Winter Essentials': 'resultclothing.com',
+  'Result Workguard': 'resultclothing.com',
+  'Nimbus': 'nimbuswear.com',
+  'Scruffs': 'scruffs.com',
+};
+
+// Get Brandfetch logo URL for a brand
+const getBrandLogoUrl = (brandName: string): string | null => {
+  const domain = BRAND_DOMAINS[brandName];
+  if (!domain) return null;
+  return `https://cdn.brandfetch.io/${domain}/w/200/h/60?c=1idwNSepBcgUb6Y8Sjq`;
+};
+
 interface ProductGroup {
   style_code: string;
   style_name: string;
@@ -53,10 +107,16 @@ const ProductDetails: React.FC = () => {
           return;
         }
 
-        // Group variants by style
-        const variants = data as Product[];
-        console.log('Variants data:', variants); // Debug log
-        
+        // Group variants by style - filter out discontinued items
+        const allVariants = data as Product[];
+        const variants = allVariants.filter(v => v.sku_status !== 'Discontinued');
+
+        // If all variants are discontinued, product is not available
+        if (variants.length === 0) {
+          setError('This product is no longer available');
+          return;
+        }
+
         const colors = Array.from(new Set(variants.map(v => v.colour_code)))
           .map(code => {
             const variant = variants.find(v => v.colour_code === code)!;
@@ -93,10 +153,11 @@ const ProductDetails: React.FC = () => {
             };
           });
 
+        // Calculate price range from live variants
         const prices = variants
           .map(v => parseFloat(v.single_price))
-          .filter(p => !isNaN(p));
-        
+          .filter(p => !isNaN(p) && p > 0);
+
         const priceRange = prices.length > 0 ? {
           min: Math.min(...prices),
           max: Math.max(...prices)
@@ -113,7 +174,7 @@ const ProductDetails: React.FC = () => {
         });
 
         // Set the initial selected color to match the first variant's color
-        const firstVariantColorIndex = colors.findIndex(color => 
+        const firstVariantColorIndex = colors.findIndex(color =>
           color.code === variants[0].colour_code
         );
         if (firstVariantColorIndex !== -1) {
@@ -201,7 +262,7 @@ const ProductDetails: React.FC = () => {
         <nav className="breadcrumb">
           <button onClick={() => navigate('/')} className="breadcrumb-link">Home</button>
           <span className="breadcrumb-separator">/</span>
-          <button onClick={() => navigate('/products')} className="breadcrumb-link">Products</button>
+          <button onClick={() => navigate('/clothing')} className="breadcrumb-link">Clothing</button>
           <span className="breadcrumb-separator">/</span>
           <span className="breadcrumb-current">{productGroup.style_name}</span>
         </nav>
@@ -270,7 +331,28 @@ const ProductDetails: React.FC = () => {
           {/* Product Info */}
           <div className="product-info">
             <div className="product-header">
-              <p className="product-brand">{productGroup.brand}</p>
+              {/* Brand logo or text */}
+              {getBrandLogoUrl(productGroup.brand) ? (
+                <div className="brand-logo-container">
+                  <img
+                    src={getBrandLogoUrl(productGroup.brand)!}
+                    alt={productGroup.brand}
+                    className="brand-logo"
+                    onError={(e) => {
+                      // Hide logo and show text fallback
+                      const container = e.currentTarget.parentElement;
+                      if (container) {
+                        container.style.display = 'none';
+                        const textFallback = container.nextElementSibling as HTMLElement;
+                        if (textFallback) textFallback.style.display = 'block';
+                      }
+                    }}
+                  />
+                </div>
+              ) : null}
+              <p className="product-brand" style={{ display: getBrandLogoUrl(productGroup.brand) ? 'none' : 'block' }}>
+                {productGroup.brand}
+              </p>
               <h1 className="product-title">{productGroup.style_name}</h1>
               <p className="product-sku">SKU: {currentVariant?.sku_code}</p>
             </div>

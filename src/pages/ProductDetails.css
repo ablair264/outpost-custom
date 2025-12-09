@@ -208,6 +208,21 @@
   margin-bottom: 20px;
 }
 
+.brand-logo-container {
+  margin-bottom: 12px;
+  background: #f5f5f5;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.brand-logo {
+  height: 32px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+
 .product-brand {
   color: #666;
   font-size: 14px;

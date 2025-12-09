@@ -24,7 +24,15 @@
       "Skill(ui-styling)",
       "Bash(npx @anthropic/claude-code mcp add figma:*)",
       "Skill(frontend-engineer)",
-      "mcp__figma__add_figma_file"
+      "mcp__figma__add_figma_file",
+      "SlashCommand(/superpowers:brainstorm)",
+      "Skill(superpowers:brainstorm)",
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "WebSearch",
+      "Skill(ux-designer)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { CheckCircle2, Frame, Ruler, Eye, Mail, Shield, Palette, Package } from 'lucide-react';
+import { CheckCircle2, Frame, Ruler, Eye, Shield, Mail, Palette, Package } from 'lucide-react';
 import SlimGridMotion from '../components/SlimGridMotion';
+import { usePageTheme } from '../contexts/ThemeContext';
+import HowItWorksSection from '../components/HowItWorksSection';
 
 const GlassManifestation: React.FC = () => {
+  // Set purple theme for this page
+  usePageTheme('purple');
   const headingRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -172,176 +176,95 @@ const GlassManifestation: React.FC = () => {
           </div>
         </section>
 
-        {/* How's it work? Section - Purple Theme */}
-        <section id="workflow" className="py-24 px-6 md:px-12 lg:px-24 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="hearns-font text-5xl md:text-6xl text-[#221c35] mb-4">
-                How's it work?
-              </h2>
-              <p className="text-lg text-[#333333] max-w-4xl mx-auto">
-                Our glass manifestation service ensures compliance with building regulations while maintaining style. From free site surveys to professional installation.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mt-16">
-              {[
-                {
-                  step: '1',
-                  title: 'Get a FREE quote',
-                  desc: 'Schedule measurement and photography, or supply your own dimensions/photos for remote quoting.',
-                  progress: 25,
-                  icon: Ruler
-                },
-                {
-                  step: '2',
-                  title: 'Design Stage',
-                  desc: 'Studio prepares visuals showing pattern placement and any branding; logo creation support available.',
-                  progress: 50,
-                  icon: Palette
-                },
-                {
-                  step: '3',
-                  title: 'Approve your order',
-                  desc: 'Confirm artwork and pricing, then book a production/install slot.',
-                  progress: 75,
-                  icon: CheckCircle2
-                },
-                {
-                  step: '4',
-                  title: 'Order up!',
-                  desc: 'Fully insured fitters apply the film on site; DIY supply (roll or cut-to-size) also available.',
-                  progress: 100,
-                  icon: Package
-                }
-              ].map((item, idx) => {
-                const Icon = item.icon;
-                return (
-                  <div key={idx} className="flex flex-col items-center text-center">
-                    {/* Animated Progress Circle - Purple */}
-                    <div className="relative w-32 h-32 mb-6">
-                      <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#e5e7eb"
-                          strokeWidth="8"
-                        />
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#908d9a"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 54}`}
-                          strokeDashoffset={`${2 * Math.PI * 54 * (1 - item.progress / 100)}`}
-                          style={{
-                            transition: 'stroke-dashoffset 1.5s ease-in-out',
-                            transitionDelay: `${idx * 0.2}s`
-                          }}
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-[#908d9a] flex items-center justify-center">
-                          <Icon className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <h3 className="text-xl font-bold text-[#221c35] mb-3">
-                      {item.step}. {item.title}
-                    </h3>
-                    <p className="text-[#333333] leading-relaxed text-sm whitespace-pre-line">
-                      {item.desc}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-16 flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#908d9a] text-white font-semibold text-base hover:bg-[#a39fa8] transition-all duration-300 shadow-lg"
-              >
-                GET SOME ADVICE FROM OUR TEAM
-              </a>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg border-2 border-[#908d9a] bg-transparent text-[#908d9a] font-semibold text-base hover:bg-[#908d9a] hover:text-white transition-all duration-300"
-              >
-                BOOK A FREE CONSULTATION
-              </a>
-            </div>
-          </div>
-        </section>
+        {/* How's it work? Section with Brush Stroke Animation */}
+        <HowItWorksSection
+          serviceType="glass-manifestation"
+          sectionId="workflow"
+          subtitle="Our glass manifestation service ensures compliance with building regulations while maintaining style. From free site surveys to professional installation."
+        />
 
         {/* Customisation Options - Textured Background */}
-        <section
-          className="py-24 px-6 md:px-12 lg:px-24 bg-cover bg-center relative"
-          style={{ backgroundImage: 'url(/Website Assets/ConcreteTexture.jpg)' }}
-        >
-          <div className="absolute inset-0 bg-[#221c35]/90" />
-          <div className="relative z-10 max-w-6xl mx-auto">
-            <h2 className="hearns-font text-5xl md:text-6xl text-white mb-16 text-center">
-              Customisation Options
-            </h2>
+<section
+  className="py-24 px-6 md:px-12 lg:px-24 bg-cover bg-center relative"
+  style={{ backgroundImage: 'url(/Website Assets/ConcreteTexture.jpg)' }}
+>
+  <div className="absolute inset-0 bg-[#221c35]/90" />
+  <div className="relative z-10 max-w-6xl mx-auto">
+    
+    <div className="text-center mb-20">
+      <h2 className="hearns-font text-5xl md:text-6xl text-white mb-4">
+        Customisation Options
+      </h2>
+      <div className="w-16 h-px bg-[#908d9a]/40 mx-auto" />
+    </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Patterns */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
-                <div className="w-14 h-14 rounded-full bg-[#908d9a]/20 flex items-center justify-center mb-6">
-                  <Frame className="w-7 h-7 text-[#908d9a]" />
-                </div>
-                <h3 className="smilecake-font text-3xl text-white mb-4">Patterns</h3>
-                <p className="text-white/80 mb-4 leading-relaxed">
-                  Choose from 16 stock designs or request bespoke motifs for subtle markers.
-                </p>
-                <p className="text-[#908d9a] font-semibold">Stock & custom patterns available</p>
-              </div>
+    <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+      {/* Patterns */}
+      <div className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8
+        transition-all duration-300 hover:bg-white/[0.07] hover:border-white/15 hover:-translate-y-1">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-px h-8 bg-[#908d9a]/50" />
+          <Frame className="w-6 h-6 text-[#908d9a]" />
+        </div>
+        <h3 className="smilecake-font text-3xl text-white mb-3">Patterns</h3>
+        <p className="text-white/70 leading-relaxed">
+          Choose from 16 stock designs or request bespoke motifs for subtle markers.
+        </p>
+        <p className="text-[#908d9a]/80 text-sm font-medium mt-4 tracking-wide uppercase">
+          Stock & custom available
+        </p>
+      </div>
 
-              {/* Text & Wayfinding */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
-                <div className="w-14 h-14 rounded-full bg-[#908d9a]/20 flex items-center justify-center mb-6">
-                  <Mail className="w-7 h-7 text-[#908d9a]" />
-                </div>
-                <h3 className="smilecake-font text-3xl text-white mb-4">Text & Wayfinding</h3>
-                <p className="text-white/80 mb-4 leading-relaxed">
-                  Integrate directional text or notices that double as visibility strips.
-                </p>
-                <p className="text-[#908d9a] font-semibold">Functional + compliant</p>
-              </div>
+      {/* Text & Wayfinding */}
+      <div className="md:mt-12 group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8
+        transition-all duration-300 hover:bg-white/[0.07] hover:border-white/15 hover:-translate-y-1">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-px h-8 bg-[#908d9a]/50" />
+          <Mail className="w-6 h-6 text-[#908d9a]" />
+        </div>
+        <h3 className="smilecake-font text-3xl text-white mb-3">Text & Wayfinding</h3>
+        <p className="text-white/70 leading-relaxed">
+          Integrate directional text or notices that double as visibility strips.
+        </p>
+        <p className="text-[#908d9a]/80 text-sm font-medium mt-4 tracking-wide uppercase">
+          Functional + compliant
+        </p>
+      </div>
 
-              {/* Logos & Branding */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
-                <div className="w-14 h-14 rounded-full bg-[#908d9a]/20 flex items-center justify-center mb-6">
-                  <Palette className="w-7 h-7 text-[#908d9a]" />
-                </div>
-                <h3 className="smilecake-font text-3xl text-white mb-4">Logos & Branding</h3>
-                <p className="text-white/80 mb-4 leading-relaxed">
-                  Embed branding into the etched film for consistent identity.
-                </p>
-                <p className="text-[#908d9a] font-semibold">Logo creation support available</p>
-              </div>
+      {/* Logos & Branding */}
+      <div className="md:-mt-6 group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8
+        transition-all duration-300 hover:bg-white/[0.07] hover:border-white/15 hover:-translate-y-1">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-px h-8 bg-[#908d9a]/50" />
+          <Palette className="w-6 h-6 text-[#908d9a]" />
+        </div>
+        <h3 className="smilecake-font text-3xl text-white mb-3">Logos & Branding</h3>
+        <p className="text-white/70 leading-relaxed">
+          Embed branding into the etched film for consistent identity.
+        </p>
+        <p className="text-[#908d9a]/80 text-sm font-medium mt-4 tracking-wide uppercase">
+          Logo creation support available
+        </p>
+      </div>
 
-              {/* Opacity Choices */}
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
-                <div className="w-14 h-14 rounded-full bg-[#908d9a]/20 flex items-center justify-center mb-6">
-                  <Eye className="w-7 h-7 text-[#908d9a]" />
-                </div>
-                <h3 className="smilecake-font text-3xl text-white mb-4">Opacity Choices</h3>
-                <p className="text-white/80 mb-4 leading-relaxed">
-                  Standard film allows ~80% of light; lighter or heavier frosts available plus coloured films.
-                </p>
-                <p className="text-[#908d9a] font-semibold">Control light & privacy levels</p>
-              </div>
-            </div>
-          </div>
-        </section>
+      {/* Opacity Choices */}
+      <div className="md:mt-6 group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8
+        transition-all duration-300 hover:bg-white/[0.07] hover:border-white/15 hover:-translate-y-1">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-px h-8 bg-[#908d9a]/50" />
+          <Eye className="w-6 h-6 text-[#908d9a]" />
+        </div>
+        <h3 className="smilecake-font text-3xl text-white mb-3">Opacity Choices</h3>
+        <p className="text-white/70 leading-relaxed">
+          Standard film allows ~80% of light; lighter or heavier frosts available plus coloured films.
+        </p>
+        <p className="text-[#908d9a]/80 text-sm font-medium mt-4 tracking-wide uppercase">
+          Control light & privacy levels
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
         {/* Installation & Care */}
         <section className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8]">

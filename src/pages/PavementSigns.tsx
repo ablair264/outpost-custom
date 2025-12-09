@@ -1,10 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { CheckCircle2, XCircle, Mail, Phone, Package, Palette } from 'lucide-react';
+import { CheckCircle2, XCircle, Mail} from 'lucide-react';
 import SlimGridMotion from '../components/SlimGridMotion';
 import CustomisationOptions from '../components/CustomisationOptions';
+import { usePageTheme } from '../contexts/ThemeContext';
+import HowItWorksSection from '../components/HowItWorksSection';
 
 const PavementSigns: React.FC = () => {
+  // Set purple theme for this page
+  usePageTheme('purple');
   const headingRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -82,9 +86,9 @@ const PavementSigns: React.FC = () => {
 
       <div className="min-h-screen bg-white">
         {/* Hero Section with SlimGridMotion */}
-        <section className="relative h-[70vh] w-full overflow-hidden bg-[#333333]">
+        <section className="relative h-[70vh] w-full overflow-hidden bg-[#221c35]">
           <div className="absolute inset-0">
-            <SlimGridMotion items={pavementImages} gradientColor="#333333" />
+            <SlimGridMotion items={pavementImages} gradientColor="#221c35" />
           </div>
           <div className="absolute inset-0 bg-black/50 z-[4]" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-transparent z-[5]" />
@@ -95,7 +99,7 @@ const PavementSigns: React.FC = () => {
                 <h1 className="hearns-font text-6xl md:text-7xl lg:text-8xl tracking-tight text-white mb-6 leading-tight">
                   Pavement &<br />Forecourt Signs
                 </h1>
-                <div className="h-1.5 w-24 bg-[#64a70b] rounded-full" />
+                <div className="h-1.5 w-24 bg-[#908d9a] rounded-full" />
               </div>
               <div ref={contentRef} className="max-w-2xl mb-10">
                 <p className="text-2xl md:text-3xl text-[#c1c6c8] font-light leading-relaxed">
@@ -105,7 +109,7 @@ const PavementSigns: React.FC = () => {
               <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4">
                 <a
                   href="#ordering-workflow"
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-base hover:bg-[#7dbf23] transition-all duration-300 shadow-lg"
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#383349] text-white font-semibold text-base hover:bg-[#4a4460] transition-all duration-300 shadow-lg"
                 >
                   How It Works
                 </a>
@@ -143,7 +147,7 @@ const PavementSigns: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-[1fr_0.5fr_1fr] gap-0 items-center min-h-[240px]">
               {/* Left Column - Stand Out / Get Noticed */}
               <div className="flex flex-col items-center justify-center text-center py-6">
-                <h2 className="embossing-font text-[#64a70b] text-4xl md:text-5xl lg:text-6xl leading-tight tracking-wide">
+                <h2 className="embossing-font text-[#908d9a] text-4xl md:text-5xl lg:text-6xl leading-tight tracking-wide">
                   STAND OUT
                 </h2>
                 <p className="embossing-font text-[#c1c6c8] text-3xl md:text-4xl lg:text-5xl leading-tight tracking-wide mt-1">
@@ -170,113 +174,12 @@ const PavementSigns: React.FC = () => {
           </div>
         </section>
 
-        {/* How's it work? Section - Green Theme */}
-        <section id="ordering-workflow" className="py-24 px-6 md:px-12 lg:px-24 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="hearns-font text-5xl md:text-6xl text-[#333333] mb-4">
-                How's it work?
-              </h2>
-              <p className="text-lg text-[#333333] max-w-4xl mx-auto">
-                Choose from our standard frames or bring your own for rebranding. Our design team will help create eye-catching graphics to promote your business.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mt-16">
-              {[
-                {
-                  step: '1',
-                  title: 'Get a FREE quote',
-                  desc: 'Choose from standard frames or bring your own for rebranding.',
-                  progress: 25,
-                  icon: Mail
-                },
-                {
-                  step: '2',
-                  title: 'Design Stage',
-                  desc: 'Submit artwork for proofing or brief the design team for new visuals/logos.',
-                  progress: 50,
-                  icon: Palette
-                },
-                {
-                  step: '3',
-                  title: 'Approve your order',
-                  desc: 'Sign off mockups and pricing to enter production.',
-                  progress: 75,
-                  icon: CheckCircle2
-                },
-                {
-                  step: '4',
-                  title: 'Order up!',
-                  desc: 'Collect locally or arrange delivery (from £10).',
-                  progress: 100,
-                  icon: Package
-                }
-              ].map((item, idx) => {
-                const Icon = item.icon;
-                return (
-                  <div key={idx} className="flex flex-col items-center text-center">
-                    {/* Animated Progress Circle - Green */}
-                    <div className="relative w-32 h-32 mb-6">
-                      <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#e5e7eb"
-                          strokeWidth="8"
-                        />
-                        <circle
-                          cx="60"
-                          cy="60"
-                          r="54"
-                          fill="none"
-                          stroke="#64a70b"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 54}`}
-                          strokeDashoffset={`${2 * Math.PI * 54 * (1 - item.progress / 100)}`}
-                          style={{
-                            transition: 'stroke-dashoffset 1.5s ease-in-out',
-                            transitionDelay: `${idx * 0.2}s`
-                          }}
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-[#64a70b] flex items-center justify-center">
-                          <Icon className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <h3 className="text-xl font-bold text-[#333333] mb-3">
-                      {item.step}. {item.title}
-                    </h3>
-                    <p className="text-[#333333] leading-relaxed text-sm whitespace-pre-line">
-                      {item.desc}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-16 flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold text-base hover:bg-[#75b81c] transition-all duration-300 shadow-lg"
-              >
-                GET SOME ADVICE FROM OUR TEAM
-              </a>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-lg border-2 border-[#64a70b] bg-transparent text-[#64a70b] font-semibold text-base hover:bg-[#64a70b] hover:text-white transition-all duration-300"
-              >
-                BOOK A FREE CONSULTATION
-              </a>
-            </div>
-          </div>
-        </section>
+        {/* How's it work? Section with Brush Stroke Animation */}
+        <HowItWorksSection
+          serviceType="pavement-signs"
+          sectionId="ordering-workflow"
+          subtitle="Choose from our standard frames or bring your own for rebranding. Our design team will help create eye-catching graphics to promote your business."
+        />
 
         {/* Product Highlight: Eco Swing */}
         <section className="py-24 px-6 md:px-12 lg:px-24 bg-white">
@@ -285,8 +188,8 @@ const PavementSigns: React.FC = () => {
               <h2 className="hearns-font text-5xl md:text-6xl text-[#333333] mb-4">
                 Eco Swing Pavement Sign
               </h2>
-              <div className="h-1 w-24 bg-[#64a70b] mx-auto mb-6" />
-              <p className="smilecake-font text-2xl text-[#64a70b]">Best for windy locations!</p>
+              <div className="h-1 w-24 bg-[#908d9a] mx-auto mb-6" />
+              <p className="smilecake-font text-2xl text-[#908d9a]">Best for windy locations!</p>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-12 items-center bg-[#f5f5f5] rounded-3xl p-8 md:p-12">
@@ -311,7 +214,7 @@ const PavementSigns: React.FC = () => {
                       'Easily swap out panels'
                     ].map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-3">
-                        <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-0.5" />
                         <span className="text-[#333333]">{feature}</span>
                       </li>
                     ))}
@@ -368,28 +271,28 @@ const PavementSigns: React.FC = () => {
                 </p>
               </div>
               <div className="bg-white p-8 rounded-2xl shadow-lg">
-                <h3 className="smilecake-font text-3xl text-[#64a70b] mb-6">Need Support?</h3>
+                <h3 className="smilecake-font text-3xl text-[#908d9a] mb-6">Need Support?</h3>
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-1" />
                     <span className="text-[#333333]">Help selecting frame type & size</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-1" />
                     <span className="text-[#333333]">Customisation method advice</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-1" />
                     <span className="text-[#333333]">Design assistance</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#64a70b] flex-shrink-0 mt-1" />
+                    <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-1" />
                     <span className="text-[#333333]">Installation guidance</span>
                   </li>
                 </ul>
                 <a
                   href="/contact"
-                  className="mt-8 w-full inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#64a70b] text-white font-semibold hover:bg-[#7dbf23] transition-all duration-300"
+                  className="mt-8 w-full inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#383349] text-white font-semibold hover:bg-[#4a4460] transition-all duration-300"
                 >
                   <Mail className="w-5 h-5 mr-2" />
                   Contact Our Team
