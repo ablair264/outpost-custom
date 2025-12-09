@@ -164,8 +164,8 @@ const ConversationalSmartSearch: React.FC<ConversationalSmartSearchProps> = ({
         { role: 'user', content: userMessage },
       ];
 
-      // Call OpenAI API via backend
-      const response = await fetch('/api/smart-search-chat', {
+      // Call OpenAI API via Railway backend
+      const response = await fetch('https://outpost-custom-production.up.railway.app/api/smart-search-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
