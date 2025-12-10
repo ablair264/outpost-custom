@@ -289,27 +289,30 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
             </div>
           </button>
         ) : (
-          /* Expanded Card - Full-width horizontal layout */
+          /* Expanded Card - Editorial magazine-style layout */
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.15 }}
-            className="relative cursor-pointer"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+            className="relative group"
             onClick={onClose}
           >
-            {/* Close button */}
+            {/* Subtle gradient overlay for depth */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent rounded-2xl pointer-events-none" />
+
+            {/* Close button - minimal, top right */}
             <button
               onClick={onClose}
-              className="absolute top-2 left-2 z-20 p-1.5 rounded-full bg-black/50 hover:bg-black/70 transition-all backdrop-blur-sm"
+              className="absolute top-3 right-3 z-20 p-1 rounded-full text-white/40 hover:text-white/80 hover:bg-white/10 transition-all"
             >
-              <X className="w-3 h-3 text-white" />
+              <X className="w-4 h-4" />
             </button>
 
-            {/* Horizontal layout - image left, content right */}
-            <div className="flex">
-              {/* Image section - fixed width */}
+            {/* Main content grid */}
+            <div className="flex gap-4 p-4">
+              {/* Image - larger, more prominent with subtle shadow */}
               <div
-                className="w-[120px] sm:w-[140px] flex-shrink-0 bg-white rounded-l-2xl overflow-hidden"
+                className="relative w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-white to-gray-100 shadow-lg shadow-black/20"
                 onClick={(e) => e.stopPropagation()}
               >
                 <img
@@ -318,108 +321,113 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                     : `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`
                   }
                   alt={productGroup.style_name}
-                  className="w-full h-full object-contain p-2"
+                  className="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
                   onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                     e.currentTarget.src = `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`;
                   }}
                 />
               </div>
 
-              {/* Content section - fills remaining space */}
-              <div className="flex-1 p-3 min-w-0 flex flex-col">
-                {/* Top row: Brand + Name + Price */}
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[9px] font-bold tracking-[0.2em] uppercase mb-0.5" style={{ color: clothingColors.accent }}>
-                      {productGroup.brand}
-                    </p>
-                    <h3 className="text-sm text-white leading-snug line-clamp-1" style={{ fontFamily: fonts.subheading }}>
-                      {productGroup.style_name}
-                    </h3>
+              {/* Content - tighter vertical rhythm */}
+              <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                {/* Header section */}
+                <div>
+                  {/* Brand with accent underline effect */}
+                  <p className="text-[10px] font-semibold tracking-[0.15em] uppercase mb-1" style={{ color: clothingColors.accent }}>
+                    {productGroup.brand}
+                  </p>
+
+                  {/* Product name - more presence */}
+                  <h3 className="text-base sm:text-lg font-semibold text-white leading-tight line-clamp-2 mb-1" style={{ fontFamily: fonts.subheading }}>
+                    {productGroup.style_name}
+                  </h3>
+
+                  {/* Meta info inline */}
+                  <div className="flex items-center gap-2 text-[11px] text-white/50">
+                    {productGroup.product_type && <span>{productGroup.product_type}</span>}
+                    {productGroup.product_type && productGroup.fabric && <span className="text-white/20">·</span>}
+                    {productGroup.fabric && <span>{productGroup.fabric.split(' ').slice(0, 2).join(' ')}</span>}
                   </div>
-                  {productGroup.price_range && productGroup.price_range.min > 0 && (
-                    <p className="text-base font-bold text-white whitespace-nowrap flex-shrink-0" style={{ fontFamily: fonts.body }}>
+                </div>
+
+                {/* Price - bottom aligned with the image */}
+                {productGroup.price_range && productGroup.price_range.min > 0 && (
+                  <div className="flex items-baseline gap-1 mt-2">
+                    <span className="text-[11px] text-white/40">from</span>
+                    <span className="text-xl font-bold text-white tabular-nums" style={{ fontFamily: fonts.body }}>
                       £{productGroup.price_range.min.toFixed(2)}
-                    </p>
-                  )}
-                </div>
-
-                {/* Key Features row */}
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {productGroup.product_type && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/10 text-white/70">
-                      {productGroup.product_type}
                     </span>
-                  )}
-                  {productGroup.fabric && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/10 text-white/70">
-                      {productGroup.fabric.split(' ').slice(0, 2).join(' ')}
-                    </span>
-                  )}
-                </div>
-
-                {/* Colors and Sizes row */}
-                <div className="flex gap-4 mb-3" onClick={(e) => e.stopPropagation()}>
-                  {/* Colors */}
-                  {productGroup.colors.length > 0 && (
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[9px] font-semibold text-white/50 uppercase tracking-wider mb-1">
-                        Colours ({productGroup.colors.length})
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {productGroup.colors.slice(0, 12).map((color, i) => (
-                          <button
-                            key={color.code}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedColorIndex(i);
-                            }}
-                            className={`w-5 h-5 rounded transition-all duration-150 ${
-                              selectedColorIndex === i
-                                ? 'ring-2 ring-offset-1 ring-offset-[#1e3a2f] ring-[#64a70b] scale-110'
-                                : 'ring-1 ring-white/20'
-                            }`}
-                            style={{ backgroundColor: color.rgb }}
-                            title={color.name}
-                          />
-                        ))}
-                        {productGroup.colors.length > 12 && (
-                          <span className="text-[10px] text-white/50 self-center ml-0.5">
-                            +{productGroup.colors.length - 12}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Sizes */}
-                  {sizeRange && (
-                    <div className="flex-shrink-0">
-                      <p className="text-[9px] font-semibold text-white/50 uppercase tracking-wider mb-1">
-                        Sizes
-                      </p>
-                      <p className="text-sm text-white font-medium">
-                        {sizeRange}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* CTA Button - full width */}
-                <div className="mt-auto" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={() => navigate(`/products/${productGroup.style_code}`)}
-                    className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg font-semibold text-sm text-white transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
-                    style={{
-                      backgroundColor: clothingColors.accent,
-                      boxShadow: '0 2px 8px rgba(100, 167, 11, 0.25)'
-                    }}
-                  >
-                    View Details
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                  </div>
+                )}
               </div>
+            </div>
+
+            {/* Bottom section - colors, sizes, CTA */}
+            <div className="px-4 pb-4 space-y-3" onClick={(e) => e.stopPropagation()}>
+              {/* Divider */}
+              <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+              {/* Colors and Sizes row */}
+              <div className="flex items-end justify-between gap-4">
+                {/* Colors */}
+                {productGroup.colors.length > 0 && (
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] text-white/40 mb-1.5">
+                      {productGroup.colors.length} colour{productGroup.colors.length !== 1 ? 's' : ''} available
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {productGroup.colors.slice(0, 10).map((color, i) => (
+                        <button
+                          key={color.code}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedColorIndex(i);
+                          }}
+                          className={`w-6 h-6 rounded-md transition-all duration-200 ${
+                            selectedColorIndex === i
+                              ? 'ring-2 ring-offset-2 ring-offset-[#1a2e1a] scale-110 shadow-lg'
+                              : 'ring-1 ring-white/10 hover:ring-white/30 hover:scale-105'
+                          }`}
+                          style={{
+                            backgroundColor: color.rgb,
+                            boxShadow: selectedColorIndex === i ? `0 4px 12px ${color.rgb}40` : undefined,
+                            ringColor: selectedColorIndex === i ? clothingColors.accent : undefined
+                          }}
+                          title={color.name}
+                        />
+                      ))}
+                      {productGroup.colors.length > 10 && (
+                        <span className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center text-[10px] text-white/50 ring-1 ring-white/10">
+                          +{productGroup.colors.length - 10}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sizes - compact pill */}
+                {sizeRange && (
+                  <div className="flex-shrink-0 text-right">
+                    <p className="text-[10px] text-white/40 mb-1.5">Sizes</p>
+                    <span className="inline-block px-2.5 py-1 rounded-md bg-white/5 text-sm text-white/90 font-medium ring-1 ring-white/10">
+                      {sizeRange}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* CTA Button - refined with hover state */}
+              <button
+                onClick={() => navigate(`/products/${productGroup.style_code}`)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm text-white transition-all duration-200 hover:shadow-xl hover:shadow-[#64a70b]/20 active:scale-[0.98] group/btn"
+                style={{
+                  backgroundColor: clothingColors.accent,
+                  backgroundImage: 'linear-gradient(to bottom, rgba(255,255,255,0.1), transparent)'
+                }}
+              >
+                <span>View Details</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
+              </button>
             </div>
           </motion.div>
         )}
