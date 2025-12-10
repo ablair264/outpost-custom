@@ -51,7 +51,9 @@
       "mcp__neon__run_sql",
       "Bash(git push:*)",
       "mcp__cloudflare-workers__accounts_list",
-      "mcp__cloudflare-workers__r2_bucket_create"
+      "mcp__cloudflare-workers__r2_bucket_create",
+      "mcp__cloudflare-workers__r2_bucket_get",
+      "mcp__cloudflare-workers__search_cloudflare_documentation"
     ],
     "deny": [],
     "ask": []
