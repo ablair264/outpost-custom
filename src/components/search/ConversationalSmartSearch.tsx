@@ -113,6 +113,11 @@ const ConversationalSmartSearch: React.FC<ConversationalSmartSearchProps> = ({
       if (searchQuery.gender) {
         params.set('gender', searchQuery.gender);
       }
+      if (searchQuery.color) {
+        // Capitalize first letter to match database format (e.g., "red" -> "Red")
+        const normalizedColor = searchQuery.color.charAt(0).toUpperCase() + searchQuery.color.slice(1).toLowerCase();
+        params.set('colors', normalizedColor);
+      }
       if (searchQuery.keywords && searchQuery.keywords.length > 0) {
         params.set('search', searchQuery.keywords.join(' '));
       }
