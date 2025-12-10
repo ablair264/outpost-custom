@@ -18,6 +18,9 @@ import Collections from './pages/Collections';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminLayoutNew from './pages/admin/AdminLayoutNew';
 import ShopPageEditor from './pages/admin/ShopPageEditor';
+import ClothingEnquiries from './pages/admin/ClothingEnquiries';
+import ClothingEnquiryDetail from './pages/admin/ClothingEnquiryDetail';
+import AdminUsers from './pages/admin/AdminUsers';
 import Collection from './pages/Collection';
 import AllSignage from './pages/AllSignage';
 import PavementSigns from './pages/PavementSigns';
@@ -38,7 +41,8 @@ import { ClothingBrowser } from './components/clothing';
 import { CartProvider } from './contexts/CartContext';
 import { WishlistProvider } from './contexts/WishlistContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import ChatWidget from './components/ChatWidget';
+import { AuthProvider } from './contexts/AuthContext';
+import UnifiedChatWidget from './components/UnifiedChatWidget';
 import PageLoader from './components/PageLoader';
 import ScrollToTop from './components/ScrollToTop';
 import Lenis from 'lenis';
@@ -95,19 +99,25 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <ThemeProvider>
-        <CartProvider>
-          <WishlistProvider>
-          <Routes>
-            {/* Admin Routes - No Header/Footer */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminLayoutNew />}>
-              <Route path="dashboard" element={<div className="p-8"><h1 className="text-3xl font-black">Dashboard</h1><p className="text-gray-600 mt-2">Welcome to the admin panel</p></div>} />
-              <Route path="shop-page" element={<ShopPageEditor />} />
-              <Route path="products" element={<div className="p-8"><h1 className="text-3xl font-black">Product Manager</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
-              <Route path="home-page" element={<div className="p-8"><h1 className="text-3xl font-black">Home Page Editor</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
-              <Route path="*" element={<div className="p-8"><h1 className="text-3xl font-black">Page Not Found</h1></div>} />
-            </Route>
+      <AuthProvider>
+        <ThemeProvider>
+          <CartProvider>
+            <WishlistProvider>
+            <Routes>
+              {/* Admin Routes - No Header/Footer */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayoutNew />}>
+                <Route path="dashboard" element={<div className="p-8"><h1 className="text-3xl font-black">Dashboard</h1><p className="text-gray-600 mt-2">Welcome to the admin panel</p></div>} />
+                <Route path="shop-page" element={<ShopPageEditor />} />
+                <Route path="products" element={<div className="p-8"><h1 className="text-3xl font-black">Product Manager</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
+                <Route path="home-page" element={<div className="p-8"><h1 className="text-3xl font-black">Home Page Editor</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
+                <Route path="clothing-enquiries" element={<ClothingEnquiries />} />
+                <Route path="clothing-enquiries/:id" element={<ClothingEnquiryDetail />} />
+                <Route path="enquiries" element={<div className="p-8"><h1 className="text-3xl font-black">General Enquiries</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
+                <Route path="enquiry-settings" element={<div className="p-8"><h1 className="text-3xl font-black">Enquiry Settings</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="*" element={<div className="p-8"><h1 className="text-3xl font-black">Page Not Found</h1></div>} />
+              </Route>
 
             {/* Public Routes - With Header/Footer */}
             <Route path="*" element={
@@ -144,13 +154,14 @@ function App() {
                   <Route path="/clothing/all" element={<ClothingBrowser />} />
                 </Routes>
                 <Footer />
-                <ChatWidget />
-              </div>
-            } />
-          </Routes>
-          </WishlistProvider>
-        </CartProvider>
-      </ThemeProvider>
+                  <UnifiedChatWidget />
+                </div>
+              } />
+            </Routes>
+            </WishlistProvider>
+          </CartProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </Router>
   );
 }

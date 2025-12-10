@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronRight,
   Home,
@@ -9,7 +9,6 @@ import {
   Filter,
   ChevronDown,
   Check,
-  ArrowRight,
 } from 'lucide-react';
 import PrintingFontStyles from './PrintingFontStyles';
 import ProductDetailModal from './ProductDetailModal';
@@ -19,7 +18,6 @@ import {
   filterProductsByFinish,
   filterProductsByType,
   filterProductsByUseCases,
-  extractUseCases,
   productTypes,
   useCaseTags,
   PrintingProduct,
@@ -44,7 +42,6 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
   const [selectedType, setSelectedType] = useState('all');
   const [selectedUseCases, setSelectedUseCases] = useState<string[]>([]);
   const [selectedFinishes, setSelectedFinishes] = useState<string[]>([]);
-  const [expandedProduct, setExpandedProduct] = useState<string | null>(initialProductSlug || null);
   const [modalProduct, setModalProduct] = useState<PrintingProduct | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   // Collapsible sections state
@@ -53,6 +50,16 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
     useCase: false,
     finish: true,
   });
+
+  // Open modal for initial product slug if provided
+  useEffect(() => {
+    if (initialProductSlug) {
+      const product = allProducts.find(p => p.slug === initialProductSlug);
+      if (product) {
+        setModalProduct(product);
+      }
+    }
+  }, [initialProductSlug]);
 
   // Read initial filter from URL params on mount
   useEffect(() => {
@@ -74,20 +81,6 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
     }
     setSearchParams(searchParams, { replace: true });
   };
-
-  // Callback ref to scroll expanded card into view when it mounts
-  const scrollToExpandedCard = useCallback((node: HTMLDivElement | null) => {
-    if (node && expandedProduct) {
-      // Wait for layout animation to complete, then scroll
-      setTimeout(() => {
-        // Use scrollIntoView for reliable scrolling
-        node.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
-      }, 350);
-    }
-  }, [expandedProduct]);
 
   // Filter products
   const filteredProducts = useMemo(() => {
@@ -139,34 +132,34 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
 
   const hasActiveFilters = selectedType !== 'all' || selectedUseCases.length > 0 || selectedFinishes.length > 0 || searchQuery.trim();
 
-  const handleProductClick = (slug: string) => {
-    // If clicking the same card, collapse it
-    if (expandedProduct === slug) {
-      setExpandedProduct(null);
-    } else {
-      // If clicking a different card (or no card is expanded), expand it
-      setExpandedProduct(slug);
-    }
-  };
-
   return (
     <>
       <PrintingFontStyles />
 
-      <div className="min-h-screen" style={{ backgroundColor: `${printingColors.dark}05` }}>
+      <div className="min-h-screen relative" style={{ backgroundColor: printingColors.dark }}>
+        {/* Background textures - matching ClothingBrowser */}
+        <div
+          className="absolute inset-0 opacity-30 pointer-events-none"
+          style={{
+            backgroundImage: 'url(/BlackTextureBackground.webp)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-10 pointer-events-none"
+          style={{
+            backgroundImage: 'url(/ConcreteTexture.webp)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            mixBlendMode: 'overlay',
+          }}
+        />
+
         {/* Header */}
         <header
-          className="relative py-6 md:py-8 px-6 md:px-8 lg:px-12"
-          style={{ backgroundColor: printingColors.dark }}
+          className="relative z-10 py-6 md:py-8 px-6 md:px-8 lg:px-12 border-b border-white/10"
         >
-          <div
-            className="absolute inset-0 opacity-20 pointer-events-none"
-            style={{
-              backgroundImage: 'url(/ConcreteTexture.webp)',
-              backgroundSize: 'cover',
-              mixBlendMode: 'overlay',
-            }}
-          />
 
           <div className="max-w-[1600px] mx-auto relative z-10">
             <nav className="flex items-center gap-2 text-sm text-white/60 mb-4">
@@ -214,28 +207,68 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
         </header>
 
         {/* Main Content */}
-        <div className="max-w-[1600px] mx-auto px-6 md:px-8 lg:px-12 py-8">
+        <div className="relative z-10 max-w-[1600px] mx-auto px-6 md:px-8 lg:px-12 py-8">
           <div className="flex gap-8">
             {/* Sidebar */}
             <aside className="hidden lg:block w-72 flex-shrink-0">
               <div
-                className="sticky top-8 rounded-[15px] overflow-hidden"
-                style={{ backgroundColor: printingColors.dark }}
+                className="sticky top-8 rounded-[15px] overflow-hidden flex flex-col"
+                style={{ backgroundColor: printingColors.darkLight, maxHeight: 'calc(100vh - 120px)' }}
               >
-                <div className="p-5 border-b border-white/10">
-                  <div className="flex items-center justify-between">
-                    <h2 className="neuzeit-font font-semibold text-white">Filters</h2>
-                    {hasActiveFilters && (
+                <div className="p-4 border-b border-white/10 flex-shrink-0">
+                  <h2 className="font-semibold text-white neuzeit-font">Filters</h2>
+                </div>
+
+                {/* Active Filters Display */}
+                {hasActiveFilters && (
+                  <div className="px-4 py-3 border-b border-white/10 bg-white/5 flex-shrink-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-white/50 uppercase tracking-wide neuzeit-font">Active Filters</p>
                       <button
                         onClick={clearAllFilters}
-                        className="text-xs font-medium px-2 py-1 rounded-md"
+                        className="text-xs font-medium px-2 py-1 rounded-md transition-all hover:opacity-80"
                         style={{ color: printingColors.accent, backgroundColor: `${printingColors.accent}20` }}
                       >
                         Clear all
                       </button>
-                    )}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedType !== 'all' && (
+                        <button
+                          onClick={() => handleTypeChange('all')}
+                          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80 neuzeit-font"
+                          style={{ backgroundColor: printingColors.accent, color: 'white' }}
+                        >
+                          {productTypes.find(t => t.id === selectedType)?.label}
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                      {selectedUseCases.map(useCase => (
+                        <button
+                          key={`filter-usecase-${useCase}`}
+                          onClick={() => setSelectedUseCases(prev => prev.filter(x => x !== useCase))}
+                          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-500 text-white transition-all hover:opacity-80 neuzeit-font"
+                        >
+                          {useCaseTags.find(t => t.id === useCase)?.label}
+                          <X className="w-3 h-3" />
+                        </button>
+                      ))}
+                      {selectedFinishes.map(finish => (
+                        <button
+                          key={`filter-finish-${finish}`}
+                          onClick={() => toggleFinish(finish)}
+                          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white transition-all hover:opacity-80 neuzeit-font"
+                        >
+                          {finishOptions.find(f => f.id === finish)?.label}
+                          <X className="w-3 h-3" />
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Scrollable filter content */}
+                <div className="overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent hover:scrollbar-thumb-white/30">
 
                 {/* Product Type */}
                 <div className="border-b border-white/10">
@@ -243,7 +276,7 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                     onClick={() => toggleSection('type')}
                     className="w-full p-5 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
                   >
-                    <span className="neuzeit-font font-medium text-sm uppercase tracking-wide">Product Type</span>
+                    <span className="text-sm uppercase tracking-wide embossing-font">Product Type</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.type ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
@@ -259,13 +292,22 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                             <button
                               key={type.id}
                               onClick={() => handleTypeChange(type.id)}
-                              className={`w-full text-left px-3 py-2.5 rounded-[8px] neuzeit-font text-sm transition-all ${
+                              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg neuzeit-font text-sm transition-all ${
                                 selectedType === type.id
                                   ? 'text-white'
                                   : 'text-white/70 hover:text-white hover:bg-white/5'
                               }`}
                               style={selectedType === type.id ? { backgroundColor: printingColors.accent } : {}}
                             >
+                              <div
+                                className={`w-4 h-4 rounded border flex items-center justify-center transition-all flex-shrink-0 ${
+                                  selectedType === type.id
+                                    ? 'border-transparent bg-white/20'
+                                    : 'border-white/30'
+                                }`}
+                              >
+                                {selectedType === type.id && <Check className="w-3 h-3" />}
+                              </div>
                               {type.label}
                             </button>
                           ))}
@@ -281,7 +323,7 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                     onClick={() => toggleSection('useCase')}
                     className="w-full p-5 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
                   >
-                    <span className="neuzeit-font font-medium text-sm uppercase tracking-wide">Use Case</span>
+                    <span className="text-sm uppercase tracking-wide embossing-font">Use Case</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.useCase ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
@@ -303,7 +345,7 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                                     : [...prev, tag.id]
                                 )
                               }
-                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] neuzeit-font text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg neuzeit-font text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
                             >
                               <div
                                 className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
@@ -332,7 +374,7 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                     onClick={() => toggleSection('finish')}
                     className="w-full p-5 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
                   >
-                    <span className="neuzeit-font font-medium text-sm uppercase tracking-wide">Finish</span>
+                    <span className="text-sm uppercase tracking-wide embossing-font">Finish</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.finish ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
@@ -348,7 +390,7 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                             <button
                               key={finish.id}
                               onClick={() => toggleFinish(finish.id)}
-                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] neuzeit-font text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg neuzeit-font text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
                             >
                               <div
                                 className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
@@ -369,6 +411,7 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                       </motion.div>
                     )}
                   </AnimatePresence>
+                </div>
                 </div>
               </div>
             </aside>
@@ -400,14 +443,14 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                   />
                   {/* Drawer */}
                   <motion.div
-                    initial={{ x: '100%' }}
+                    initial={{ x: '-100%' }}
                     animate={{ x: 0 }}
-                    exit={{ x: '100%' }}
+                    exit={{ x: '-100%' }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="lg:hidden fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] z-50 overflow-y-auto"
-                    style={{ backgroundColor: printingColors.dark }}
+                    className="lg:hidden fixed left-0 top-0 bottom-0 w-80 max-w-[85vw] z-50 flex flex-col"
+                    style={{ backgroundColor: printingColors.darkLight }}
                   >
-                    <div className="p-5 border-b border-white/10 flex items-center justify-between">
+                    <div className="p-5 border-b border-white/10 flex items-center justify-between flex-shrink-0">
                       <h2 className="neuzeit-font font-semibold text-white text-lg">Filters</h2>
                       <button
                         onClick={() => setSidebarOpen(false)}
@@ -417,157 +460,205 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                       </button>
                     </div>
 
+                    {/* Active Filters Display */}
                     {hasActiveFilters && (
-                      <div className="p-5 border-b border-white/10">
-                        <button
-                          onClick={() => {
-                            clearAllFilters();
-                            setSidebarOpen(false);
-                          }}
-                          className="w-full text-center text-sm font-medium py-2.5 rounded-[10px] transition-all"
-                          style={{ color: printingColors.accent, backgroundColor: `${printingColors.accent}20` }}
-                        >
-                          Clear all filters
-                        </button>
+                      <div className="px-4 py-3 border-b border-white/10 bg-white/5 flex-shrink-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs text-white/50 uppercase tracking-wide neuzeit-font">Active Filters</p>
+                          <button
+                            onClick={() => {
+                              clearAllFilters();
+                              setSidebarOpen(false);
+                            }}
+                            className="text-xs font-medium px-2 py-1 rounded-md transition-all hover:opacity-80"
+                            style={{ color: printingColors.accent, backgroundColor: `${printingColors.accent}20` }}
+                          >
+                            Clear all
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {selectedType !== 'all' && (
+                            <button
+                              onClick={() => handleTypeChange('all')}
+                              className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80 neuzeit-font"
+                              style={{ backgroundColor: printingColors.accent, color: 'white' }}
+                            >
+                              {productTypes.find(t => t.id === selectedType)?.label}
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                          {selectedUseCases.map(useCase => (
+                            <button
+                              key={`mobile-filter-usecase-${useCase}`}
+                              onClick={() => setSelectedUseCases(prev => prev.filter(x => x !== useCase))}
+                              className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-500 text-white transition-all hover:opacity-80 neuzeit-font"
+                            >
+                              {useCaseTags.find(t => t.id === useCase)?.label}
+                              <X className="w-3 h-3" />
+                            </button>
+                          ))}
+                          {selectedFinishes.map(finish => (
+                            <button
+                              key={`mobile-filter-finish-${finish}`}
+                              onClick={() => toggleFinish(finish)}
+                              className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white transition-all hover:opacity-80 neuzeit-font"
+                            >
+                              {finishOptions.find(f => f.id === finish)?.label}
+                              <X className="w-3 h-3" />
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
 
-                    {/* Product Type */}
-                    <div className="border-b border-white/10">
-                      <button
-                        onClick={() => toggleSection('type')}
-                        className="w-full p-5 flex items-center justify-between text-white"
-                      >
-                        <span className="neuzeit-font font-medium text-sm uppercase tracking-wide">Product Type</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.type ? 'rotate-180' : ''}`} />
-                      </button>
-                      <AnimatePresence>
-                        {sectionsOpen.type && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="px-5 pb-5 space-y-1">
-                              {productTypes.map(type => (
-                                <button
-                                  key={type.id}
-                                  onClick={() => handleTypeChange(type.id)}
-                                  className={`w-full text-left px-3 py-2.5 rounded-[8px] neuzeit-font text-sm transition-all ${
-                                    selectedType === type.id
-                                      ? 'text-white'
-                                      : 'text-white/70 hover:text-white hover:bg-white/5'
-                                  }`}
-                                  style={selectedType === type.id ? { backgroundColor: printingColors.accent } : {}}
-                                >
-                                  {type.label}
-                                </button>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                    {/* Use Cases */}
-                    <div className="border-b border-white/10">
-                      <button
-                        onClick={() => toggleSection('useCase')}
-                        className="w-full p-5 flex items-center justify-between text-white"
-                      >
-                        <span className="neuzeit-font font-medium text-sm uppercase tracking-wide">Use Case</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.useCase ? 'rotate-180' : ''}`} />
-                      </button>
-                      <AnimatePresence>
-                        {sectionsOpen.useCase && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="px-5 pb-5 space-y-1">
-                              {useCaseTags.map(tag => (
-                                <button
-                                  key={tag.id}
-                                  onClick={() => {
-                                    setSelectedUseCases(prev =>
-                                      prev.includes(tag.id)
-                                        ? prev.filter(x => x !== tag.id)
-                                        : [...prev, tag.id]
-                                    );
-                                  }}
-                                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] neuzeit-font text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
-                                >
-                                  <div
-                                    className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
-                                      selectedUseCases.includes(tag.id)
-                                        ? 'border-transparent'
-                                        : 'border-white/30'
+                    {/* Scrollable filter content */}
+                    <div className="overflow-y-auto flex-1">
+                      {/* Product Type */}
+                      <div className="border-b border-white/10">
+                        <button
+                          onClick={() => toggleSection('type')}
+                          className="w-full p-5 flex items-center justify-between text-white"
+                        >
+                          <span className="text-sm uppercase tracking-wide embossing-font">Product Type</span>
+                          <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.type ? 'rotate-180' : ''}`} />
+                        </button>
+                        <AnimatePresence>
+                          {sectionsOpen.type && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-5 pb-5 space-y-1">
+                                {productTypes.map(type => (
+                                  <button
+                                    key={type.id}
+                                    onClick={() => handleTypeChange(type.id)}
+                                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg neuzeit-font text-sm transition-all ${
+                                      selectedType === type.id
+                                        ? 'text-white'
+                                        : 'text-white/70 hover:text-white hover:bg-white/5'
                                     }`}
-                                    style={selectedUseCases.includes(tag.id) ? { backgroundColor: printingColors.accent } : {}}
+                                    style={selectedType === type.id ? { backgroundColor: printingColors.accent } : {}}
                                   >
-                                    {selectedUseCases.includes(tag.id) && (
-                                      <Check className="w-3 h-3 text-white" />
-                                    )}
-                                  </div>
-                                  {tag.label}
-                                </button>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+                                    <div
+                                      className={`w-4 h-4 rounded border flex items-center justify-center transition-all flex-shrink-0 ${
+                                        selectedType === type.id
+                                          ? 'border-transparent bg-white/20'
+                                          : 'border-white/30'
+                                      }`}
+                                    >
+                                      {selectedType === type.id && <Check className="w-3 h-3" />}
+                                    </div>
+                                    {type.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
 
-                    {/* Finish */}
-                    <div>
-                      <button
-                        onClick={() => toggleSection('finish')}
-                        className="w-full p-5 flex items-center justify-between text-white"
-                      >
-                        <span className="neuzeit-font font-medium text-sm uppercase tracking-wide">Finish</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.finish ? 'rotate-180' : ''}`} />
-                      </button>
-                      <AnimatePresence>
-                        {sectionsOpen.finish && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="px-5 pb-5 space-y-1">
-                              {finishOptions.map(finish => (
-                                <button
-                                  key={finish.id}
-                                  onClick={() => toggleFinish(finish.id)}
-                                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] neuzeit-font text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
-                                >
-                                  <div
-                                    className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
-                                      selectedFinishes.includes(finish.id)
-                                        ? 'border-transparent'
-                                        : 'border-white/30'
-                                    }`}
-                                    style={selectedFinishes.includes(finish.id) ? { backgroundColor: printingColors.accent } : {}}
+                      {/* Use Cases */}
+                      <div className="border-b border-white/10">
+                        <button
+                          onClick={() => toggleSection('useCase')}
+                          className="w-full p-5 flex items-center justify-between text-white"
+                        >
+                          <span className="text-sm uppercase tracking-wide embossing-font">Use Case</span>
+                          <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.useCase ? 'rotate-180' : ''}`} />
+                        </button>
+                        <AnimatePresence>
+                          {sectionsOpen.useCase && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-5 pb-5 space-y-1">
+                                {useCaseTags.map(tag => (
+                                  <button
+                                    key={tag.id}
+                                    onClick={() => {
+                                      setSelectedUseCases(prev =>
+                                        prev.includes(tag.id)
+                                          ? prev.filter(x => x !== tag.id)
+                                          : [...prev, tag.id]
+                                      );
+                                    }}
+                                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg neuzeit-font text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
                                   >
-                                    {selectedFinishes.includes(finish.id) && (
-                                      <Check className="w-3 h-3 text-white" />
-                                    )}
-                                  </div>
-                                  {finish.label}
-                                </button>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                                    <div
+                                      className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
+                                        selectedUseCases.includes(tag.id)
+                                          ? 'border-transparent'
+                                          : 'border-white/30'
+                                      }`}
+                                      style={selectedUseCases.includes(tag.id) ? { backgroundColor: printingColors.accent } : {}}
+                                    >
+                                      {selectedUseCases.includes(tag.id) && (
+                                        <Check className="w-3 h-3 text-white" />
+                                      )}
+                                    </div>
+                                    {tag.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                      {/* Finish */}
+                      <div>
+                        <button
+                          onClick={() => toggleSection('finish')}
+                          className="w-full p-5 flex items-center justify-between text-white"
+                        >
+                          <span className="text-sm uppercase tracking-wide embossing-font">Finish</span>
+                          <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.finish ? 'rotate-180' : ''}`} />
+                        </button>
+                        <AnimatePresence>
+                          {sectionsOpen.finish && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-5 pb-5 space-y-1">
+                                {finishOptions.map(finish => (
+                                  <button
+                                    key={finish.id}
+                                    onClick={() => toggleFinish(finish.id)}
+                                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg neuzeit-font text-sm text-white/70 hover:text-white hover:bg-white/5 transition-all"
+                                  >
+                                    <div
+                                      className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
+                                        selectedFinishes.includes(finish.id)
+                                          ? 'border-transparent'
+                                          : 'border-white/30'
+                                      }`}
+                                      style={selectedFinishes.includes(finish.id) ? { backgroundColor: printingColors.accent } : {}}
+                                    >
+                                      {selectedFinishes.includes(finish.id) && (
+                                        <Check className="w-3 h-3 text-white" />
+                                      )}
+                                    </div>
+                                    {finish.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
                     </div>
 
                     {/* Apply button */}
-                    <div className="p-5 mt-auto">
+                    <div className="p-5 border-t border-white/10 flex-shrink-0">
                       <button
                         onClick={() => setSidebarOpen(false)}
                         className="w-full py-3 rounded-[10px] neuzeit-font font-semibold text-white transition-all"
@@ -611,23 +702,16 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
                     </button>
                   </motion.div>
                 ) : (
-                  <LayoutGroup>
-                    <motion.div layout className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {filteredProducts.map((product, index) => (
-                        <ProductGridCard
-                          key={product.slug}
-                          product={product}
-                          index={index}
-                          isExpanded={expandedProduct === product.slug}
-                          hasExpandedCard={expandedProduct !== null}
-                          onExpand={() => handleProductClick(product.slug)}
-                          onGetStarted={() => setModalProduct(product)}
-                          onClose={() => setExpandedProduct(null)}
-                          expandedRef={expandedProduct === product.slug ? scrollToExpandedCard : undefined}
-                        />
-                      ))}
-                    </motion.div>
-                  </LayoutGroup>
+                  <motion.div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {filteredProducts.map((product, index) => (
+                      <ProductGridCard
+                        key={product.slug}
+                        product={product}
+                        index={index}
+                        onClick={() => setModalProduct(product)}
+                      />
+                    ))}
+                  </motion.div>
                 )}
               </AnimatePresence>
             </main>
@@ -647,185 +731,47 @@ const PrintingBrowser: React.FC<PrintingBrowserProps> = ({ initialProductSlug })
   );
 };
 
-// Product Card Component with Inline Expansion
+// Simple Product Card Component
 interface ProductGridCardProps {
   product: PrintingProduct;
   index: number;
-  isExpanded: boolean;
-  hasExpandedCard: boolean;
-  onExpand: () => void;
-  onGetStarted: () => void;
-  onClose: () => void;
-  expandedRef?: (node: HTMLDivElement | null) => void;
+  onClick: () => void;
 }
 
 const ProductGridCard: React.FC<ProductGridCardProps> = ({
   product,
   index,
-  isExpanded,
-  hasExpandedCard,
-  onExpand,
-  onGetStarted,
-  onClose,
-  expandedRef,
+  onClick,
 }) => {
   const imageUrl = product.images[0] || '/printing/placeholder.jpg';
-  const useCases = extractUseCases(product);
-
-  // Parse specs from description
-  const parseSpecs = () => {
-    const desc = product.full_description;
-    const specs: { label: string; items: string[] }[] = [];
-
-    const sizes: string[] = [];
-    if (desc.includes('85mm x 55mm') || desc.includes('85 x 55')) sizes.push('85 x 55mm');
-    if (desc.includes('A4')) sizes.push('A4');
-    if (desc.includes('A5')) sizes.push('A5');
-    if (desc.includes('A6')) sizes.push('A6');
-    if (desc.includes('DL')) sizes.push('DL');
-    if (desc.includes('A3')) sizes.push('A3');
-    if (sizes.length > 0) specs.push({ label: 'Sizes', items: sizes.slice(0, 3) });
-
-    const paper: string[] = [];
-    if (desc.includes('350gsm')) paper.push('350gsm');
-    if (desc.includes('400gsm')) paper.push('400gsm');
-    if (desc.toLowerCase().includes('uncoated')) paper.push('Uncoated');
-    if (paper.length > 0) specs.push({ label: 'Paper', items: paper });
-
-    const finish: string[] = [];
-    if (desc.toLowerCase().includes('matt')) finish.push('Matt');
-    if (desc.toLowerCase().includes('gloss')) finish.push('Gloss');
-    if (desc.toLowerCase().includes('silk')) finish.push('Silk');
-    if (finish.length > 0) specs.push({ label: 'Finish', items: finish });
-
-    return specs;
-  };
-
-  const specs = parseSpecs();
-
-  // Determine if this card should be dimmed (another card is expanded)
-  const shouldDim = hasExpandedCard && !isExpanded;
 
   return (
     <motion.div
-      ref={isExpanded ? expandedRef : undefined}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{
-        delay: Math.min(index * 0.02, 0.2),
-        layout: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }
-      }}
-      layout
-      className={`
-        ${isExpanded ? 'col-span-2 md:col-span-2 lg:col-span-2 row-span-2 z-10' : ''}
-        transition-[opacity,transform] duration-150 ease-out
-        ${shouldDim ? 'opacity-40 scale-[0.98]' : 'opacity-100 scale-100'}
-      `}
-      style={{ willChange: isExpanded || shouldDim ? 'transform, opacity' : 'auto' }}
+      transition={{ delay: Math.min(index * 0.02, 0.2) }}
     >
-      <motion.div
-        layout
-        transition={{ layout: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] } }}
-        className={`group w-full h-full rounded-[10px] overflow-hidden transition-shadow duration-150 ${
-          isExpanded ? 'shadow-2xl' : 'hover:shadow-lg'
-        }`}
-        style={{ backgroundColor: printingColors.dark }}
+      <button
+        onClick={onClick}
+        className="group w-full text-left rounded-[10px] overflow-hidden transition-shadow duration-150 hover:shadow-lg"
+        style={{ backgroundColor: printingColors.darkLight }}
       >
-        {!isExpanded ? (
-          /* Collapsed Card */
-          <button
-            onClick={onExpand}
-            className="w-full h-full text-left"
-          >
-            <div className="aspect-[4/3] overflow-hidden">
-              <img
-                src={imageUrl}
-                alt={product.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
-            <div className="p-3">
-              <h3 className="hearns-font text-sm md:text-base text-white mb-0.5 group-hover:text-[#64a70b] transition-colors line-clamp-1">
-                {product.title}
-              </h3>
-              <p className="neuzeit-light-font text-xs text-white/50 line-clamp-1">
-                {cleanDescription(product.short_description).split(' ').slice(0, 8).join(' ')}...
-              </p>
-            </div>
-          </button>
-        ) : (
-          /* Expanded Card - click anywhere to close except buttons */
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="relative h-full flex flex-col cursor-pointer"
-            onClick={onClose}
-          >
-            {/* Close button */}
-            <button
-              onClick={(e) => { e.stopPropagation(); onClose(); }}
-              className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-black/40 hover:bg-black/60 transition-colors"
-            >
-              <X className="w-4 h-4 text-white" />
-            </button>
-
-            {/* Image */}
-            <div className="aspect-[16/9] overflow-hidden flex-shrink-0">
-              <img
-                src={imageUrl}
-                alt={product.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Content */}
-            <div className="p-4 flex-1 flex flex-col">
-              <h3 className="hearns-font text-lg md:text-xl text-white mb-2">
-                {product.title}
-              </h3>
-
-              {/* Perfect for */}
-              <div className="mb-3">
-                <p className="smilecake-font text-sm mb-2" style={{ color: printingColors.accent }}>
-                  Perfect for...
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {useCases.slice(0, 3).map((useCase, i) => (
-                    <div key={i} className="flex items-center gap-1">
-                      <Check className="w-3 h-3" style={{ color: printingColors.accent }} />
-                      <span className="neuzeit-font text-xs text-white/70">{useCase}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Specs */}
-              {specs.length > 0 && (
-                <div className="grid grid-cols-3 gap-2 mb-4">
-                  {specs.map((spec, i) => (
-                    <div key={i}>
-                      <p className="neuzeit-font text-[10px] uppercase tracking-wide text-white/40 mb-0.5">
-                        {spec.label}
-                      </p>
-                      <p className="neuzeit-font text-xs text-white">{spec.items[0]}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* CTA Button */}
-              <button
-                onClick={(e) => { e.stopPropagation(); onGetStarted(); }}
-                className="mt-auto w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-[8px] neuzeit-font font-semibold text-sm text-white transition-all hover:opacity-90"
-                style={{ backgroundColor: printingColors.accent }}
-              >
-                Request a Quote
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </motion.div>
+        <div className="aspect-[4/3] overflow-hidden">
+          <img
+            src={imageUrl}
+            alt={product.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+        <div className="p-3">
+          <h3 className="hearns-font text-sm md:text-base text-white mb-0.5 group-hover:text-[#64a70b] transition-colors line-clamp-1">
+            {product.title}
+          </h3>
+          <p className="neuzeit-light-font text-xs text-white/50 line-clamp-1">
+            {cleanDescription(product.short_description).split(' ').slice(0, 8).join(' ')}...
+          </p>
+        </div>
+      </button>
     </motion.div>
   );
 };

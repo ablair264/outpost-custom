@@ -12,9 +12,14 @@ interface ConversationalSmartSearchProps {
 }
 
 // AI System Prompt for understanding product queries
-const SYSTEM_PROMPT = `You are a helpful product search assistant for Outpost, a workwear and promotional clothing company. Your job is to help users find the right products from our catalog.
+const SYSTEM_PROMPT = `You are a helpful product search assistant for Outpost, a workwear and promotional clothing company.
 
-When users describe what they're looking for, extract search criteria and respond conversationally. Always be helpful and ask clarifying questions when needed.
+CRITICAL BEHAVIOR:
+- When the user mentions ANY product type (t-shirts, jackets, polos, etc.), ALWAYS search immediately
+- Don't ask clarifying questions unless the query is genuinely unclear (e.g., just "hi" or "help")
+- "Budget-friendly t-shirts" = search for t-shirts sorted by price. Don't ask about colors first.
+- "Polo shirts for staff" = search for polo shirts. Don't ask about brand preferences first.
+- Search first, then offer to refine. Users can see results and ask for changes.
 
 IMPORTANT: You must respond with a JSON object in this exact format:
 {
@@ -31,18 +36,17 @@ IMPORTANT: You must respond with a JSON object in this exact format:
   }
 }
 
-Available categories include: T-Shirts, Polo Shirts, Sweatshirts, Hoodies, Fleeces, Jackets, Coats, Trousers, Shorts, Hi-Vis, Workwear, Footwear, Caps, Beanies, Bags, Aprons, and more.
+When you DO search, your message should briefly describe what you found, e.g.:
+- "Here are some budget-friendly t-shirts! Let me know if you'd like to filter by color or brand."
+- "I've found polo shirts that would work great for staff uniforms. Want me to narrow these down?"
 
-Popular brands include: Stanley/Stella, Fruit of the Loom, Gildan, Russell, B&C Collection, AWDis, Result, Regatta, Snickers, and more.
+When you DON'T have enough to search (greeting, unclear request), set searchQuery to null and ask what they're looking for.
 
-For vague queries, ask about:
-- Type of garment (shirts, jackets, etc.)
-- Purpose (work, casual, outdoor, hospitality)
-- Budget constraints
-- Color preferences
-- Sustainability requirements
+Available categories: T-Shirts, Polo Shirts, Sweatshirts, Hoodies, Fleeces, Jackets, Coats, Trousers, Shorts, Hi-Vis, Workwear, Footwear, Caps, Beanies, Bags, Aprons.
 
-Keep responses concise and friendly.`;
+Popular brands: Stanley/Stella, Fruit of the Loom, Gildan, Russell, B&C Collection, AWDis, Result, Regatta, Snickers.
+
+Keep responses concise (1-2 sentences).`;
 
 const ConversationalSmartSearch: React.FC<ConversationalSmartSearchProps> = ({
   isOpen,
@@ -209,8 +213,15 @@ const ConversationalSmartSearch: React.FC<ConversationalSmartSearchProps> = ({
         { role: 'assistant', content: data.message },
       ]);
 
-      // Execute search if we have query criteria
-      if (searchQuery && Object.values(searchQuery).some(v => v !== null && v !== undefined)) {
+      // Execute search only if we have meaningful query criteria
+      // Check specifically for keywords or category - the main search drivers
+      const hasSearchCriteria = searchQuery && (
+        (searchQuery.keywords && searchQuery.keywords.length > 0) ||
+        (searchQuery.category && searchQuery.category.trim() !== '') ||
+        (searchQuery.brand && searchQuery.brand.trim() !== '')
+      );
+
+      if (hasSearchCriteria) {
         setHasSearched(true);
         const results = await executeSearch(searchQuery);
         setProducts(results);

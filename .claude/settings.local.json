@@ -32,7 +32,14 @@
       "Bash(git commit:*)",
       "WebSearch",
       "Skill(ux-designer)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "WebFetch(domain:mymarketinghub.canto.global)",
+      "WebFetch(domain:support.canto.com)",
+      "WebFetch(domain:api.canto.com)",
+      "WebFetch(domain:www.databasics.com.au)",
+      "WebFetch(domain:doc.canto.solutions)",
+      "Bash(node scrape-canto.js:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

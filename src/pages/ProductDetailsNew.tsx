@@ -1,16 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, ShoppingCart, Check, ChevronRight, ChevronLeft, Ruler, Sparkles, Shirt, Droplets, Award, Info, ZoomIn } from 'lucide-react';
+import { ArrowLeft, Heart, Check, ChevronRight, ChevronLeft, Ruler, Sparkles, Shirt, Droplets, Award, Info, ZoomIn, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, ColorVariant } from '../lib/supabase';
 import { supabase } from '../lib/supabase';
-import { useCart, cartUtils } from '../contexts/CartContext';
+import { cartUtils } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import LogoCustomizerModal, { LogoOverlayConfig } from '../components/LogoCustomizerModal';
 import ImageModal from '../components/ImageModal';
 import VinylLoader from '../components/VinylLoader';
 import { ImageZoom, Image as ZoomImage } from '../components/animate-ui/primitives/effects/image-zoom';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../components/ui/carousel';
+import ClothingOrderWizard, { LogoPreviewData, ContactFormData } from '../components/clothing/ClothingOrderWizard';
+import ClothingLogoUploader from '../components/clothing/ClothingLogoUploader';
+import ClothingHelpRequestForm from '../components/clothing/ClothingHelpRequestForm';
+import ClothingConsultationBooker from '../components/clothing/ClothingConsultationBooker';
+import ClothingHowItWorks from '../components/clothing/ClothingHowItWorks';
+import { submitClothingEnquiry } from '../lib/enquiry-service';
+import { sendEnquiryEmails } from '../lib/email-service';
 
 // Design system colors matching printing pages
 const colors = {
@@ -42,23 +49,25 @@ const ProductDetailsNew: React.FC = () => {
   const [productGroup, setProductGroup] = useState<ProductGroup | null>(null);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
-  const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showLogoModal, setShowLogoModal] = useState(false);
   const [logoOverlay, setLogoOverlay] = useState<LogoOverlayConfig | null>(null);
-  const [addedToCart, setAddedToCart] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'care' | 'sizing'>('overview');
   const [showImageModal, setShowImageModal] = useState(false);
-  const [imageModalIndex, setImageModalIndex] = useState(0);
+  const [imageModalIndex] = useState(0);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
-  const [showAllColors, setShowAllColors] = useState(false);
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
+  const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
+  const [quoteStep, setQuoteStep] = useState<'logo-options' | 'upload' | 'help' | 'consult' | 'success' | 'submitting'>('logo-options');
+  const [savedLogoData, setSavedLogoData] = useState<LogoPreviewData | null>(null);
+  const [enquiryRef, setEnquiryRef] = useState<string>('');
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const imageSectionRef = useRef<HTMLElement>(null);
 
-  // Max colors to show before truncating
-  const MAX_COLORS_DISPLAY = 12;
+  // Max colors to show before switching to dropdown
+  const MAX_COLORS_DISPLAY = 20;
 
-  const { addToCart, isInCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
@@ -320,29 +329,7 @@ const ProductDetailsNew: React.FC = () => {
     code: color.colour_code,
   }));
 
-  const inCart = isInCart(productGroup.style_code);
   const inWishlist = isInWishlist(productGroup.style_code);
-
-  const handleAddToCart = () => {
-    const groupedProduct = {
-      style_code: productGroup.style_code,
-      style_name: productGroup.style_name,
-      brand: productGroup.brand,
-      product_type: currentVariant.product_type,
-      gender: currentVariant.gender,
-      categorisation: currentVariant.categorisation,
-      primary_product_image_url: currentVariant.primary_product_image_url,
-      price_range: productGroup.price_range || { min: 0, max: 0 },
-      size_range: productGroup.size_range,
-      colors: productGroup.colors,
-      sizes: availableSizes.map(s => s.name),
-      variants: productGroup.variants,
-    };
-
-    addToCart(groupedProduct, quantity, productGroup.colors[selectedColor]?.colour_name, selectedSize);
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
-  };
 
   const handleWishlistToggle = () => {
     const groupedProduct = {
@@ -563,7 +550,7 @@ const ProductDetailsNew: React.FC = () => {
                 {/* Thumbnail Grid */}
                 {galleryImages.length > 1 && (
                   <div className="grid grid-cols-5 gap-3">
-                    {galleryImages.slice(0, galleryImages.length > 5 ? 4 : 5).map((img, i) => (
+                    {galleryImages.slice(0, 5).map((img, i) => (
                       <button
                         key={`thumb-${img.src}-${i}`}
                         onClick={() => handleThumbnailClick(img.colorIndex)}
@@ -576,16 +563,6 @@ const ProductDetailsNew: React.FC = () => {
                         <img src={img.src} alt="" className="object-contain w-full h-full p-2" />
                       </button>
                     ))}
-                    {galleryImages.length > 5 && (
-                      <button
-                        onClick={() => setShowAllColors(true)}
-                        className="aspect-square rounded-[12px] overflow-hidden border-2 border-white/20 bg-white/5 flex items-center justify-center transition-all duration-200 hover:bg-white/10 hover:border-white/30"
-                      >
-                        <span className="neuzeit-font text-sm font-medium text-white/70">
-                          +{galleryImages.length - 4}
-                        </span>
-                      </button>
-                    )}
                   </div>
                 )}
               </section>
@@ -606,7 +583,7 @@ const ProductDetailsNew: React.FC = () => {
                   </p>
 
                   {/* Product Name */}
-                  <h1 className="hearns-font text-3xl md:text-4xl leading-tight mb-3 text-white">
+                  <h1 className="embossing-font text-2xl md:text-3xl leading-tight mb-3 text-white uppercase tracking-wide">
                     {productGroup.style_name}
                   </h1>
 
@@ -651,56 +628,61 @@ const ProductDetailsNew: React.FC = () => {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="space-y-2"
                 >
-                  <div className="flex items-center justify-between">
-                    <p className="embossing-font text-[10px] uppercase tracking-[0.15em] text-white/70">
-                      Colour{' '}
-                      <span className="neuzeit-font normal-case tracking-normal text-white/50 ml-2">
-                        {productGroup.colors[selectedColor]?.colour_name}
-                      </span>
-                    </p>
-                    {productGroup.colors.length > MAX_COLORS_DISPLAY && (
-                      <span className="neuzeit-font text-[10px] text-white/40">
-                        {productGroup.colors.length} total
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {(showAllColors ? productGroup.colors : productGroup.colors.slice(0, MAX_COLORS_DISPLAY)).map((c, i) => (
-                      <button
-                        key={c.colour_code}
-                        onClick={() => handleThumbnailClick(showAllColors ? i : i)}
-                        className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                          selectedColor === i
-                            ? 'scale-110'
-                            : 'hover:scale-105'
-                        }`}
-                        style={{
-                          backgroundColor: c.rgb,
-                          borderColor: selectedColor === i ? colors.accent : 'rgba(255,255,255,0.15)',
-                          boxShadow: selectedColor === i ? `0 0 0 2px ${colors.dark}, 0 0 0 3px ${colors.accent}` : undefined,
-                        }}
-                        title={c.colour_name}
-                      />
-                    ))}
-                    {productGroup.colors.length > MAX_COLORS_DISPLAY && !showAllColors && (
-                      <button
-                        onClick={() => setShowAllColors(true)}
-                        className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-[10px] text-white/60 hover:text-white font-medium transition-all border-2 border-white/15"
-                        title={`Show all ${productGroup.colors.length} colours`}
+                  <p className="embossing-font text-[10px] uppercase tracking-[0.15em] text-white/70">
+                    Colour{' '}
+                    <span className="neuzeit-font normal-case tracking-normal text-white/50 ml-2">
+                      {productGroup.colors[selectedColor]?.colour_name}
+                    </span>
+                  </p>
+
+                  {/* Use dropdown if more than 20 colors, otherwise show color swatches */}
+                  {productGroup.colors.length > MAX_COLORS_DISPLAY ? (
+                    <div className="relative">
+                      <select
+                        value={selectedColor}
+                        onChange={(e) => handleThumbnailClick(parseInt(e.target.value))}
+                        className="w-full h-12 px-4 pr-10 rounded-[10px] border border-white/20 bg-white/5 text-white neuzeit-font text-sm appearance-none cursor-pointer hover:border-[#64a70b]/50 focus:border-[#64a70b] focus:outline-none transition-all"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
                       >
-                        +{productGroup.colors.length - MAX_COLORS_DISPLAY}
-                      </button>
-                    )}
-                    {showAllColors && productGroup.colors.length > MAX_COLORS_DISPLAY && (
-                      <button
-                        onClick={() => setShowAllColors(false)}
-                        className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-[10px] text-white/60 hover:text-white font-medium transition-all border-2 border-white/15"
-                        title="Show less"
-                      >
-                        −
-                      </button>
-                    )}
-                  </div>
+                        {productGroup.colors.map((c, i) => (
+                          <option key={c.colour_code} value={i} className="bg-[#183028] text-white">
+                            {c.colour_name}
+                          </option>
+                        ))}
+                      </select>
+                      {/* Color swatch preview next to dropdown */}
+                      <div className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                        <div
+                          className="w-6 h-6 rounded-full border-2 border-white/30"
+                          style={{ backgroundColor: productGroup.colors[selectedColor]?.rgb }}
+                        />
+                      </div>
+                      {/* Dropdown arrow */}
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <ChevronRight className="w-4 h-4 text-white/50 rotate-90" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {productGroup.colors.map((c, i) => (
+                        <button
+                          key={c.colour_code}
+                          onClick={() => handleThumbnailClick(i)}
+                          className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                            selectedColor === i
+                              ? 'scale-110'
+                              : 'hover:scale-105'
+                          }`}
+                          style={{
+                            backgroundColor: c.rgb,
+                            borderColor: selectedColor === i ? colors.accent : 'rgba(255,255,255,0.15)',
+                            boxShadow: selectedColor === i ? `0 0 0 2px ${colors.dark}, 0 0 0 3px ${colors.accent}` : undefined,
+                          }}
+                          title={c.colour_name}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
 
                 {/* Size Selection */}
@@ -737,35 +719,6 @@ const ProductDetailsNew: React.FC = () => {
                   </motion.div>
                 )}
 
-                {/* Quantity */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.35 }}
-                  className="space-y-2"
-                >
-                  <p className="embossing-font text-[10px] uppercase tracking-[0.15em] text-white/70">
-                    Quantity
-                  </p>
-                  <div className="inline-flex items-center border border-white/15 rounded-[8px]">
-                    <button
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="w-10 h-10 flex items-center justify-center neuzeit-font text-lg text-white/70 hover:text-white transition-colors"
-                    >
-                      −
-                    </button>
-                    <span className="w-10 h-10 flex items-center justify-center neuzeit-font font-medium border-x border-white/15 text-white">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="w-10 h-10 flex items-center justify-center neuzeit-font text-lg text-white/70 hover:text-white transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                </motion.div>
-
                 {/* Action Buttons */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -773,45 +726,38 @@ const ProductDetailsNew: React.FC = () => {
                   transition={{ duration: 0.5, delay: 0.4 }}
                   className="space-y-3 pt-2"
                 >
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={availableSizes.length > 0 && !selectedSize}
-                    className="w-full h-12 rounded-[10px] neuzeit-font font-semibold text-sm text-white transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:scale-[1.01]"
-                    style={{
-                      backgroundColor: colors.accent,
-                      boxShadow: `0 6px 20px ${colors.accent}30`,
-                    }}
-                  >
-                    {addedToCart || inCart ? (
-                      <>
-                        <Check className="w-4 h-4" />
-                        {addedToCart ? 'Added to Cart' : 'In Cart'}
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingCart className="w-4 h-4" />
-                        Add to Cart
-                      </>
-                    )}
-                  </button>
-
-                  <div className="grid grid-cols-2 gap-2">
+                  {/* Primary CTA - Start Order */}
+                  <div className="flex gap-2">
                     <button
-                      onClick={() => setShowLogoModal(true)}
-                      className="h-10 rounded-[8px] border border-white/15 neuzeit-font text-sm text-white/70 transition-all duration-200 hover:border-[#64a70b] hover:text-white"
+                      onClick={() => setShowQuoteModal(true)}
+                      className="flex-1 h-12 rounded-[10px] neuzeit-font font-semibold text-sm text-white transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-xl hover:scale-[1.01]"
+                      style={{
+                        backgroundColor: colors.accent,
+                        boxShadow: `0 6px 20px ${colors.accent}30`,
+                      }}
                     >
-                      Try Your Logo
+                      <MessageSquare className="w-4 h-4" />
+                      Start Order
                     </button>
                     <button
-                      onClick={handleWishlistToggle}
-                      className="h-10 rounded-[8px] border border-white/15 neuzeit-font text-sm text-white/70 flex items-center justify-center gap-2 transition-all duration-200 hover:border-[#64a70b] hover:text-white"
+                      onClick={() => setShowHowItWorksModal(true)}
+                      className="h-12 px-4 rounded-[10px] border border-white/20 neuzeit-font text-sm text-white/80 transition-all duration-200 hover:border-[#64a70b] hover:text-white flex items-center justify-center gap-2"
                     >
-                      <Heart
-                        className={`w-4 h-4 transition-colors ${inWishlist ? 'fill-[#64a70b] text-[#64a70b]' : ''}`}
-                      />
-                      {inWishlist ? 'Saved' : 'Save'}
+                      <Info className="w-4 h-4" />
+                      How Does it Work?
                     </button>
                   </div>
+
+                  {/* Save to wishlist */}
+                  <button
+                    onClick={handleWishlistToggle}
+                    className="w-full h-10 rounded-[8px] border border-white/15 neuzeit-font text-sm text-white/70 flex items-center justify-center gap-2 transition-all duration-200 hover:border-[#64a70b] hover:text-white"
+                  >
+                    <Heart
+                      className={`w-4 h-4 transition-colors ${inWishlist ? 'fill-[#64a70b] text-[#64a70b]' : ''}`}
+                    />
+                    {inWishlist ? 'Saved' : 'Save'}
+                  </button>
                 </motion.div>
 
                 {/* Product Details Tabs */}
@@ -1070,6 +1016,316 @@ const ProductDetailsNew: React.FC = () => {
         initialIndex={imageModalIndex}
         alt={productGroup.style_name}
       />
+
+      {/* How It Works Modal */}
+      <ClothingHowItWorks
+        isOpen={showHowItWorksModal}
+        onClose={() => setShowHowItWorksModal(false)}
+        onStartOrder={() => {
+          setShowHowItWorksModal(false);
+          setShowQuoteModal(true);
+        }}
+      />
+
+      {/* Quote Modal - Start Order Flow */}
+      <AnimatePresence>
+        {showQuoteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setShowQuoteModal(false);
+                setQuoteStep('logo-options');
+                setSavedLogoData(null); // Clear any saved logo data
+              }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-4xl max-h-[90vh] mx-4 rounded-2xl overflow-hidden shadow-2xl"
+              style={{ backgroundColor: colors.dark }}
+            >
+              {/* Background texture */}
+              <div
+                className="absolute inset-0 opacity-20 pointer-events-none"
+                style={{
+                  backgroundImage: 'url(/BlackTextureBackground.webp)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+
+              {/* Close button */}
+              <button
+                onClick={() => {
+                  setShowQuoteModal(false);
+                  setQuoteStep('logo-options');
+                }}
+                className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5 text-white rotate-180" />
+              </button>
+
+              {/* Content */}
+              <div className="relative z-10 p-6 md:p-10 overflow-y-auto max-h-[90vh] scrollbar-clothing">
+                {/* Error message */}
+                {submitError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 p-4 rounded-[12px] bg-red-500/10 border border-red-500/20 text-center"
+                  >
+                    <p className="neuzeit-font text-sm text-red-400">{submitError}</p>
+                    <button
+                      onClick={() => setSubmitError(null)}
+                      className="neuzeit-font text-xs text-red-300 hover:text-red-200 mt-2 underline"
+                    >
+                      Dismiss
+                    </button>
+                  </motion.div>
+                )}
+
+                <AnimatePresence mode="wait">
+                  {quoteStep === 'logo-options' && (
+                    <motion.div
+                      key="logo-options"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ClothingOrderWizard
+                        onSelectPath={async (path, logoData, contactData) => {
+                          // Save logo data if provided from preview
+                          if (logoData) {
+                            setSavedLogoData(logoData);
+                          }
+
+                          // Handle upload path with contact data - submit to backend
+                          if (path === 'upload' && contactData && logoData) {
+                            setSubmitError(null);
+                            setQuoteStep('submitting');
+
+                            try {
+                              // Submit enquiry to Supabase
+                              const result = await submitClothingEnquiry({
+                                customerName: contactData.name,
+                                customerEmail: contactData.email,
+                                customerPhone: contactData.phone,
+                                productId: productGroup?.style_code,
+                                productName: productGroup?.style_name || '',
+                                productStyleCode: productGroup?.style_code,
+                                productColor: productGroup?.colors[logoData.colorIndex]?.colour_name,
+                                productColorCode: productGroup?.colors[logoData.colorIndex]?.colour_code,
+                                productImageUrl: productGroup?.colors[logoData.colorIndex]?.colour_image,
+                                logoData: logoData.logoSrc,
+                                logoAnalysis: logoData.analysis,
+                                logoPositionX: logoData.x,
+                                logoPositionY: logoData.y,
+                                logoSizePercent: logoData.size,
+                                estimatedQuantity: contactData.quantity,
+                                additionalNotes: contactData.notes,
+                                enquiryType: 'upload',
+                              });
+
+                              if (result.success && result.enquiryId && result.enquiryRef) {
+                                setEnquiryRef(result.enquiryRef);
+
+                                // Send email notifications (don't fail submission if emails fail)
+                                sendEnquiryEmails({
+                                  customerEmail: contactData.email,
+                                  customerName: contactData.name,
+                                  customerPhone: contactData.phone,
+                                  enquiryId: result.enquiryId,
+                                  enquiryRef: result.enquiryRef,
+                                  productName: productGroup?.style_name || '',
+                                  enquiryType: 'upload',
+                                  estimatedQuantity: contactData.quantity,
+                                  additionalNotes: contactData.notes,
+                                  logoQuality: logoData.analysis?.qualityTier,
+                                }).catch(console.error);
+
+                                setQuoteStep('success');
+                              } else {
+                                setSubmitError(result.error || 'Something went wrong. Please try again.');
+                                setQuoteStep('logo-options');
+                              }
+                            } catch (error) {
+                              console.error('Submission error:', error);
+                              setSubmitError('Something went wrong. Please try again.');
+                              setQuoteStep('logo-options');
+                            }
+                            return;
+                          }
+
+                          // Handle other paths (help, consult)
+                          switch (path) {
+                            case 'upload':
+                              // Legacy path without contact data - shouldn't happen now
+                              setQuoteStep('upload');
+                              break;
+                            case 'help':
+                              setQuoteStep('help');
+                              break;
+                            case 'consult':
+                              setQuoteStep('consult');
+                              break;
+                          }
+                        }}
+                        productName={productGroup.style_name}
+                        productImage={mainImage}
+                        productColors={logoModalColors}
+                        initialColorIndex={selectedColor}
+                      />
+                    </motion.div>
+                  )}
+
+                  {quoteStep === 'upload' && (
+                    <motion.div
+                      key="upload"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ClothingLogoUploader
+                        onBack={() => {
+                          setQuoteStep('logo-options');
+                          setSavedLogoData(null); // Clear saved logo when going back
+                        }}
+                        onComplete={() => setQuoteStep('success')}
+                        productTitle={productGroup.style_name}
+                        productImage={mainImage}
+                        initialLogoData={savedLogoData || undefined}
+                      />
+                    </motion.div>
+                  )}
+
+                  {quoteStep === 'help' && (
+                    <motion.div
+                      key="help"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ClothingHelpRequestForm
+                        onBack={() => setQuoteStep('logo-options')}
+                        onComplete={() => setQuoteStep('success')}
+                        productTitle={productGroup.style_name}
+                      />
+                    </motion.div>
+                  )}
+
+                  {quoteStep === 'consult' && (
+                    <motion.div
+                      key="consult"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ClothingConsultationBooker
+                        onBack={() => setQuoteStep('logo-options')}
+                        onComplete={() => setQuoteStep('success')}
+                        productName={productGroup.style_name}
+                      />
+                    </motion.div>
+                  )}
+
+                  {quoteStep === 'submitting' && (
+                    <motion.div
+                      key="submitting"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="w-full max-w-xl mx-auto text-center py-16"
+                    >
+                      <div className="w-16 h-16 mx-auto mb-6">
+                        <div
+                          className="w-full h-full rounded-full border-4 border-t-transparent animate-spin"
+                          style={{ borderColor: `${colors.accent} transparent ${colors.accent} ${colors.accent}` }}
+                        />
+                      </div>
+                      <h2 className="hearns-font text-2xl text-white mb-2">
+                        Submitting your request...
+                      </h2>
+                      <p className="neuzeit-light-font text-white/60">
+                        Please wait while we process your enquiry
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {quoteStep === 'success' && (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full max-w-xl mx-auto text-center py-12"
+                    >
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', delay: 0.2 }}
+                        className="w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center"
+                        style={{ backgroundColor: `${colors.accent}25` }}
+                      >
+                        <Check className="w-12 h-12" style={{ color: colors.accent }} />
+                      </motion.div>
+
+                      <h2 className="hearns-font text-3xl text-white mb-3">
+                        Request Received!
+                      </h2>
+
+                      {enquiryRef && (
+                        <div className="inline-block px-4 py-2 rounded-lg bg-white/10 border border-white/20 mb-4">
+                          <p className="embossing-font text-xs text-white/50 uppercase tracking-wide mb-1">
+                            Your Reference
+                          </p>
+                          <p className="neuzeit-font text-xl font-bold" style={{ color: colors.accent }}>
+                            {enquiryRef}
+                          </p>
+                        </div>
+                      )}
+
+                      <p className="embossing-font text-xl mb-4" style={{ color: colors.accent }}>
+                        We'll be in touch soon
+                      </p>
+                      <p className="neuzeit-light-font text-white/70 max-w-md mx-auto mb-8">
+                        Our team will review your request and get back to you within 24 hours with a mockup and quote.
+                        {enquiryRef && ' Keep your reference number handy for any enquiries.'}
+                      </p>
+
+                      <button
+                        onClick={() => {
+                          setShowQuoteModal(false);
+                          setQuoteStep('logo-options');
+                          setEnquiryRef('');
+                          setSavedLogoData(null);
+                        }}
+                        className="px-6 py-3 rounded-xl neuzeit-font font-semibold text-black transition-all hover:opacity-90"
+                        style={{ backgroundColor: colors.accent }}
+                      >
+                        Continue Browsing
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

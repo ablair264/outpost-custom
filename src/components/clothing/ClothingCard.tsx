@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ArrowRight, ZoomIn, Eye, Sparkles } from 'lucide-react';
+import { X, ArrowRight, ZoomIn, Eye, Sparkles, MessageSquare } from 'lucide-react';
 import { ProductGroup } from './ClothingBrowser';
 import { ImageZoom, Image } from '../animate-ui/primitives/effects/image-zoom';
+import ClothingProductDetailModal from './ClothingProductDetailModal';
 
 // Theme colors - Brand palette (matching ClothingBrowser)
 const clothingColors = {
@@ -107,6 +108,7 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
   const navigate = useNavigate();
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [isImageZoomed, setIsImageZoomed] = useState(false);
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
 
   const currentColor = productGroup.colors[selectedColorIndex];
   const currentImage = currentColor?.image || productGroup.variants[0]?.primary_product_image_url;
@@ -446,7 +448,14 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
               })()}
 
               {/* CTA */}
-              <div className="flex-shrink-0 ml-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex-shrink-0 ml-auto flex gap-2" onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={() => setShowQuoteModal(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm text-white transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap border-2 border-white/30 hover:border-[#64a70b] hover:bg-[#64a70b]/10"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  Get Quote
+                </button>
                 <button
                   onClick={() => navigate(`/products/${productGroup.style_code}`)}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm text-black transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
@@ -463,6 +472,13 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
           </motion.div>
         )}
       </motion.div>
+
+      {/* Quote Modal */}
+      <ClothingProductDetailModal
+        productGroup={productGroup}
+        isOpen={showQuoteModal}
+        onClose={() => setShowQuoteModal(false)}
+      />
     </motion.div>
   );
 };

@@ -9,11 +9,9 @@ import {
   Filter,
   ChevronDown,
   Check,
-  Lightbulb,
 } from 'lucide-react';
 import { getAllProducts, getFilterOptions, getSizesForProductTypes, ProductFilters, FilterOptions, BrandOption } from '../../lib/productBrowserApi';
 import { Product } from '../../lib/supabase';
-import ConversationalSmartSearch from '../search/ConversationalSmartSearch';
 import ClothingCard from './ClothingCard';
 
 // Product Type Groups - comprehensive mapping
@@ -136,7 +134,6 @@ const ClothingBrowser: React.FC = () => {
   const [priceMax, setPriceMax] = useState<number | undefined>();
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isSmartSearchOpen, setIsSmartSearchOpen] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -400,14 +397,6 @@ const ClothingBrowser: React.FC = () => {
     }
   };
 
-  const handleSmartSearchApply = (query: string, filters: ProductFilters) => {
-    if (filters.productTypes) setSelectedTypes(filters.productTypes);
-    if (filters.brands) setSelectedBrands(filters.brands);
-    if (filters.colors) setSelectedColors(filters.colors);
-    if (query) setSearchQuery(query);
-    setIsSmartSearchOpen(false);
-  };
-
   // Filter available product types based on what exists in filter options
   const availableTypeGroups = PRODUCT_TYPE_GROUPS.map(group => ({
     ...group,
@@ -483,14 +472,6 @@ const ClothingBrowser: React.FC = () => {
                 )}
               </div>
 
-              {/* Smart Search Button */}
-              <button
-                onClick={() => setIsSmartSearchOpen(true)}
-                className="hidden md:flex items-center gap-2 px-4 py-3 bg-yellow-400 hover:bg-yellow-300 text-black font-bold text-sm rounded-xl transition-colors whitespace-nowrap"
-              >
-                <Lightbulb size={18} fill="currentColor" />
-                SmartSearch
-              </button>
             </div>
           </div>
         </div>
@@ -902,14 +883,6 @@ const ClothingBrowser: React.FC = () => {
             )}
           </button>
 
-          {/* Mobile SmartSearch Button */}
-          <button
-            onClick={() => setIsSmartSearchOpen(true)}
-            className="lg:hidden fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full shadow-lg font-medium text-black bg-yellow-400"
-          >
-            <Lightbulb className="w-5 h-5" fill="currentColor" />
-          </button>
-
           {/* Mobile Filter Drawer */}
           <AnimatePresence>
             {sidebarOpen && (
@@ -1233,12 +1206,6 @@ const ClothingBrowser: React.FC = () => {
           </main>
         </div>
       </div>
-
-      {/* Conversational Smart Search Modal */}
-      <ConversationalSmartSearch
-        isOpen={isSmartSearchOpen}
-        onClose={() => setIsSmartSearchOpen(false)}
-      />
     </div>
   );
 };

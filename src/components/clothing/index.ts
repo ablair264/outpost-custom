@@ -1,3 +1,15 @@
 export { default as ClothingBrowser } from './ClothingBrowser';
 export { default as ClothingCard } from './ClothingCard';
+export { default as ClothingDetailModal } from './ClothingDetailModal';
+export { default as ClothingProductDetailModal } from './ClothingProductDetailModal';
+export { default as ClothingPathSelector } from './ClothingPathSelector';
+export { default as ClothingLogoUploader } from './ClothingLogoUploader';
+export { default as ClothingHelpRequestForm } from './ClothingHelpRequestForm';
+export { default as ClothingConsultationBooker } from './ClothingConsultationBooker';
+export { default as ClothingLogoOptions } from './ClothingLogoOptions';
+export { default as ClothingHowItWorks } from './ClothingHowItWorks';
+export { default as ClothingOrderWizard } from './ClothingOrderWizard';
 export type { ProductGroup } from './ClothingBrowser';
+export type { ClothingSubmissionPath } from './ClothingPathSelector';
+export type { LogoOptionPath } from './ClothingLogoOptions';
+export type { WizardStep } from './ClothingOrderWizard';
