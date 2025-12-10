@@ -340,21 +340,21 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                 </ImageZoom>
               </div>
 
-              {/* Content - horizontal layout */}
-              <div className="flex-1 px-4 py-3 flex items-center gap-3 min-w-0">
+              {/* Content - horizontal layout spread across full width */}
+              <div className="flex-1 px-6 py-4 flex items-center justify-between min-w-0">
                 {/* Product Info */}
-                <div className="w-[160px] flex-shrink-0">
-                  <p className="text-[9px] font-bold tracking-[0.2em] uppercase mb-0.5" style={{ color: clothingColors.accent }}>
+                <div className="min-w-[180px] max-w-[220px]">
+                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1" style={{ color: clothingColors.accent }}>
                     {productGroup.brand}
                   </p>
-                  <h3 className="text-sm text-white leading-snug mb-1" style={{ fontFamily: fonts.subheading }}>
+                  <h3 className="text-base text-white leading-snug mb-1.5" style={{ fontFamily: fonts.subheading }}>
                     {productGroup.style_name}
                   </h3>
                   {productGroup.price_range && productGroup.price_range.min > 0 && (
-                    <p className="text-base font-bold text-white" style={{ fontFamily: fonts.body }}>
+                    <p className="text-lg font-bold text-white" style={{ fontFamily: fonts.body }}>
                       £{productGroup.price_range.min.toFixed(2)}
                       {productGroup.price_range.min !== productGroup.price_range.max && (
-                        <span className="text-[10px] font-normal text-white/40 ml-1">
+                        <span className="text-xs font-normal text-white/40 ml-1.5">
                           – £{productGroup.price_range.max.toFixed(2)}
                         </span>
                       )}
@@ -362,61 +362,61 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                   )}
                 </div>
 
-                <div className="w-px h-12 bg-white/10 flex-shrink-0" />
+                <div className="w-px h-16 bg-white/10 flex-shrink-0 mx-4" />
 
                 {/* Colors */}
                 {productGroup.colors.length > 0 && (
                   <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-                    <p className="text-[9px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                    <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-2">
                       {productGroup.colors.length} Colours
                     </p>
-                    <div className="flex flex-wrap gap-1.5 max-w-[160px]">
-                      {productGroup.colors.slice(0, 12).map((color, i) => (
+                    <div className="flex flex-wrap gap-2 max-w-[200px]">
+                      {productGroup.colors.slice(0, 15).map((color, i) => (
                         <button
                           key={color.code}
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedColorIndex(i);
                           }}
-                          className={`w-6 h-6 rounded-full transition-all duration-150 ${
+                          className={`w-7 h-7 rounded-full transition-all duration-150 ${
                             selectedColorIndex === i
-                              ? 'ring-2 ring-offset-1 ring-offset-[#1e3a2f] ring-[#64a70b] scale-110'
+                              ? 'ring-2 ring-offset-2 ring-offset-[#1e3a2f] ring-[#64a70b] scale-110'
                               : 'ring-1 ring-white/20 hover:ring-white/40'
                           }`}
                           style={{ backgroundColor: color.rgb }}
                           title={color.name}
                         />
                       ))}
-                      {productGroup.colors.length > 12 && (
-                        <span className="w-6 h-6 rounded-full bg-white/10 text-[9px] text-white/60 flex items-center justify-center">
-                          +{productGroup.colors.length - 12}
+                      {productGroup.colors.length > 15 && (
+                        <span className="w-7 h-7 rounded-full bg-white/10 text-[10px] text-white/60 flex items-center justify-center">
+                          +{productGroup.colors.length - 15}
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] text-white/40 mt-1 truncate max-w-[140px]">{currentColor?.name}</p>
+                    <p className="text-[11px] text-white/40 mt-1.5 truncate max-w-[180px]">{currentColor?.name}</p>
                   </div>
                 )}
 
-                <div className="w-px h-12 bg-white/10 flex-shrink-0" />
+                <div className="w-px h-16 bg-white/10 flex-shrink-0 mx-4" />
 
                 {/* Sizes */}
                 {sizeRange && (
                   <div className="flex-shrink-0">
-                    <p className="text-[9px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">Sizes</p>
-                    <p className="text-white text-sm font-medium whitespace-nowrap">{sizeRange}</p>
+                    <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-2">Sizes</p>
+                    <p className="text-white text-base font-medium whitespace-nowrap">{sizeRange}</p>
                   </div>
                 )}
 
-                <div className="w-px h-12 bg-white/10 flex-shrink-0" />
+                <div className="w-px h-16 bg-white/10 flex-shrink-0 mx-4" />
 
                 {/* Key Features */}
                 {(productGroup.fabric || productGroup.product_type) && (
-                  <div className="flex-shrink-0">
-                    <p className="text-[9px] font-semibold text-white/50 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                      <Shirt className="w-3 h-3" />
+                  <div className="flex-shrink-0 min-w-[140px]">
+                    <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Shirt className="w-3.5 h-3.5" />
                       Key Features
                     </p>
-                    <ul className="text-[11px] text-white/70 space-y-0.5">
+                    <ul className="text-[12px] text-white/70 space-y-1">
                       {productGroup.fabric && <li>• {productGroup.fabric.split(' ').slice(0, 3).join(' ')}</li>}
                       {productGroup.product_type && <li>• {productGroup.product_type}</li>}
                       {productGroup.colors.length > 5 && <li>• Wide choice of colours</li>}
@@ -425,14 +425,14 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                 )}
 
                 {/* CTA */}
-                <div className="flex-shrink-0 ml-auto" onClick={(e) => e.stopPropagation()}>
+                <div className="flex-shrink-0 ml-6" onClick={(e) => e.stopPropagation()}>
                   <button
                     onClick={() => navigate(`/products/${productGroup.style_code}`)}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg font-semibold text-sm text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
-                    style={{ backgroundColor: clothingColors.accent, boxShadow: '0 2px 8px rgba(100, 167, 11, 0.25)' }}
+                    className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
+                    style={{ backgroundColor: clothingColors.accent, boxShadow: '0 4px 12px rgba(100, 167, 11, 0.3)' }}
                   >
                     View Details
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
