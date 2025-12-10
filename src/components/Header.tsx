@@ -3,6 +3,7 @@ import { ShoppingCart, Heart, Send, ChevronDown, Sparkles, ArrowRight } from 'lu
 import { useCart } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useHeaderFilter } from '../contexts/HeaderFilterContext';
 import CartDrawer from './CartDrawer';
 import WishlistDrawer from './WishlistDrawer';
 
@@ -179,6 +180,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   const { cart } = useCart();
   const { wishlist } = useWishlist();
   const { colorScheme, colors } = useTheme();
+  const { filterContent } = useHeaderFilter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -889,6 +891,13 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           </div>
         </div>
       </header>
+
+        {/* Dynamic Filter Bar Slot - rendered when on clothing pages */}
+        {filterContent && (
+          <div className="border-b border-white/10">
+            {filterContent}
+          </div>
+        )}
     </div>
 
       {/* Mobile Navigation */}
