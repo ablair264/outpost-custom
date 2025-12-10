@@ -385,13 +385,12 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                           }}
                           className={`w-6 h-6 rounded-md transition-all duration-200 ${
                             selectedColorIndex === i
-                              ? 'ring-2 ring-offset-2 ring-offset-[#1a2e1a] scale-110 shadow-lg'
+                              ? 'ring-2 ring-offset-2 ring-offset-[#1a2e1a] ring-[#64a70b] scale-110 shadow-lg'
                               : 'ring-1 ring-white/10 hover:ring-white/30 hover:scale-105'
                           }`}
                           style={{
                             backgroundColor: color.rgb,
-                            boxShadow: selectedColorIndex === i ? `0 4px 12px ${color.rgb}40` : undefined,
-                            ringColor: selectedColorIndex === i ? clothingColors.accent : undefined
+                            boxShadow: selectedColorIndex === i ? `0 4px 12px ${color.rgb}40` : undefined
                           }}
                           title={color.name}
                         />
