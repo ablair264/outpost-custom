@@ -227,7 +227,27 @@ const ClothingBrowser: React.FC = () => {
     loadProducts();
   }, [selectedTypes, selectedBrands, selectedColors, selectedGenders, priceMin, priceMax, searchQuery, currentPage]);
 
-  // Group products by style
+  // Convert RGB string "R G B" to CSS rgb() value
+  const convertRgbToCSS = (rgbString: string): string => {
+    if (!rgbString || rgbString === 'Not available') return '';
+    try {
+      const rgbParts = rgbString.split('|')[0].trim();
+      const rgbNumbers = rgbParts.match(/\d+/g);
+      if (rgbNumbers && rgbNumbers.length >= 3) {
+        const r = parseInt(rgbNumbers[0]);
+        const g = parseInt(rgbNumbers[1]);
+        const b = parseInt(rgbNumbers[2]);
+        if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
+          return `rgb(${r}, ${g}, ${b})`;
+        }
+      }
+    } catch (e) {
+      // Fallback
+    }
+    return '';
+  };
+
+  // Group products by style - now uses color_variants from API
   const groupProductsByStyle = useCallback((products: Product[]): ProductGroup[] => {
     const grouped = products.reduce((groups: Record<string, Product[]>, product) => {
       const styleCode = product.style_code || 'unknown';
@@ -242,49 +262,56 @@ const ClothingBrowser: React.FC = () => {
       const variants = grouped[styleCode];
       const firstVariant = variants[0];
 
-      const uniqueColors = variants.reduce((colors: Array<{code: string, name: string, rgb: string, image: string}>, variant) => {
-        const existingColor = colors.find(c => c.code === variant.colour_code);
-        if (!existingColor && variant.colour_code) {
-          const colorName = (variant.colour_name || '').toLowerCase();
-          let rgbValue = getColorHexValue(variant.colour_name || '');
+      // Use color_variants from API if available (fast path)
+      let uniqueColors: Array<{code: string, name: string, rgb: string, image: string}> = [];
 
-          if (variant.rgb && variant.rgb !== 'Not available') {
-            try {
-              const rgbParts = variant.rgb.split('|')[0].trim();
-              const rgbNumbers = rgbParts.match(/\d+/g);
-              if (rgbNumbers && rgbNumbers.length >= 3) {
-                const r = parseInt(rgbNumbers[0]);
-                const g = parseInt(rgbNumbers[1]);
-                const b = parseInt(rgbNumbers[2]);
-                if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) {
-                  rgbValue = `rgb(${r}, ${g}, ${b})`;
-                }
-              }
-            } catch (e) {
-              // Use fallback color
-            }
+      const colorVariants = (firstVariant as any).color_variants;
+      if (colorVariants && Array.isArray(colorVariants) && colorVariants.length > 0) {
+        // Use pre-computed color variants from database
+        uniqueColors = colorVariants.map((cv: any) => ({
+          code: cv.code || '',
+          name: cv.name || cv.code || '',
+          rgb: convertRgbToCSS(cv.rgb) || getColorHexValue(cv.name || ''),
+          image: cv.image || firstVariant.primary_product_image_url
+        }));
+      } else {
+        // Fallback: extract from variant data (slower)
+        uniqueColors = variants.reduce((colors: Array<{code: string, name: string, rgb: string, image: string}>, variant) => {
+          const existingColor = colors.find(c => c.code === variant.colour_code);
+          if (!existingColor && variant.colour_code) {
+            let rgbValue = convertRgbToCSS(variant.rgb) || getColorHexValue(variant.colour_name || '');
+            colors.push({
+              code: variant.colour_code,
+              name: variant.colour_name || variant.colour_code,
+              rgb: rgbValue,
+              image: variant.colour_image || variant.primary_product_image_url
+            });
           }
+          return colors;
+        }, []);
+      }
 
-          colors.push({
-            code: variant.colour_code,
-            name: variant.colour_name || variant.colour_code,
-            rgb: rgbValue,
-            image: variant.colour_image || variant.primary_product_image_url
-          });
-        }
-        return colors;
-      }, []);
+      // Use price_min/price_max from API if available
+      const priceMin = (firstVariant as any).price_min;
+      const priceMax = (firstVariant as any).price_max;
 
-      // Only include prices from Live products (exclude Discontinued)
-      const prices = variants
-        .filter(v => v.sku_status !== 'Discontinued')
-        .map(v => parseFloat(v.single_price))
-        .filter(p => !isNaN(p) && p > 0);
-
-      const priceRange = prices.length > 0 ? {
-        min: Math.min(...prices),
-        max: Math.max(...prices)
-      } : { min: 0, max: 0 };
+      let priceRange: { min: number; max: number };
+      if (priceMin !== undefined && priceMax !== undefined) {
+        priceRange = {
+          min: parseFloat(priceMin) || 0,
+          max: parseFloat(priceMax) || 0
+        };
+      } else {
+        // Fallback: calculate from variants
+        const prices = variants
+          .filter(v => v.sku_status !== 'Discontinued')
+          .map(v => parseFloat(v.single_price))
+          .filter(p => !isNaN(p) && p > 0);
+        priceRange = prices.length > 0 ? {
+          min: Math.min(...prices),
+          max: Math.max(...prices)
+        } : { min: 0, max: 0 };
+      }
 
       return {
         style_code: styleCode,

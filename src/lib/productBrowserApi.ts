@@ -127,64 +127,70 @@ export async function getAllProducts(
     }
 
     // Convert styles to Product format for the browser view
-    // No need to fetch variants - product_styles already has aggregated data
-    // Note: Some fields are placeholders since styles aggregate multiple variants
-    const products: Product[] = stylesResponse.styles.map(style => ({
-      // Core identifiers
-      id: style.id,
-      sku_code: style.style_code,
-      style_code: style.style_code,
-      style_name: style.style_name,
+    // product_styles now includes color_variants JSONB with full color info
+    const products: Product[] = stylesResponse.styles.map(style => {
+      // Get first color variant for default display
+      const firstColor = style.color_variants?.[0];
 
-      // Basic info
-      brand: style.brand,
-      product_type: style.product_type,
-      gender: style.gender,
-      age_group: style.age_group,
+      return {
+        // Core identifiers
+        id: style.id,
+        sku_code: style.style_code,
+        style_code: style.style_code,
+        style_name: style.style_name,
 
-      // Pricing - use aggregated min/max
-      single_price: style.price_min?.toString() || '0',
-      price_min: style.price_min,
-      price_max: style.price_max,
+        // Basic info
+        brand: style.brand,
+        product_type: style.product_type,
+        gender: style.gender,
+        age_group: style.age_group,
 
-      // Image
-      primary_product_image_url: style.primary_product_image_url,
+        // Pricing - use aggregated min/max
+        single_price: style.price_min?.toString() || '0',
+        price_min: style.price_min,
+        price_max: style.price_max,
 
-      // Color fields - use first available color or placeholder
-      // These are required by Product interface but styles have multiple colors
-      primary_colour: style.available_colors?.[0] || '',
-      colour_code: '',
-      colour_name: style.available_colors?.[0] || '',
-      colour_image: style.primary_product_image_url || '',
-      rgb: '',
-      colour_shade: style.color_shades?.[0] || '',
+        // Image
+        primary_product_image_url: style.primary_product_image_url,
 
-      // Size fields - placeholder since styles have multiple sizes
-      size_code: '',
-      size_name: style.available_sizes?.[0] || '',
-      size_range: style.size_range || '',
+        // Color fields from first color variant
+        primary_colour: firstColor?.name || style.available_colors?.[0] || '',
+        colour_code: firstColor?.code || '',
+        colour_name: firstColor?.name || style.available_colors?.[0] || '',
+        colour_image: firstColor?.image || style.primary_product_image_url || '',
+        rgb: firstColor?.rgb || '',
+        colour_shade: style.color_shades?.[0] || '',
 
-      // Description
-      retail_description: style.retail_description,
-      specification: style.specification,
-      fabric: style.fabric,
+        // Size fields - placeholder since styles have multiple sizes
+        size_code: '',
+        size_name: style.available_sizes?.[0] || '',
+        size_range: style.size_range || '',
 
-      // Aggregated arrays for filtering display (extended properties)
-      available_sizes: style.available_sizes || [],
-      available_colors: style.available_colors || [],
-      color_shades: style.color_shades || [],
+        // Description
+        retail_description: style.retail_description,
+        specification: style.specification,
+        fabric: style.fabric,
 
-      // Count of variants
-      variant_count: style.variant_count,
+        // Aggregated arrays for filtering display (extended properties)
+        available_sizes: style.available_sizes || [],
+        available_colors: style.available_colors || [],
+        color_shades: style.color_shades || [],
 
-      // Status
-      sku_status: style.is_live ? 'Live' : 'Discontinued',
+        // Color variants with full RGB/image data for swatches
+        color_variants: style.color_variants || [],
 
-      // Additional metadata
-      categorisation: style.categorisation,
-      accreditations: style.accreditations,
-      sustainable_organic: style.sustainable_organic,
-    } as Product));
+        // Count of variants
+        variant_count: style.variant_count,
+
+        // Status
+        sku_status: style.is_live ? 'Live' : 'Discontinued',
+
+        // Additional metadata
+        categorisation: style.categorisation,
+        accreditations: style.accreditations,
+        sustainable_organic: style.sustainable_organic,
+      } as Product;
+    });
 
     console.log('📊 Query result:', {
       stylesFound: stylesResponse.styles.length,
