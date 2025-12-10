@@ -289,144 +289,242 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
             </div>
           </button>
         ) : (
-          /* Expanded Card - Editorial magazine-style layout */
+          /* Expanded Card - Horizontal on desktop, compact vertical on mobile */
           <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-            className="relative group"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
+            className="relative cursor-pointer"
             onClick={onClose}
           >
-            {/* Subtle gradient overlay for depth */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent rounded-2xl pointer-events-none" />
-
-            {/* Close button - minimal, top right */}
-            <button
-              onClick={onClose}
-              className="absolute top-3 right-3 z-20 p-1 rounded-full text-white/40 hover:text-white/80 hover:bg-white/10 transition-all"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            {/* Main content grid */}
-            <div className="flex gap-4 p-4">
-              {/* Image - larger, more prominent with subtle shadow */}
+            {/* Desktop: Horizontal layout */}
+            <div className="hidden sm:flex">
+              {/* Image section - with zoom capability */}
               <div
-                className="relative w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-white to-gray-100 shadow-lg shadow-black/20"
+                className="w-[180px] bg-white relative flex-shrink-0 rounded-l-2xl overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
-                <img
-                  src={currentImage !== 'Not available'
-                    ? currentImage
-                    : `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`
-                  }
-                  alt={productGroup.style_name}
-                  className="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
-                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                    e.currentTarget.src = `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`;
-                  }}
-                />
+                <button
+                  onClick={onClose}
+                  className="absolute top-3 left-3 z-20 p-1.5 rounded-full bg-black/50 hover:bg-black/70 transition-all backdrop-blur-sm"
+                >
+                  <X className="w-3.5 h-3.5 text-white" />
+                </button>
+
+                <motion.div
+                  className="absolute bottom-3 right-3 z-20 p-1.5 rounded-full bg-black/50 pointer-events-none backdrop-blur-sm"
+                  initial={{ opacity: 0.8 }}
+                  animate={{ opacity: isImageZoomed ? 0 : 0.8 }}
+                >
+                  <ZoomIn className="w-3 h-3 text-white" />
+                </motion.div>
+
+                <ImageZoom
+                  zoomScale={2.5}
+                  zoomOnHover={false}
+                  zoomOnClick={true}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                >
+                  <Image
+                    src={currentImage !== 'Not available'
+                      ? currentImage
+                      : `https://via.placeholder.com/600x600/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`
+                    }
+                    alt={productGroup.style_name}
+                    objectFit="contain"
+                    style={{ padding: '1rem' }}
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                      e.currentTarget.src = `https://via.placeholder.com/600x600/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`;
+                    }}
+                  />
+                </ImageZoom>
               </div>
 
-              {/* Content - tighter vertical rhythm */}
-              <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-                {/* Header section */}
-                <div>
-                  {/* Brand with accent underline effect */}
-                  <p className="text-[10px] font-semibold tracking-[0.15em] uppercase mb-1" style={{ color: clothingColors.accent }}>
+              {/* Content - horizontal layout */}
+              <div className="flex-1 px-4 py-3 flex items-center gap-3 min-w-0">
+                {/* Product Info */}
+                <div className="w-[160px] flex-shrink-0">
+                  <p className="text-[9px] font-bold tracking-[0.2em] uppercase mb-0.5" style={{ color: clothingColors.accent }}>
                     {productGroup.brand}
                   </p>
-
-                  {/* Product name - more presence */}
-                  <h3 className="text-base sm:text-lg font-semibold text-white leading-tight line-clamp-2 mb-1" style={{ fontFamily: fonts.subheading }}>
+                  <h3 className="text-sm text-white leading-snug mb-1" style={{ fontFamily: fonts.subheading }}>
                     {productGroup.style_name}
                   </h3>
-
-                  {/* Meta info inline */}
-                  <div className="flex items-center gap-2 text-[11px] text-white/50">
-                    {productGroup.product_type && <span>{productGroup.product_type}</span>}
-                    {productGroup.product_type && productGroup.fabric && <span className="text-white/20">·</span>}
-                    {productGroup.fabric && <span>{productGroup.fabric.split(' ').slice(0, 2).join(' ')}</span>}
-                  </div>
+                  {productGroup.price_range && productGroup.price_range.min > 0 && (
+                    <p className="text-base font-bold text-white" style={{ fontFamily: fonts.body }}>
+                      £{productGroup.price_range.min.toFixed(2)}
+                      {productGroup.price_range.min !== productGroup.price_range.max && (
+                        <span className="text-[10px] font-normal text-white/40 ml-1">
+                          – £{productGroup.price_range.max.toFixed(2)}
+                        </span>
+                      )}
+                    </p>
+                  )}
                 </div>
 
-                {/* Price - bottom aligned with the image */}
-                {productGroup.price_range && productGroup.price_range.min > 0 && (
-                  <div className="flex items-baseline gap-1 mt-2">
-                    <span className="text-[11px] text-white/40">from</span>
-                    <span className="text-xl font-bold text-white tabular-nums" style={{ fontFamily: fonts.body }}>
-                      £{productGroup.price_range.min.toFixed(2)}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
+                <div className="w-px h-12 bg-white/10 flex-shrink-0" />
 
-            {/* Bottom section - colors, sizes, CTA */}
-            <div className="px-4 pb-4 space-y-3" onClick={(e) => e.stopPropagation()}>
-              {/* Divider */}
-              <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-              {/* Colors and Sizes row */}
-              <div className="flex items-end justify-between gap-4">
                 {/* Colors */}
                 {productGroup.colors.length > 0 && (
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] text-white/40 mb-1.5">
-                      {productGroup.colors.length} colour{productGroup.colors.length !== 1 ? 's' : ''} available
+                  <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <p className="text-[9px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">
+                      {productGroup.colors.length} Colours
                     </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {productGroup.colors.slice(0, 10).map((color, i) => (
+                    <div className="flex flex-wrap gap-1.5 max-w-[160px]">
+                      {productGroup.colors.slice(0, 12).map((color, i) => (
                         <button
                           key={color.code}
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedColorIndex(i);
                           }}
-                          className={`w-6 h-6 rounded-md transition-all duration-200 ${
+                          className={`w-6 h-6 rounded-full transition-all duration-150 ${
                             selectedColorIndex === i
-                              ? 'ring-2 ring-offset-2 ring-offset-[#1a2e1a] ring-[#64a70b] scale-110 shadow-lg'
-                              : 'ring-1 ring-white/10 hover:ring-white/30 hover:scale-105'
+                              ? 'ring-2 ring-offset-1 ring-offset-[#1e3a2f] ring-[#64a70b] scale-110'
+                              : 'ring-1 ring-white/20 hover:ring-white/40'
                           }`}
-                          style={{
-                            backgroundColor: color.rgb,
-                            boxShadow: selectedColorIndex === i ? `0 4px 12px ${color.rgb}40` : undefined
-                          }}
+                          style={{ backgroundColor: color.rgb }}
                           title={color.name}
                         />
                       ))}
-                      {productGroup.colors.length > 10 && (
-                        <span className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center text-[10px] text-white/50 ring-1 ring-white/10">
-                          +{productGroup.colors.length - 10}
+                      {productGroup.colors.length > 12 && (
+                        <span className="w-6 h-6 rounded-full bg-white/10 text-[9px] text-white/60 flex items-center justify-center">
+                          +{productGroup.colors.length - 12}
                         </span>
                       )}
                     </div>
+                    <p className="text-[10px] text-white/40 mt-1 truncate max-w-[140px]">{currentColor?.name}</p>
                   </div>
                 )}
 
-                {/* Sizes - compact pill */}
+                <div className="w-px h-12 bg-white/10 flex-shrink-0" />
+
+                {/* Sizes */}
                 {sizeRange && (
-                  <div className="flex-shrink-0 text-right">
-                    <p className="text-[10px] text-white/40 mb-1.5">Sizes</p>
-                    <span className="inline-block px-2.5 py-1 rounded-md bg-white/5 text-sm text-white/90 font-medium ring-1 ring-white/10">
-                      {sizeRange}
-                    </span>
+                  <div className="flex-shrink-0">
+                    <p className="text-[9px] font-semibold text-white/50 uppercase tracking-wider mb-1.5">Sizes</p>
+                    <p className="text-white text-sm font-medium whitespace-nowrap">{sizeRange}</p>
                   </div>
                 )}
+
+                <div className="w-px h-12 bg-white/10 flex-shrink-0" />
+
+                {/* Key Features */}
+                {(productGroup.fabric || productGroup.product_type) && (
+                  <div className="flex-shrink-0">
+                    <p className="text-[9px] font-semibold text-white/50 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                      <Shirt className="w-3 h-3" />
+                      Key Features
+                    </p>
+                    <ul className="text-[11px] text-white/70 space-y-0.5">
+                      {productGroup.fabric && <li>• {productGroup.fabric.split(' ').slice(0, 3).join(' ')}</li>}
+                      {productGroup.product_type && <li>• {productGroup.product_type}</li>}
+                      {productGroup.colors.length > 5 && <li>• Wide choice of colours</li>}
+                    </ul>
+                  </div>
+                )}
+
+                {/* CTA */}
+                <div className="flex-shrink-0 ml-auto" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => navigate(`/products/${productGroup.style_code}`)}
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg font-semibold text-sm text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
+                    style={{ backgroundColor: clothingColors.accent, boxShadow: '0 2px 8px rgba(100, 167, 11, 0.25)' }}
+                  >
+                    View Details
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile: Compact horizontal layout */}
+            <div className="flex sm:hidden">
+              {/* Image - smaller on mobile */}
+              <div
+                className="w-[100px] h-[100px] bg-white flex-shrink-0 rounded-l-2xl overflow-hidden relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={onClose}
+                  className="absolute top-2 left-2 z-20 p-1 rounded-full bg-black/50"
+                >
+                  <X className="w-3 h-3 text-white" />
+                </button>
+                <img
+                  src={currentImage !== 'Not available'
+                    ? currentImage
+                    : `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`
+                  }
+                  alt={productGroup.style_name}
+                  className="w-full h-full object-contain p-2"
+                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                    e.currentTarget.src = `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`;
+                  }}
+                />
               </div>
 
-              {/* CTA Button - refined with hover state */}
-              <button
-                onClick={() => navigate(`/products/${productGroup.style_code}`)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm text-white transition-all duration-200 hover:shadow-xl hover:shadow-[#64a70b]/20 active:scale-[0.98] group/btn"
-                style={{
-                  backgroundColor: clothingColors.accent,
-                  backgroundImage: 'linear-gradient(to bottom, rgba(255,255,255,0.1), transparent)'
-                }}
-              >
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
-              </button>
+              {/* Content - vertical stack */}
+              <div className="flex-1 p-3 min-w-0 flex flex-col">
+                {/* Header: Brand + Name + Price */}
+                <div className="mb-2">
+                  <p className="text-[9px] font-bold tracking-[0.2em] uppercase" style={{ color: clothingColors.accent }}>
+                    {productGroup.brand}
+                  </p>
+                  <h3 className="text-sm text-white leading-snug line-clamp-1" style={{ fontFamily: fonts.subheading }}>
+                    {productGroup.style_name}
+                  </h3>
+                  {productGroup.price_range && productGroup.price_range.min > 0 && (
+                    <p className="text-base font-bold text-white mt-0.5" style={{ fontFamily: fonts.body }}>
+                      £{productGroup.price_range.min.toFixed(2)}
+                    </p>
+                  )}
+                </div>
+
+                {/* Colors row - compact */}
+                {productGroup.colors.length > 0 && (
+                  <div className="flex items-center gap-2 mb-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-1">
+                      {productGroup.colors.slice(0, 6).map((color, i) => (
+                        <button
+                          key={color.code}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedColorIndex(i);
+                          }}
+                          className={`w-5 h-5 rounded-full transition-all ${
+                            selectedColorIndex === i
+                              ? 'ring-2 ring-offset-1 ring-offset-[#1e3a2f] ring-[#64a70b] scale-110'
+                              : 'ring-1 ring-white/20'
+                          }`}
+                          style={{ backgroundColor: color.rgb }}
+                        />
+                      ))}
+                      {productGroup.colors.length > 6 && (
+                        <span className="text-[10px] text-white/50 self-center ml-0.5">+{productGroup.colors.length - 6}</span>
+                      )}
+                    </div>
+                    {sizeRange && (
+                      <>
+                        <span className="text-white/20">·</span>
+                        <span className="text-[11px] text-white/60">{sizeRange}</span>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* CTA - full width */}
+                <div className="mt-auto" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => navigate(`/products/${productGroup.style_code}`)}
+                    className="w-full flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-xs text-white"
+                    style={{ backgroundColor: clothingColors.accent }}
+                  >
+                    View Details
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
