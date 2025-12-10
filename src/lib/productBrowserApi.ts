@@ -128,6 +128,7 @@ export async function getAllProducts(
 
     // Convert styles to Product format for the browser view
     // No need to fetch variants - product_styles already has aggregated data
+    // Note: Some fields are placeholders since styles aggregate multiple variants
     const products: Product[] = stylesResponse.styles.map(style => ({
       // Core identifiers
       id: style.id,
@@ -142,30 +143,42 @@ export async function getAllProducts(
       age_group: style.age_group,
 
       // Pricing - use aggregated min/max
-      single_price: style.price_min,
+      single_price: style.price_min?.toString() || '0',
       price_min: style.price_min,
       price_max: style.price_max,
 
       // Image
       primary_product_image_url: style.primary_product_image_url,
 
+      // Color fields - use first available color or placeholder
+      // These are required by Product interface but styles have multiple colors
+      primary_colour: style.available_colors?.[0] || '',
+      colour_code: '',
+      colour_name: style.available_colors?.[0] || '',
+      colour_image: style.primary_product_image_url || '',
+      rgb: '',
+      colour_shade: style.color_shades?.[0] || '',
+
+      // Size fields - placeholder since styles have multiple sizes
+      size_code: '',
+      size_name: style.available_sizes?.[0] || '',
+      size_range: style.size_range || '',
+
       // Description
       retail_description: style.retail_description,
       specification: style.specification,
       fabric: style.fabric,
 
-      // Aggregated arrays for filtering display
+      // Aggregated arrays for filtering display (extended properties)
       available_sizes: style.available_sizes || [],
       available_colors: style.available_colors || [],
       color_shades: style.color_shades || [],
-      size_range: style.size_range,
 
       // Count of variants
       variant_count: style.variant_count,
 
       // Status
       sku_status: style.is_live ? 'Live' : 'Discontinued',
-      is_live: style.is_live,
 
       // Additional metadata
       categorisation: style.categorisation,

@@ -747,14 +747,13 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
         }
       `}</style>
 
-      <div ref={headerRef} className={`fixed top-0 left-0 right-0 z-50 ${className}`}>
+      <div
+        ref={headerRef}
+        className={`fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-all ${isScrolled ? 'backdrop-blur-md' : ''} ${className}`}
+        style={{ backgroundColor: isScrolled ? `${colors.headerBg}f2` : colors.headerBg }}
+      >
         {/* Compact Single-Line Header */}
-        <header
-          className={`border-b border-white/10 transition-all ${isScrolled ? 'backdrop-blur-md' : ''}`}
-          style={{
-            backgroundColor: isScrolled ? `${colors.headerBg}f2` : colors.headerBg
-          }}
-        >
+        <header className="border-b border-white/10">
           <div className="max-w-[1600px] mx-auto px-4 lg:px-8">
             <div className="flex items-center justify-between h-14">
 

@@ -870,78 +870,62 @@ const ClothingBrowser: React.FC = () => {
             </div>
           </aside>
 
-          {/* Mobile Filter Button */}
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="lg:hidden fixed bottom-6 left-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full shadow-lg font-medium text-black"
-            style={{ backgroundColor: clothingColors.accent }}
-          >
-            <Filter className="w-5 h-5" />
-            Filters
-            {hasActiveFilters && (
-              <span className="w-2 h-2 rounded-full bg-white" />
-            )}
-          </button>
+          {/* Mobile Filter Bar - Sticky below header */}
+          <div className="lg:hidden sticky top-14 z-40 -mx-6 md:-mx-8 px-4 py-2" style={{ backgroundColor: clothingColors.dark }}>
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-white/20 transition-all"
+              style={{ backgroundColor: clothingColors.secondary }}
+            >
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-white/70" />
+                <span className="font-medium text-white text-sm">Filters</span>
+                {hasActiveFilters && (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: clothingColors.accent, color: 'black' }}>
+                    {selectedTypes.length + selectedBrands.length + selectedColors.length + selectedGenders.length}
+                  </span>
+                )}
+              </div>
+              <ChevronDown className={`w-5 h-5 text-white/70 transition-transform duration-200 ${sidebarOpen ? 'rotate-180' : ''}`} />
+            </button>
 
-          {/* Mobile Filter Drawer */}
-          <AnimatePresence>
-            {sidebarOpen && (
-              <>
+            {/* Slide-down filter panel */}
+            <AnimatePresence>
+              {sidebarOpen && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setSidebarOpen(false)}
-                  className="lg:hidden fixed inset-0 bg-black/60 z-50"
-                />
-                <motion.div
-                  initial={{ x: '-100%' }}
-                  animate={{ x: 0 }}
-                  exit={{ x: '-100%' }}
-                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                  className="lg:hidden fixed left-0 top-0 bottom-0 w-80 max-w-[85vw] z-50 overflow-y-auto"
-                  style={{ backgroundColor: clothingColors.secondary }}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
                 >
-                  <div className="p-5 border-b border-white/10 flex items-center justify-between">
-                    <h2 className="font-semibold text-white text-lg">Filters</h2>
-                    <button
-                      onClick={() => setSidebarOpen(false)}
-                      className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                    >
-                      <X className="w-5 h-5 text-white" />
-                    </button>
-                  </div>
+                  <div className="pt-3 pb-2">
+                    {hasActiveFilters && (
+                      <div className="mb-3">
+                        <button
+                          onClick={clearAllFilters}
+                          className="text-xs font-medium px-3 py-1.5 rounded-full transition-all"
+                          style={{ color: clothingColors.accent, backgroundColor: `${clothingColors.accent}20` }}
+                        >
+                          Clear all filters
+                        </button>
+                      </div>
+                    )}
 
-                  {hasActiveFilters && (
-                    <div className="p-5 border-b border-white/10">
-                      <button
-                        onClick={() => {
-                          clearAllFilters();
-                          setSidebarOpen(false);
-                        }}
-                        className="w-full text-center text-sm font-medium py-2.5 rounded-xl transition-all"
-                        style={{ color: clothingColors.accent, backgroundColor: `${clothingColors.accent}20` }}
-                      >
-                        Clear all filters
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Mobile filter sections - same as desktop */}
-                  <div className="p-5 space-y-4">
                     {/* Product Types */}
-                    <div>
-                      <p className="text-sm font-semibold text-white mb-3">Product Type</p>
-                      <div className="flex flex-wrap gap-2">
-                        {filterOptions.productTypes.slice(0, 20).map(type => (
+                    <div className="mb-4">
+                      <p className="text-xs font-semibold text-white/70 mb-2 uppercase tracking-wide">Product Type</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {filterOptions.productTypes.slice(0, 15).map(type => (
                           <button
                             key={type}
                             onClick={() => toggleType(type)}
                             className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${
                               selectedTypes.includes(type)
-                                ? 'bg-[#78BE20] text-black'
-                                : 'bg-white/10 text-white/80 hover:bg-white/20'
+                                ? 'text-black'
+                                : 'bg-white/10 text-white/80'
                             }`}
+                            style={selectedTypes.includes(type) ? { backgroundColor: clothingColors.accent } : {}}
                           >
                             {type}
                           </button>
@@ -949,11 +933,11 @@ const ClothingBrowser: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Colours */}
-                    <div>
-                      <p className="text-sm font-semibold text-white mb-3">Colour</p>
-                      <div className="flex flex-wrap gap-2">
-                        {filterOptions.colors.map(color => {
+                    {/* Colors */}
+                    <div className="mb-4">
+                      <p className="text-xs font-semibold text-white/70 mb-2 uppercase tracking-wide">Colour</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {filterOptions.colors.slice(0, 12).map(color => {
                           const isSelected = selectedColors.includes(color);
                           const colorHex = getColorHexValue(color);
                           const isLight = colorHex === '#FFFFFF' || colorHex === '#FFFDD0';
@@ -961,7 +945,7 @@ const ClothingBrowser: React.FC = () => {
                             <button
                               key={color}
                               onClick={() => toggleColor(color)}
-                              className={`relative w-8 h-8 rounded-full border-2 transition-all ${
+                              className={`relative w-7 h-7 rounded-full border-2 transition-all ${
                                 isSelected
                                   ? 'border-[#78BE20] scale-110'
                                   : isLight
@@ -972,28 +956,39 @@ const ClothingBrowser: React.FC = () => {
                               title={color}
                             >
                               {isSelected && (
-                                <Check className={`absolute inset-0 m-auto w-4 h-4 ${isLight ? 'text-black' : 'text-white'}`} />
+                                <Check className={`absolute inset-0 m-auto w-3 h-3 ${isLight ? 'text-black' : 'text-white'}`} />
                               )}
                             </button>
                           );
                         })}
                       </div>
                     </div>
-                  </div>
 
-                  <div className="p-5 mt-auto border-t border-white/10">
-                    <button
-                      onClick={() => setSidebarOpen(false)}
-                      className="w-full py-3 rounded-xl font-semibold text-black transition-all"
-                      style={{ backgroundColor: clothingColors.accent }}
-                    >
-                      Show {productGroups.length} Products
-                    </button>
+                    {/* Brands */}
+                    <div>
+                      <p className="text-xs font-semibold text-white/70 mb-2 uppercase tracking-wide">Brand</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {filterOptions.brandOptions.slice(0, 8).map(brand => (
+                          <button
+                            key={brand.name}
+                            onClick={() => toggleBrand(brand.name)}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${
+                              selectedBrands.includes(brand.name)
+                                ? 'text-black'
+                                : 'bg-white/10 text-white/80'
+                            }`}
+                            style={selectedBrands.includes(brand.name) ? { backgroundColor: clothingColors.accent } : {}}
+                          >
+                            {brand.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
-              </>
-            )}
-          </AnimatePresence>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Product Grid */}
           <main className="flex-1 min-w-0">

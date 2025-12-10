@@ -261,7 +261,7 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
               </p>
 
               {/* Name */}
-              <h3 className="text-sm text-white leading-tight mb-2 line-clamp-2 min-h-[40px]" style={{ fontFamily: fonts.subheading }}>
+              <h3 className="text-sm text-white leading-tight mb-2 line-clamp-3 sm:line-clamp-2 min-h-[48px] sm:min-h-[40px]" style={{ fontFamily: fonts.subheading }}>
                 {productGroup.style_name}
               </h3>
 
@@ -291,24 +291,24 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
             </div>
           </button>
         ) : (
-          /* Expanded Card - Compact single-row layout */
+          /* Expanded Card - Responsive layout: vertical on mobile, horizontal on desktop */
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.15 }}
-            className="relative flex cursor-pointer"
+            className="relative flex flex-col sm:flex-row cursor-pointer"
             onClick={onClose}
           >
             {/* Image section */}
             <div
-              className="w-[140px] bg-white relative flex-shrink-0 rounded-l-2xl overflow-hidden"
+              className="w-full sm:w-[140px] aspect-square sm:aspect-auto bg-white relative flex-shrink-0 rounded-t-2xl sm:rounded-t-none sm:rounded-l-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={onClose}
-                className="absolute top-2 left-2 z-20 p-1 rounded-full bg-black/60 hover:bg-black/80 transition-all"
+                className="absolute top-2 left-2 z-20 p-1.5 sm:p-1 rounded-full bg-black/60 hover:bg-black/80 transition-all"
               >
-                <X className="w-3 h-3 text-white" />
+                <X className="w-4 h-4 sm:w-3 sm:h-3 text-white" />
               </button>
 
               <motion.div
@@ -340,21 +340,21 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
               </ImageZoom>
             </div>
 
-            {/* Content */}
-            <div className="flex-1 p-4 flex items-center gap-4 min-w-0">
+            {/* Content - stack on mobile, row on desktop */}
+            <div className="flex-1 p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0">
               {/* Product Info */}
-              <div className="w-[180px] flex-shrink-0">
-                <p className="text-[9px] font-bold tracking-[0.15em] uppercase mb-0.5" style={{ color: clothingColors.accent }}>
+              <div className="sm:w-[180px] flex-shrink-0">
+                <p className="text-[10px] sm:text-[9px] font-bold tracking-[0.15em] uppercase mb-0.5" style={{ color: clothingColors.accent }}>
                   {productGroup.brand}
                 </p>
-                <h3 className="text-sm text-white leading-tight mb-1" style={{ fontFamily: fonts.subheading }}>
+                <h3 className="text-base sm:text-sm text-white leading-tight mb-1" style={{ fontFamily: fonts.subheading }}>
                   {productGroup.style_name}
                 </h3>
                 {productGroup.price_range && productGroup.price_range.min > 0 && (
-                  <p className="text-base font-bold text-white" style={{ fontFamily: fonts.body }}>
+                  <p className="text-lg sm:text-base font-bold text-white" style={{ fontFamily: fonts.body }}>
                     £{productGroup.price_range.min.toFixed(2)}
                     {productGroup.price_range.min !== productGroup.price_range.max && (
-                      <span className="text-[10px] font-normal text-white/50 ml-1">
+                      <span className="text-xs sm:text-[10px] font-normal text-white/50 ml-1">
                         – £{productGroup.price_range.max.toFixed(2)}
                       </span>
                     )}
@@ -362,65 +362,67 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                 )}
               </div>
 
-              <div className="w-px h-14 bg-white/10 flex-shrink-0" />
+              <div className="hidden sm:block w-px h-14 bg-white/10 flex-shrink-0" />
 
-              {/* Colors */}
-              {productGroup.colors.length > 0 && (
-                <div className="min-w-0 flex-shrink" onClick={(e) => e.stopPropagation()}>
-                  <p className="text-[9px] font-semibold text-white/40 uppercase tracking-wider mb-1">
-                    {productGroup.colors.length} Colours
-                  </p>
-                  <div className="flex flex-wrap gap-1 max-w-[140px]">
-                    {productGroup.colors.slice(0, 8).map((color, i) => (
-                      <button
-                        key={color.code}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedColorIndex(i);
-                        }}
-                        className={`w-5 h-5 rounded-full transition-all ${
-                          selectedColorIndex === i
-                            ? 'ring-2 ring-offset-1 ring-offset-[#1e3a2f] ring-[#64a70b] scale-110'
-                            : 'ring-1 ring-white/20 hover:ring-white/40'
-                        }`}
-                        style={{ backgroundColor: color.rgb }}
-                        title={color.name}
-                      />
-                    ))}
-                    {productGroup.colors.length > 8 && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/products/${productGroup.style_code}`);
-                        }}
-                        className="w-5 h-5 rounded-full bg-white/10 hover:bg-white/20 text-[8px] text-white/60 hover:text-white font-medium transition-all flex items-center justify-center"
-                        title={`View all ${productGroup.colors.length} colours`}
-                      >
-                        +{productGroup.colors.length - 8}
-                      </button>
-                    )}
+              {/* Colors and Size row on mobile */}
+              <div className="flex items-start gap-4 sm:contents" onClick={(e) => e.stopPropagation()}>
+                {/* Colors */}
+                {productGroup.colors.length > 0 && (
+                  <div className="flex-1 sm:flex-shrink min-w-0">
+                    <p className="text-[10px] sm:text-[9px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 sm:mb-1">
+                      {productGroup.colors.length} Colours
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-1 sm:max-w-[140px]">
+                      {productGroup.colors.slice(0, 8).map((color, i) => (
+                        <button
+                          key={color.code}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedColorIndex(i);
+                          }}
+                          className={`w-6 h-6 sm:w-5 sm:h-5 rounded-full transition-all ${
+                            selectedColorIndex === i
+                              ? 'ring-2 ring-offset-1 ring-offset-[#1e3a2f] ring-[#64a70b] scale-110'
+                              : 'ring-1 ring-white/20 hover:ring-white/40'
+                          }`}
+                          style={{ backgroundColor: color.rgb }}
+                          title={color.name}
+                        />
+                      ))}
+                      {productGroup.colors.length > 8 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/products/${productGroup.style_code}`);
+                          }}
+                          className="w-6 h-6 sm:w-5 sm:h-5 rounded-full bg-white/10 hover:bg-white/20 text-[9px] sm:text-[8px] text-white/60 hover:text-white font-medium transition-all flex items-center justify-center"
+                          title={`View all ${productGroup.colors.length} colours`}
+                        >
+                          +{productGroup.colors.length - 8}
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-[10px] sm:text-[9px] text-white/40 mt-1 sm:mt-0.5 truncate">{currentColor?.name}</p>
                   </div>
-                  <p className="text-[9px] text-white/40 mt-0.5 truncate max-w-[140px]">{currentColor?.name}</p>
-                </div>
-              )}
+                )}
 
-              <div className="w-px h-14 bg-white/10 flex-shrink-0" />
+                <div className="hidden sm:block w-px h-14 bg-white/10 flex-shrink-0" />
 
-              {/* Size */}
-              {sizeRange && (
-                <div className="flex-shrink-0">
-                  <p className="text-[9px] font-semibold text-white/40 uppercase tracking-wider mb-1">
-                    Sizes
-                  </p>
-                  <p className="text-white text-sm font-medium whitespace-nowrap">
-                    {sizeRange}
-                  </p>
-                </div>
-              )}
+                {/* Size */}
+                {sizeRange && (
+                  <div className="flex-shrink-0">
+                    <p className="text-[10px] sm:text-[9px] font-semibold text-white/40 uppercase tracking-wider mb-1">
+                      Sizes
+                    </p>
+                    <p className="text-white text-base sm:text-sm font-medium whitespace-nowrap">
+                      {sizeRange}
+                    </p>
+                  </div>
+                )}
+              </div>
 
-              <div className="w-px h-14 bg-white/10 flex-shrink-0" />
-
-              {/* Key Features */}
+              {/* Features - hidden on mobile */}
+              <div className="hidden sm:block w-px h-14 bg-white/10 flex-shrink-0" />
               {(() => {
                 const features = [
                   productGroup.variants[0]?.product_feature_1,
@@ -431,7 +433,7 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                 if (features.length === 0) return null;
 
                 return (
-                  <div className="flex-1 min-w-[140px] max-w-[220px]">
+                  <div className="hidden sm:block flex-1 min-w-[140px] max-w-[220px]">
                     <p className="text-[9px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                       <Sparkles className="w-2.5 h-2.5" />
                       Features
@@ -447,25 +449,25 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                 );
               })()}
 
-              {/* CTA */}
-              <div className="flex-shrink-0 ml-auto flex gap-2" onClick={(e) => e.stopPropagation()}>
+              {/* CTA - full width on mobile */}
+              <div className="flex-shrink-0 sm:ml-auto flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setShowQuoteModal(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm text-white transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap border-2 border-white/30 hover:border-[#64a70b] hover:bg-[#64a70b]/10"
+                  className="flex items-center justify-center sm:justify-start gap-1.5 px-4 py-2.5 sm:py-2 rounded-lg font-semibold text-sm text-white transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap border-2 border-white/30 hover:border-[#64a70b] hover:bg-[#64a70b]/10"
                 >
-                  <MessageSquare className="w-3.5 h-3.5" />
+                  <MessageSquare className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   Get Quote
                 </button>
                 <button
                   onClick={() => navigate(`/products/${productGroup.style_code}`)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm text-black transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
+                  className="flex items-center justify-center sm:justify-start gap-1.5 px-4 py-2.5 sm:py-2 rounded-lg font-semibold text-sm text-black transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
                   style={{
                     backgroundColor: clothingColors.accent,
                     boxShadow: '0 4px 12px rgba(100, 167, 11, 0.25)'
                   }}
                 >
                   View Details
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                 </button>
               </div>
             </div>

@@ -289,8 +289,10 @@ const UnifiedChatWidget: React.FC = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className={`bg-[#183028] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/10 ${
-                isExpanded ? 'w-[900px] h-[600px]' : 'w-[380px] h-[550px]'
+              className={`bg-[#183028] shadow-2xl flex flex-col overflow-hidden border border-white/10 ${
+                isExpanded
+                  ? 'fixed inset-0 sm:relative sm:inset-auto w-full h-full sm:w-[900px] sm:h-[600px] sm:rounded-2xl rounded-none'
+                  : 'fixed inset-0 sm:relative sm:inset-auto w-full h-full sm:w-[380px] sm:h-[550px] sm:rounded-2xl rounded-none'
               }`}
             >
               {/* Header */}
@@ -323,10 +325,10 @@ const UnifiedChatWidget: React.FC = () => {
               </div>
 
               {/* Content */}
-              <div className="flex-1 flex overflow-hidden">
-                {/* Products Panel (left, only in SmartSearch) */}
+              <div className="flex-1 flex flex-col sm:flex-row overflow-hidden">
+                {/* Products Panel (top on mobile, left on desktop, only in SmartSearch) */}
                 {isExpanded && (
-                  <div className="w-[55%] border-r border-white/10">
+                  <div className="h-[45%] sm:h-auto sm:w-[55%] border-b sm:border-b-0 sm:border-r border-white/10 overflow-auto">
                     <SmartSearchResults
                       products={products}
                       isLoading={loading && hasSearched}
@@ -337,7 +339,7 @@ const UnifiedChatWidget: React.FC = () => {
                 )}
 
                 {/* Chat Panel */}
-                <div className={`flex flex-col ${isExpanded ? 'w-[45%]' : 'w-full'}`}>
+                <div className={`flex flex-col ${isExpanded ? 'h-[55%] sm:h-auto sm:w-[45%]' : 'w-full'}`}>
                   {/* Messages */}
                   <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {messages.length === 0 && (
@@ -476,24 +478,24 @@ const UnifiedChatWidget: React.FC = () => {
                 )}
               </AnimatePresence>
 
-              {/* Main toggle button */}
+              {/* Main toggle button - smaller on mobile */}
               <motion.button
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleOpen()}
-                className="flex items-center gap-3 px-5 py-3 rounded-full bg-[#64a70b] text-white font-semibold shadow-lg shadow-[#64a70b]/30"
+                className="flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2.5 sm:py-3 rounded-full bg-[#64a70b] text-white font-semibold shadow-lg shadow-[#64a70b]/30"
               >
                 {isClothingPage ? (
                   <>
                     <Lightbulb size={20} fill="currentColor" />
-                    <span>Smart Search</span>
+                    <span className="hidden sm:inline">Smart Search</span>
                   </>
                 ) : (
                   <>
                     <MessageCircle size={20} />
-                    <span>Chat with us</span>
+                    <span className="hidden sm:inline">Chat with us</span>
                   </>
                 )}
               </motion.button>

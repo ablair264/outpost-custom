@@ -437,10 +437,10 @@ const ProductDetailsNew: React.FC = () => {
             </button>
           </div>
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 items-start">
 
-              {/* Left: Image Gallery */}
-              <section ref={imageSectionRef} className="space-y-6">
+              {/* Left: Image Gallery - order-2 on mobile (appears second) */}
+              <section ref={imageSectionRef} className="space-y-4 lg:space-y-6 order-2 lg:order-1">
                 {/* Main Image with Carousel */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -456,7 +456,7 @@ const ProductDetailsNew: React.FC = () => {
                     <CarouselContent className="ml-0">
                       {galleryImages.map((img, i) => (
                         <CarouselItem key={`carousel-${img.src}-${i}`} className="pl-0">
-                          <div className="relative rounded-[20px] overflow-hidden aspect-square bg-white shadow-2xl">
+                          <div className="relative rounded-[16px] lg:rounded-[20px] overflow-hidden aspect-[4/3] lg:aspect-square bg-white shadow-xl lg:shadow-2xl">
                             <ImageZoom
                               zoomScale={2.5}
                               zoomOnHover={false}
@@ -485,32 +485,33 @@ const ProductDetailsNew: React.FC = () => {
                               />
                             )}
 
-                            {/* Zoom hint */}
-                            <div className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-sm flex items-center gap-2 text-white text-xs neuzeit-font">
-                              <ZoomIn className="w-3.5 h-3.5" />
-                              Click to zoom
+                            {/* Zoom hint - smaller on mobile */}
+                            <div className="absolute bottom-2 right-2 lg:bottom-4 lg:right-4 px-2 py-1 lg:px-3 lg:py-1.5 rounded-full bg-black/50 backdrop-blur-sm flex items-center gap-1.5 lg:gap-2 text-white text-[10px] lg:text-xs neuzeit-font">
+                              <ZoomIn className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
+                              <span className="hidden sm:inline">Click to zoom</span>
+                              <span className="sm:hidden">Tap</span>
                             </div>
                           </div>
                         </CarouselItem>
                       ))}
                     </CarouselContent>
 
-                    {/* Navigation Arrows */}
+                    {/* Navigation Arrows - smaller on mobile */}
                     {galleryImages.length > 1 && (
                       <>
                         <button
                           onClick={() => carouselApi?.scrollPrev()}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full flex items-center justify-center text-white transition-all shadow-lg"
+                          className="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 lg:w-12 lg:h-12 rounded-full flex items-center justify-center text-white transition-all shadow-lg"
                           style={{ backgroundColor: colors.dark }}
                         >
-                          <ChevronLeft className="w-6 h-6" />
+                          <ChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
                         </button>
                         <button
                           onClick={() => carouselApi?.scrollNext()}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full flex items-center justify-center text-white transition-all shadow-lg"
+                          className="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 lg:w-12 lg:h-12 rounded-full flex items-center justify-center text-white transition-all shadow-lg"
                           style={{ backgroundColor: colors.dark }}
                         >
-                          <ChevronRight className="w-6 h-6" />
+                          <ChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
                         </button>
                       </>
                     )}
@@ -537,9 +538,9 @@ const ProductDetailsNew: React.FC = () => {
                   )}
                 </motion.div>
 
-                {/* Thumbnail Grid */}
+                {/* Thumbnail Grid - hidden on mobile */}
                 {galleryImages.length > 1 && (
-                  <div className="grid grid-cols-5 gap-3">
+                  <div className="hidden md:grid grid-cols-5 gap-3">
                     {galleryImages.slice(0, 5).map((img, i) => (
                       <button
                         key={`thumb-${img.src}-${i}`}
@@ -557,8 +558,8 @@ const ProductDetailsNew: React.FC = () => {
                 )}
               </section>
 
-              {/* Right: Product Info */}
-              <section className="space-y-5">
+              {/* Right: Product Info - order-1 on mobile (appears first) */}
+              <section className="space-y-5 order-1 lg:order-2">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
