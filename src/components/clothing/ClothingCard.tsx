@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, ArrowRight, ZoomIn, Eye, Sparkles, MessageSquare } from 'lucide-react';
+import { motion } from 'motion/react';
+import { X, ArrowRight, ZoomIn, Eye } from 'lucide-react';
 import { ProductGroup } from './ClothingBrowser';
 import { ImageZoom, Image } from '../animate-ui/primitives/effects/image-zoom';
-import ClothingProductDetailModal from './ClothingProductDetailModal';
 
 // Theme colors - Brand palette (matching ClothingBrowser)
 const clothingColors = {
@@ -108,7 +107,6 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
   const navigate = useNavigate();
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [isImageZoomed, setIsImageZoomed] = useState(false);
-  const [showQuoteModal, setShowQuoteModal] = useState(false);
 
   const currentColor = productGroup.colors[selectedColorIndex];
   const currentImage = currentColor?.image || productGroup.variants[0]?.primary_product_image_url;
@@ -291,7 +289,7 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
             </div>
           </button>
         ) : (
-          /* Expanded Card - Responsive layout: vertical on mobile, horizontal on desktop */
+          /* Expanded Card - Refined horizontal layout with better proportions */
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -299,24 +297,24 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
             className="relative flex flex-col sm:flex-row cursor-pointer"
             onClick={onClose}
           >
-            {/* Image section */}
+            {/* Image section - larger, better proportions */}
             <div
-              className="w-full sm:w-[140px] aspect-square sm:aspect-auto bg-white relative flex-shrink-0 rounded-t-2xl sm:rounded-t-none sm:rounded-l-2xl overflow-hidden"
+              className="w-full sm:w-[180px] aspect-square sm:aspect-auto bg-white relative flex-shrink-0 rounded-t-2xl sm:rounded-t-none sm:rounded-l-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={onClose}
-                className="absolute top-2 left-2 z-20 p-1.5 sm:p-1 rounded-full bg-black/60 hover:bg-black/80 transition-all"
+                className="absolute top-3 left-3 z-20 p-1.5 rounded-full bg-black/50 hover:bg-black/70 transition-all backdrop-blur-sm"
               >
-                <X className="w-4 h-4 sm:w-3 sm:h-3 text-white" />
+                <X className="w-3.5 h-3.5 text-white" />
               </button>
 
               <motion.div
-                className="absolute bottom-2 right-2 z-20 p-1 rounded-full bg-black/60 pointer-events-none"
-                initial={{ opacity: 0.7 }}
-                animate={{ opacity: isImageZoomed ? 0 : 0.7 }}
+                className="absolute bottom-3 right-3 z-20 p-1.5 rounded-full bg-black/50 pointer-events-none backdrop-blur-sm"
+                initial={{ opacity: 0.8 }}
+                animate={{ opacity: isImageZoomed ? 0 : 0.8 }}
               >
-                <ZoomIn className="w-2.5 h-2.5 text-white" />
+                <ZoomIn className="w-3 h-3 text-white" />
               </motion.div>
 
               <ImageZoom
@@ -332,7 +330,7 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                   }
                   alt={productGroup.style_name}
                   objectFit="contain"
-                  style={{ padding: '0.5rem' }}
+                  style={{ padding: '1rem' }}
                   onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                     e.currentTarget.src = `https://via.placeholder.com/600x600/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`;
                   }}
@@ -340,21 +338,21 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
               </ImageZoom>
             </div>
 
-            {/* Content - stack on mobile, row on desktop */}
-            <div className="flex-1 p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0">
-              {/* Product Info */}
-              <div className="sm:w-[180px] flex-shrink-0">
-                <p className="text-[10px] sm:text-[9px] font-bold tracking-[0.15em] uppercase mb-0.5" style={{ color: clothingColors.accent }}>
+            {/* Content - refined layout with better spacing */}
+            <div className="flex-1 px-5 py-4 sm:py-5 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 min-w-0">
+              {/* Product Info - more breathing room */}
+              <div className="sm:min-w-[140px] sm:max-w-[200px] flex-shrink-0">
+                <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1" style={{ color: clothingColors.accent }}>
                   {productGroup.brand}
                 </p>
-                <h3 className="text-base sm:text-sm text-white leading-tight mb-1" style={{ fontFamily: fonts.subheading }}>
+                <h3 className="text-base sm:text-[15px] text-white leading-snug mb-2" style={{ fontFamily: fonts.subheading }}>
                   {productGroup.style_name}
                 </h3>
                 {productGroup.price_range && productGroup.price_range.min > 0 && (
-                  <p className="text-lg sm:text-base font-bold text-white" style={{ fontFamily: fonts.body }}>
+                  <p className="text-xl sm:text-lg font-bold text-white" style={{ fontFamily: fonts.body }}>
                     £{productGroup.price_range.min.toFixed(2)}
                     {productGroup.price_range.min !== productGroup.price_range.max && (
-                      <span className="text-xs sm:text-[10px] font-normal text-white/50 ml-1">
+                      <span className="text-xs font-normal text-white/40 ml-1.5">
                         – £{productGroup.price_range.max.toFixed(2)}
                       </span>
                     )}
@@ -362,112 +360,77 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                 )}
               </div>
 
-              <div className="hidden sm:block w-px h-14 bg-white/10 flex-shrink-0" />
+              <div className="hidden sm:block w-px self-stretch bg-white/10 flex-shrink-0" />
 
               {/* Colors and Size row on mobile */}
-              <div className="flex items-start gap-4 sm:contents" onClick={(e) => e.stopPropagation()}>
-                {/* Colors */}
+              <div className="flex items-start gap-6 sm:contents" onClick={(e) => e.stopPropagation()}>
+                {/* Colors - refined swatch layout */}
                 {productGroup.colors.length > 0 && (
                   <div className="flex-1 sm:flex-shrink min-w-0">
-                    <p className="text-[10px] sm:text-[9px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 sm:mb-1">
+                    <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-2">
                       {productGroup.colors.length} Colours
                     </p>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-1 sm:max-w-[140px]">
-                      {productGroup.colors.slice(0, 8).map((color, i) => (
+                    <div className="flex flex-wrap gap-2 sm:max-w-[180px]">
+                      {productGroup.colors.slice(0, 10).map((color, i) => (
                         <button
                           key={color.code}
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedColorIndex(i);
                           }}
-                          className={`w-6 h-6 sm:w-5 sm:h-5 rounded-full transition-all ${
+                          className={`w-7 h-7 sm:w-6 sm:h-6 rounded-full transition-all duration-150 ${
                             selectedColorIndex === i
-                              ? 'ring-2 ring-offset-1 ring-offset-[#1e3a2f] ring-[#64a70b] scale-110'
-                              : 'ring-1 ring-white/20 hover:ring-white/40'
+                              ? 'ring-2 ring-offset-2 ring-offset-[#1e3a2f] ring-[#64a70b] scale-105'
+                              : 'ring-1 ring-white/20 hover:ring-white/50 hover:scale-105'
                           }`}
                           style={{ backgroundColor: color.rgb }}
                           title={color.name}
                         />
                       ))}
-                      {productGroup.colors.length > 8 && (
+                      {productGroup.colors.length > 10 && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/products/${productGroup.style_code}`);
                           }}
-                          className="w-6 h-6 sm:w-5 sm:h-5 rounded-full bg-white/10 hover:bg-white/20 text-[9px] sm:text-[8px] text-white/60 hover:text-white font-medium transition-all flex items-center justify-center"
+                          className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-white/10 hover:bg-white/20 text-[10px] text-white/60 hover:text-white font-medium transition-all flex items-center justify-center"
                           title={`View all ${productGroup.colors.length} colours`}
                         >
-                          +{productGroup.colors.length - 8}
+                          +{productGroup.colors.length - 10}
                         </button>
                       )}
                     </div>
-                    <p className="text-[10px] sm:text-[9px] text-white/40 mt-1 sm:mt-0.5 truncate">{currentColor?.name}</p>
+                    <p className="text-[11px] text-white/50 mt-2 truncate">{currentColor?.name}</p>
                   </div>
                 )}
 
-                <div className="hidden sm:block w-px h-14 bg-white/10 flex-shrink-0" />
+                <div className="hidden sm:block w-px self-stretch bg-white/10 flex-shrink-0" />
 
-                {/* Size */}
+                {/* Size - cleaner presentation */}
                 {sizeRange && (
                   <div className="flex-shrink-0">
-                    <p className="text-[10px] sm:text-[9px] font-semibold text-white/40 uppercase tracking-wider mb-1">
+                    <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-2">
                       Sizes
                     </p>
-                    <p className="text-white text-base sm:text-sm font-medium whitespace-nowrap">
+                    <p className="text-white text-lg sm:text-base font-medium whitespace-nowrap">
                       {sizeRange}
                     </p>
                   </div>
                 )}
               </div>
 
-              {/* Features - hidden on mobile */}
-              <div className="hidden sm:block w-px h-14 bg-white/10 flex-shrink-0" />
-              {(() => {
-                const features = [
-                  productGroup.variants[0]?.product_feature_1,
-                  productGroup.variants[0]?.product_feature_2,
-                  productGroup.variants[0]?.product_feature_3,
-                ].filter(f => f && f !== 'Not available');
-
-                if (features.length === 0) return null;
-
-                return (
-                  <div className="hidden sm:block flex-1 min-w-[140px] max-w-[220px]">
-                    <p className="text-[9px] font-semibold text-white/40 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                      <Sparkles className="w-2.5 h-2.5" />
-                      Features
-                    </p>
-                    <ul className="space-y-0.5">
-                      {features.slice(0, 3).map((feature, i) => (
-                        <li key={i} className="text-white/70 text-xs leading-snug truncate">
-                          • {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })()}
-
-              {/* CTA - full width on mobile */}
-              <div className="flex-shrink-0 sm:ml-auto flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0" onClick={(e) => e.stopPropagation()}>
-                <button
-                  onClick={() => setShowQuoteModal(true)}
-                  className="flex items-center justify-center sm:justify-start gap-1.5 px-4 py-2.5 sm:py-2 rounded-lg font-semibold text-sm text-white transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap border-2 border-white/30 hover:border-[#64a70b] hover:bg-[#64a70b]/10"
-                >
-                  <MessageSquare className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  Get Quote
-                </button>
+              {/* CTA - single clean button */}
+              <div className="flex-shrink-0 sm:ml-auto mt-3 sm:mt-0" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => navigate(`/products/${productGroup.style_code}`)}
-                  className="flex items-center justify-center sm:justify-start gap-1.5 px-4 py-2.5 sm:py-2 rounded-lg font-semibold text-sm text-black transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-lg font-semibold text-sm text-white transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] whitespace-nowrap"
                   style={{
                     backgroundColor: clothingColors.accent,
-                    boxShadow: '0 4px 12px rgba(100, 167, 11, 0.25)'
+                    boxShadow: '0 4px 16px rgba(100, 167, 11, 0.3)'
                   }}
                 >
                   View Details
-                  <ArrowRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -475,12 +438,6 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
         )}
       </motion.div>
 
-      {/* Quote Modal */}
-      <ClothingProductDetailModal
-        productGroup={productGroup}
-        isOpen={showQuoteModal}
-        onClose={() => setShowQuoteModal(false)}
-      />
     </motion.div>
   );
 };
