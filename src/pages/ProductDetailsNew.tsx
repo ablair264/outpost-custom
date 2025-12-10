@@ -437,9 +437,52 @@ const ProductDetailsNew: React.FC = () => {
             </button>
           </div>
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 items-start">
+            {/* Mobile: 3 sections (header, gallery, options). Desktop: 2 columns */}
+            <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-16 items-start">
 
-              {/* Left: Image Gallery - order-2 on mobile (appears second) */}
+              {/* Mobile Header: Brand/Name/Price - only visible on mobile, first */}
+              <div className="lg:hidden order-1">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                >
+                  <p
+                    className="embossing-font text-xs uppercase tracking-[0.2em] mb-2"
+                    style={{ color: colors.accent }}
+                  >
+                    {productGroup.brand}
+                  </p>
+                  <h1 className="embossing-font text-2xl leading-tight mb-3 text-white uppercase tracking-wide">
+                    {productGroup.style_name}
+                  </h1>
+                  <div className="h-0.5 w-12 rounded-full mb-4" style={{ backgroundColor: colors.accent }} />
+                  <div className="flex items-baseline gap-2">
+                    {currentPrice && 'specific' in currentPrice ? (
+                      <span className="neuzeit-font text-2xl font-semibold" style={{ color: colors.accent }}>
+                        {cartUtils.formatPrice(currentPrice.specific)}
+                      </span>
+                    ) : currentPrice ? (
+                      <>
+                        <span className="neuzeit-font text-2xl font-semibold" style={{ color: colors.accent }}>
+                          {cartUtils.formatPrice(currentPrice.min)}
+                        </span>
+                        {currentPrice.max !== currentPrice.min && (
+                          <span className="neuzeit-light-font text-base text-white/50">
+                            – {cartUtils.formatPrice(currentPrice.max)}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="neuzeit-font text-2xl font-semibold text-white/50">
+                        Price on request
+                      </span>
+                    )}
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Image Gallery - order-2 on mobile, first column on desktop */}
               <section ref={imageSectionRef} className="space-y-4 lg:space-y-6 order-2 lg:order-1">
                 {/* Main Image with Carousel */}
                 <motion.div
@@ -558,12 +601,14 @@ const ProductDetailsNew: React.FC = () => {
                 )}
               </section>
 
-              {/* Right: Product Info - order-1 on mobile (appears first) */}
-              <section className="space-y-5 order-1 lg:order-2">
+              {/* Right: Product Info - order-3 on mobile (after gallery), second column on desktop */}
+              <section className="space-y-5 order-3 lg:order-2">
+                {/* Desktop only: Brand/Name/Price header (hidden on mobile as it's shown above) */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.1 }}
+                  className="hidden lg:block"
                 >
                   {/* Brand */}
                   <p

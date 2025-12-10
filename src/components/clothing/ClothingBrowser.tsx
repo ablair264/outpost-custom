@@ -109,6 +109,8 @@ export interface ProductGroup {
   style_code: string;
   style_name: string;
   brand: string;
+  product_type: string;
+  fabric?: string;
   variants: Product[];
   colors: Array<{
     code: string;
@@ -320,6 +322,8 @@ const ClothingBrowser: React.FC = () => {
         style_code: styleCode,
         style_name: firstVariant.style_name,
         brand: firstVariant.brand,
+        product_type: firstVariant.product_type || '',
+        fabric: firstVariant.fabric,
         variants,
         colors: uniqueColors,
         size_range: firstVariant.size_range || '',
@@ -342,14 +346,29 @@ const ClothingBrowser: React.FC = () => {
     updateUrlParams();
   }, [selectedTypes, selectedBrands, selectedColors, searchQuery]);
 
-  // Callback ref to scroll expanded card into view
+  // Callback ref to scroll expanded card into view - optimized for mobile
   const scrollToExpandedCard = useCallback((node: HTMLDivElement | null) => {
     if (node && expandedProduct) {
       setTimeout(() => {
-        node.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
+        // Get card position
+        const rect = node.getBoundingClientRect();
+        const isMobile = window.innerWidth < 640;
+
+        if (isMobile) {
+          // Scroll so card is near top of viewport with header clearance
+          const headerOffset = 120; // Account for header + filter bar
+          const targetScrollTop = window.scrollY + rect.top - headerOffset;
+          window.scrollTo({
+            top: Math.max(0, targetScrollTop),
+            behavior: 'smooth'
+          });
+        } else {
+          // Desktop: center the card
+          node.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
       }, 350);
     }
   }, [expandedProduct]);
@@ -419,12 +438,21 @@ const ClothingBrowser: React.FC = () => {
 
   const hasActiveFilters = selectedTypes.length > 0 || selectedBrands.length > 0 || selectedColors.length > 0 || selectedGenders.length > 0 || priceMin !== undefined || priceMax !== undefined || searchQuery.trim();
 
-  // Render filter bar into the Header
+  // Filter available product types based on what exists in filter options
+  const availableTypeGroups = PRODUCT_TYPE_GROUPS.map(group => ({
+    ...group,
+    availableItems: group.items.filter(item => filterOptions.productTypes.includes(item))
+  })).filter(group => group.availableItems.length > 0);
+
+  // Render filter bar into the Header (mobile only)
   useEffect(() => {
     const filterCount = selectedTypes.length + selectedBrands.length + selectedColors.length + selectedGenders.length;
+    const brandsList = filterOptions.brandOptions?.length > 0
+      ? filterOptions.brandOptions.map(b => b.name)
+      : filterOptions.brands;
 
     const filterBar = (
-      <div className="px-4 lg:px-8 py-2" style={{ backgroundColor: clothingColors.dark }}>
+      <div className="lg:hidden px-4 py-2" style={{ backgroundColor: clothingColors.dark }}>
         <div className="max-w-[1600px] mx-auto">
           {/* Collapsible trigger */}
           <button
@@ -444,7 +472,7 @@ const ClothingBrowser: React.FC = () => {
             <ChevronDown className={`w-5 h-5 text-white/70 transition-transform duration-200 ${headerFilterOpen ? 'rotate-180' : ''}`} />
           </button>
 
-          {/* Filter panel */}
+          {/* Filter panel - matches sidebar structure */}
           <AnimatePresence>
             {headerFilterOpen && (
               <motion.div
@@ -454,89 +482,226 @@ const ClothingBrowser: React.FC = () => {
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
               >
-                <div className="pt-3 pb-2">
+                <div className="mt-3 rounded-xl border border-white/10 overflow-hidden" style={{ backgroundColor: clothingColors.secondary }}>
+                  {/* Active Filters */}
                   {hasActiveFilters && (
-                    <div className="mb-3">
-                      <button
-                        onClick={clearAllFilters}
-                        className="text-xs font-medium px-3 py-1.5 rounded-full transition-all"
-                        style={{ color: clothingColors.accent, backgroundColor: `${clothingColors.accent}20` }}
-                      >
-                        Clear all filters
-                      </button>
+                    <div className="px-4 py-3 border-b border-white/10 bg-white/5">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs text-white/50 uppercase tracking-wide">Active Filters</p>
+                        <button
+                          onClick={clearAllFilters}
+                          className="text-xs font-medium px-2 py-1 rounded-md transition-all hover:opacity-80"
+                          style={{ color: clothingColors.accent, backgroundColor: `${clothingColors.accent}20` }}
+                        >
+                          Clear all
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {selectedTypes.map(type => (
+                          <button
+                            key={`mobile-filter-type-${type}`}
+                            onClick={() => toggleType(type)}
+                            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
+                            style={{ backgroundColor: clothingColors.accent, color: 'black' }}
+                          >
+                            {type}
+                            <X className="w-3 h-3" />
+                          </button>
+                        ))}
+                        {selectedBrands.map(brand => (
+                          <button
+                            key={`mobile-filter-brand-${brand}`}
+                            onClick={() => toggleBrand(brand)}
+                            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-500 text-white transition-all hover:opacity-80"
+                          >
+                            {brand}
+                            <X className="w-3 h-3" />
+                          </button>
+                        ))}
+                        {selectedColors.map(color => (
+                          <button
+                            key={`mobile-filter-color-${color}`}
+                            onClick={() => toggleColor(color)}
+                            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white transition-all hover:opacity-80"
+                          >
+                            {color}
+                            <X className="w-3 h-3" />
+                          </button>
+                        ))}
+                        {selectedGenders.map(gender => (
+                          <button
+                            key={`mobile-filter-gender-${gender}`}
+                            onClick={() => toggleGender(gender)}
+                            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-orange-500 text-white transition-all hover:opacity-80"
+                          >
+                            {gender}
+                            <X className="w-3 h-3" />
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
 
-                  {/* Product Types */}
-                  <div className="mb-4">
-                    <p className="text-xs font-semibold text-white/70 mb-2 uppercase tracking-wide">Product Type</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {filterOptions.productTypes.slice(0, 15).map(type => (
-                        <button
-                          key={type}
-                          onClick={() => toggleType(type)}
-                          className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${
-                            selectedTypes.includes(type)
-                              ? 'text-black'
-                              : 'bg-white/10 text-white/80'
-                          }`}
-                          style={selectedTypes.includes(type) ? { backgroundColor: clothingColors.accent } : {}}
-                        >
-                          {type}
-                        </button>
-                      ))}
+                  {/* Scrollable filter sections */}
+                  <div className="max-h-[60vh] overflow-y-auto">
+                    {/* Product Type */}
+                    <div className="border-b border-white/10">
+                      <button
+                        onClick={() => toggleSection('type')}
+                        className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
+                      >
+                        <span className="text-sm font-medium uppercase tracking-wide">Product Type</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.type ? 'rotate-180' : ''}`} />
+                      </button>
+                      {sectionsOpen.type && (
+                        <div className="px-4 pb-4 max-h-48 overflow-y-auto space-y-1">
+                          {availableTypeGroups.map(group => (
+                            <div key={group.name} className="mb-2">
+                              <p className="text-xs text-white/50 uppercase tracking-wide mb-1 px-2">{group.name}</p>
+                              {group.availableItems.map(type => (
+                                <button
+                                  key={type}
+                                  onClick={() => toggleType(type)}
+                                  className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-lg text-sm transition-all ${
+                                    selectedTypes.includes(type)
+                                      ? 'text-black'
+                                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                                  }`}
+                                  style={selectedTypes.includes(type) ? { backgroundColor: clothingColors.accent } : {}}
+                                >
+                                  <div
+                                    className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                      selectedTypes.includes(type)
+                                        ? 'border-transparent bg-white/20'
+                                        : 'border-white/30'
+                                    }`}
+                                  >
+                                    {selectedTypes.includes(type) && <Check className="w-3 h-3" />}
+                                  </div>
+                                  {type}
+                                </button>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Colors */}
-                  <div className="mb-4">
-                    <p className="text-xs font-semibold text-white/70 mb-2 uppercase tracking-wide">Colour</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {filterOptions.colors.slice(0, 12).map(color => {
-                        const isSelected = selectedColors.includes(color);
-                        const colorHex = getColorHexValue(color);
-                        const isLight = colorHex === '#FFFFFF' || colorHex === '#FFFDD0';
-                        return (
-                          <button
-                            key={color}
-                            onClick={() => toggleColor(color)}
-                            className={`relative w-7 h-7 rounded-full border-2 transition-all ${
-                              isSelected
-                                ? 'border-[#78BE20] scale-110'
-                                : isLight
-                                ? 'border-gray-400'
-                                : 'border-transparent'
-                            }`}
-                            style={{ backgroundColor: colorHex }}
-                            title={color}
-                          >
-                            {isSelected && (
-                              <Check className={`absolute inset-0 m-auto w-3 h-3 ${isLight ? 'text-black' : 'text-white'}`} />
-                            )}
-                          </button>
-                        );
-                      })}
+                    {/* Brand */}
+                    <div className="border-b border-white/10">
+                      <button
+                        onClick={() => toggleSection('brand')}
+                        className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
+                      >
+                        <span className="text-sm font-medium uppercase tracking-wide">Brand</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.brand ? 'rotate-180' : ''}`} />
+                      </button>
+                      {sectionsOpen.brand && (
+                        <div className="px-4 pb-4 max-h-48 overflow-y-auto space-y-1">
+                          {brandsList.map(brand => (
+                            <button
+                              key={brand}
+                              onClick={() => toggleBrand(brand)}
+                              className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-lg text-sm transition-all ${
+                                selectedBrands.includes(brand)
+                                  ? 'text-black'
+                                  : 'text-white/70 hover:text-white hover:bg-white/5'
+                              }`}
+                              style={selectedBrands.includes(brand) ? { backgroundColor: clothingColors.accent } : {}}
+                            >
+                              <div
+                                className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                  selectedBrands.includes(brand)
+                                    ? 'border-transparent bg-white/20'
+                                    : 'border-white/30'
+                                }`}
+                              >
+                                {selectedBrands.includes(brand) && <Check className="w-3 h-3" />}
+                              </div>
+                              {brand}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Brands */}
-                  <div>
-                    <p className="text-xs font-semibold text-white/70 mb-2 uppercase tracking-wide">Brand</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {filterOptions.brands.slice(0, 10).map(brand => (
-                        <button
-                          key={brand}
-                          onClick={() => toggleBrand(brand)}
-                          className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${
-                            selectedBrands.includes(brand)
-                              ? 'text-black'
-                              : 'bg-white/10 text-white/80'
-                          }`}
-                          style={selectedBrands.includes(brand) ? { backgroundColor: clothingColors.accent } : {}}
-                        >
-                          {brand}
-                        </button>
-                      ))}
+                    {/* Colour */}
+                    <div className="border-b border-white/10">
+                      <button
+                        onClick={() => toggleSection('colour')}
+                        className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
+                      >
+                        <span className="text-sm font-medium uppercase tracking-wide">Colour</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.colour ? 'rotate-180' : ''}`} />
+                      </button>
+                      {sectionsOpen.colour && (
+                        <div className="px-4 pb-4">
+                          <div className="flex flex-wrap gap-2">
+                            {filterOptions.colors.map(color => {
+                              const isSelected = selectedColors.includes(color);
+                              const colorHex = getColorHexValue(color);
+                              const isLight = colorHex === '#FFFFFF' || colorHex === '#FFFDD0';
+                              return (
+                                <button
+                                  key={color}
+                                  onClick={() => toggleColor(color)}
+                                  className={`relative w-8 h-8 rounded-full border-2 transition-all ${
+                                    isSelected
+                                      ? 'border-[#78BE20] scale-110'
+                                      : isLight
+                                      ? 'border-gray-400 hover:scale-110'
+                                      : 'border-transparent hover:scale-110'
+                                  }`}
+                                  style={{ backgroundColor: colorHex }}
+                                  title={color}
+                                >
+                                  {isSelected && (
+                                    <Check className={`absolute inset-0 m-auto w-4 h-4 ${isLight ? 'text-black' : 'text-white'}`} />
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Gender */}
+                    <div>
+                      <button
+                        onClick={() => toggleSection('gender')}
+                        className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
+                      >
+                        <span className="text-sm font-medium uppercase tracking-wide">Gender</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.gender ? 'rotate-180' : ''}`} />
+                      </button>
+                      {sectionsOpen.gender && (
+                        <div className="px-4 pb-4 space-y-1">
+                          {filterOptions.genders.filter(gender => gender !== 'None').map(gender => (
+                            <button
+                              key={gender}
+                              onClick={() => toggleGender(gender)}
+                              className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-lg text-sm transition-all ${
+                                selectedGenders.includes(gender)
+                                  ? 'text-black'
+                                  : 'text-white/70 hover:text-white hover:bg-white/5'
+                              }`}
+                              style={selectedGenders.includes(gender) ? { backgroundColor: clothingColors.accent } : {}}
+                            >
+                              <div
+                                className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                  selectedGenders.includes(gender)
+                                    ? 'border-transparent bg-white/20'
+                                    : 'border-white/30'
+                                }`}
+                              >
+                                {selectedGenders.includes(gender) && <Check className="w-3 h-3" />}
+                              </div>
+                              {gender}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -563,6 +728,10 @@ const ClothingBrowser: React.FC = () => {
     filterOptions.productTypes,
     filterOptions.colors,
     filterOptions.brands,
+    filterOptions.brandOptions,
+    filterOptions.genders,
+    sectionsOpen,
+    availableTypeGroups,
     setFilterContent
   ]);
 
@@ -573,12 +742,6 @@ const ClothingBrowser: React.FC = () => {
       setExpandedProduct(styleCode);
     }
   };
-
-  // Filter available product types based on what exists in filter options
-  const availableTypeGroups = PRODUCT_TYPE_GROUPS.map(group => ({
-    ...group,
-    availableItems: group.items.filter(item => filterOptions.productTypes.includes(item))
-  })).filter(group => group.availableItems.length > 0);
 
   return (
     <div className="min-h-screen relative" style={{ backgroundColor: clothingColors.pageBg }}>
