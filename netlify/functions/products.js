@@ -122,11 +122,70 @@ export async function handler(event) {
         colors
       } = params;
 
+      // Category alias mapping for common variations
+      const categoryAliases = {
+        'polo shirts': 'Polos',
+        'polo shirt': 'Polos',
+        'polos': 'Polos',
+        't-shirts': 'T-Shirts',
+        't-shirt': 'T-Shirts',
+        'tshirts': 'T-Shirts',
+        'tshirt': 'T-Shirts',
+        'tees': 'T-Shirts',
+        'fleeces': 'Fleece',
+        'fleece': 'Fleece',
+        'hoodies': 'Hoodies',
+        'hoodie': 'Hoodies',
+        'sweatshirts': 'Sweatshirts',
+        'sweatshirt': 'Sweatshirts',
+        'jackets': 'Jackets',
+        'jacket': 'Jackets',
+        'coats': 'Jackets',
+        'coat': 'Jackets',
+        'caps': 'Caps',
+        'cap': 'Caps',
+        'hats': 'Hats',
+        'hat': 'Hats',
+        'beanies': 'Beanies',
+        'beanie': 'Beanies',
+        'bags': 'Bags',
+        'bag': 'Bags',
+        'shorts': 'Shorts',
+        'trousers': 'Trousers',
+        'pants': 'Trousers',
+        'aprons': 'Aprons',
+        'apron': 'Aprons',
+        'hi-vis': 'Safety Vests',
+        'hi vis': 'Safety Vests',
+        'high vis': 'Safety Vests',
+        'high visibility': 'Safety Vests',
+        'safety vest': 'Safety Vests',
+        'safety vests': 'Safety Vests',
+        'workwear': 'Trousers', // Default workwear to trousers, or could be multiple
+        'shirts': 'Shirts',
+        'shirt': 'Shirts',
+        'softshells': 'Softshells',
+        'softshell': 'Softshells',
+        'gilets': 'Gilets & Body Warmers',
+        'gilet': 'Gilets & Body Warmers',
+        'body warmers': 'Gilets & Body Warmers',
+        'bodywarmers': 'Gilets & Body Warmers',
+      };
+
+      // Normalize productType using aliases
+      const normalizeCategory = (cat) => {
+        const lower = cat.toLowerCase().trim();
+        return categoryAliases[lower] || cat; // Return alias if found, else original
+      };
+
       // Build conditions
       const conditions = ['is_live = true'];
 
       if (productType) {
-        const types = productType.split(',').map(t => `'${t.replace(/'/g, "''")}'`).join(',');
+        const types = productType.split(',').map(t => {
+          const normalized = normalizeCategory(t);
+          return `'${normalized.replace(/'/g, "''")}'`;
+        }).join(',');
         conditions.push(`product_type IN (${types})`);
       }
 

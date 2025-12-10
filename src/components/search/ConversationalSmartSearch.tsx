@@ -44,7 +44,7 @@ When you DO search, your message should briefly describe what you found, e.g.:
 
 When you DON'T have enough to search (greeting, unclear request), set searchQuery to null and ask what they're looking for.
 
-Available categories: T-Shirts, Polo Shirts, Sweatshirts, Hoodies, Fleeces, Jackets, Coats, Trousers, Shorts, Hi-Vis, Workwear, Footwear, Caps, Beanies, Bags, Aprons.
+Available categories: T-Shirts, Polo Shirts, Sweatshirts, Hoodies, Fleeces, Jackets, Coats, Trousers, Shorts, Hi-Vis, Workwear, Footwear, Caps, Beanies, Bags, Aprons, Shirts, Softshells, Gilets.
 
 Popular brands: Stanley/Stella, Fruit of the Loom, Gildan, Russell, B&C Collection, AWDis, Result, Regatta, Snickers.
 
