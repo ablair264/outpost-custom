@@ -438,18 +438,18 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
               </div>
             </div>
 
-            {/* Mobile: Compact horizontal layout */}
-            <div className="flex sm:hidden">
-              {/* Image - smaller on mobile */}
+            {/* Mobile: Refined compact layout */}
+            <div className="flex sm:hidden p-3 gap-3">
+              {/* Image - clean square with shadow */}
               <div
-                className="w-[100px] h-[100px] bg-white flex-shrink-0 rounded-l-2xl overflow-hidden relative"
+                className="w-[90px] h-[90px] bg-white flex-shrink-0 rounded-xl overflow-hidden relative shadow-lg shadow-black/20"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   onClick={onClose}
-                  className="absolute top-2 left-2 z-20 p-1 rounded-full bg-black/50"
+                  className="absolute top-1.5 left-1.5 z-20 p-1 rounded-full bg-black/40 backdrop-blur-sm"
                 >
-                  <X className="w-3 h-3 text-white" />
+                  <X className="w-2.5 h-2.5 text-white" />
                 </button>
                 <img
                   src={currentImage !== 'Not available'
@@ -464,63 +464,55 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                 />
               </div>
 
-              {/* Content - vertical stack */}
-              <div className="flex-1 p-3 min-w-0 flex flex-col">
-                {/* Header: Brand + Name + Price */}
-                <div className="mb-2">
-                  <p className="text-[9px] font-bold tracking-[0.2em] uppercase" style={{ color: clothingColors.accent }}>
+              {/* Content */}
+              <div className="flex-1 min-w-0 flex flex-col justify-between">
+                {/* Top: Brand + Name + Price */}
+                <div>
+                  <p className="text-[9px] font-bold tracking-[0.15em] uppercase mb-0.5" style={{ color: clothingColors.accent }}>
                     {productGroup.brand}
                   </p>
-                  <h3 className="text-sm text-white leading-snug line-clamp-1" style={{ fontFamily: fonts.subheading }}>
+                  <h3 className="text-sm font-semibold text-white leading-tight line-clamp-2 mb-1" style={{ fontFamily: fonts.subheading }}>
                     {productGroup.style_name}
                   </h3>
                   {productGroup.price_range && productGroup.price_range.min > 0 && (
-                    <p className="text-base font-bold text-white mt-0.5" style={{ fontFamily: fonts.body }}>
+                    <p className="text-base font-bold text-white" style={{ fontFamily: fonts.body }}>
                       £{productGroup.price_range.min.toFixed(2)}
                     </p>
                   )}
                 </div>
 
-                {/* Colors row - compact */}
-                {productGroup.colors.length > 0 && (
-                  <div className="flex items-center gap-2 mb-2" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex gap-1">
-                      {productGroup.colors.slice(0, 6).map((color, i) => (
-                        <button
-                          key={color.code}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedColorIndex(i);
-                          }}
-                          className={`w-5 h-5 rounded-full transition-all ${
-                            selectedColorIndex === i
-                              ? 'ring-2 ring-offset-1 ring-offset-[#1e3a2f] ring-[#64a70b] scale-110'
-                              : 'ring-1 ring-white/20'
-                          }`}
-                          style={{ backgroundColor: color.rgb }}
-                        />
-                      ))}
-                      {productGroup.colors.length > 6 && (
-                        <span className="text-[10px] text-white/50 self-center ml-0.5">+{productGroup.colors.length - 6}</span>
-                      )}
-                    </div>
+                {/* Bottom: Colors/Sizes + CTA */}
+                <div className="flex items-end justify-between gap-2 mt-2" onClick={(e) => e.stopPropagation()}>
+                  {/* Colors & Sizes info */}
+                  <div className="flex flex-col gap-1">
+                    {productGroup.colors.length > 0 && (
+                      <div className="flex items-center gap-1.5">
+                        <div className="flex -space-x-1">
+                          {productGroup.colors.slice(0, 4).map((color, i) => (
+                            <div
+                              key={color.code}
+                              className="w-4 h-4 rounded-full ring-1 ring-white/20"
+                              style={{ backgroundColor: color.rgb }}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-[10px] text-white/50">
+                          {productGroup.colors.length} colour{productGroup.colors.length !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    )}
                     {sizeRange && (
-                      <>
-                        <span className="text-white/20">·</span>
-                        <span className="text-[11px] text-white/60">{sizeRange}</span>
-                      </>
+                      <span className="text-[10px] text-white/50">{sizeRange}</span>
                     )}
                   </div>
-                )}
 
-                {/* CTA - full width */}
-                <div className="mt-auto" onClick={(e) => e.stopPropagation()}>
+                  {/* CTA - compact */}
                   <button
                     onClick={() => navigate(`/products/${productGroup.style_code}`)}
-                    className="w-full flex items-center justify-center gap-1 px-3 py-2 rounded-lg font-semibold text-xs text-white"
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-xs text-white flex-shrink-0"
                     style={{ backgroundColor: clothingColors.accent }}
                   >
-                    View Details
+                    View
                     <ArrowRight className="w-3 h-3" />
                   </button>
                 </div>
