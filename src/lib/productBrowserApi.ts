@@ -70,7 +70,7 @@ export interface FilterOptions {
 export async function getAllProducts(
   filters: ProductFilters = {},
   page: number = 1,
-  pageSize: number = 12
+  pageSize: number = 24
 ): Promise<ProductsResponse> {
   try {
     console.log('🗄️ Database query starting with filters:', filters);
@@ -106,7 +106,7 @@ export async function getAllProducts(
     params.set('limit', pageSize.toString());
     params.set('offset', ((page - 1) * pageSize).toString());
 
-    // First get the styles
+    // Get styles - this is a single fast query that returns all needed data
     const stylesResponse = await apiFetch<{
       success: boolean;
       styles: any[];
@@ -126,25 +126,52 @@ export async function getAllProducts(
       };
     }
 
-    // Get variants for these styles
-    const styleCodes = stylesResponse.styles.map(s => s.style_code);
-    const variantsParams = new URLSearchParams();
-    variantsParams.set('styleCode', styleCodes[0]); // For now, get one at a time or batch
+    // Convert styles to Product format for the browser view
+    // No need to fetch variants - product_styles already has aggregated data
+    const products: Product[] = stylesResponse.styles.map(style => ({
+      // Core identifiers
+      id: style.id,
+      sku_code: style.style_code,
+      style_code: style.style_code,
+      style_name: style.style_name,
 
-    // Fetch all variants for the matched styles
-    const allProducts: Product[] = [];
-    for (const style of stylesResponse.styles) {
-      try {
-        const variantsResponse = await apiFetch<{ success: boolean; products: Product[] }>(
-          `/styles/${encodeURIComponent(style.style_code)}/variants`
-        );
-        if (variantsResponse.products) {
-          allProducts.push(...variantsResponse.products);
-        }
-      } catch (e) {
-        console.warn(`Failed to fetch variants for ${style.style_code}`);
-      }
-    }
+      // Basic info
+      brand: style.brand,
+      product_type: style.product_type,
+      gender: style.gender,
+      age_group: style.age_group,
+
+      // Pricing - use aggregated min/max
+      single_price: style.price_min,
+      price_min: style.price_min,
+      price_max: style.price_max,
+
+      // Image
+      primary_product_image_url: style.primary_product_image_url,
+
+      // Description
+      retail_description: style.retail_description,
+      specification: style.specification,
+      fabric: style.fabric,
+
+      // Aggregated arrays for filtering display
+      available_sizes: style.available_sizes || [],
+      available_colors: style.available_colors || [],
+      color_shades: style.color_shades || [],
+      size_range: style.size_range,
+
+      // Count of variants
+      variant_count: style.variant_count,
+
+      // Status
+      sku_status: style.is_live ? 'Live' : 'Discontinued',
+      is_live: style.is_live,
+
+      // Additional metadata
+      categorisation: style.categorisation,
+      accreditations: style.accreditations,
+      sustainable_organic: style.sustainable_organic,
+    } as Product));
 
     console.log('📊 Query result:', {
       stylesFound: stylesResponse.styles.length,
@@ -154,7 +181,7 @@ export async function getAllProducts(
     });
 
     return {
-      products: allProducts,
+      products,
       totalCount: stylesResponse.total,
       totalPages: stylesResponse.totalPages,
       currentPage: page,
