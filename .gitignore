@@ -113,3 +113,7 @@ dist-ssr/
 /sql
 
 /generated/prisma
+
+# Large data files
+*.csv
+CustomerDataFull.csv
