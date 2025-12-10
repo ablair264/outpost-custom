@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdminUser {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique @db.VarChar(255)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  name         String?   @db.VarChar(255)
+  role         String    @default("staff") @db.VarChar(20)
+  isActive     Boolean   @default(true) @map("is_active")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relations
+  assignedEnquiries ClothingEnquiry[] @relation("AssignedTo")
+  notes             EnquiryNote[]
+
+  @@map("admin_users")
+}
+
+model ClothingEnquiry {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  status    String   @default("new") @db.VarChar(50)
+
+  // Assignment
+  assignedTo   String?    @map("assigned_to") @db.Uuid
+  assignedUser AdminUser? @relation("AssignedTo", fields: [assignedTo], references: [id])
+
+  // Contact info
+  customerName  String  @map("customer_name") @db.VarChar(255)
+  customerEmail String  @map("customer_email") @db.VarChar(255)
+  customerPhone String? @map("customer_phone") @db.VarChar(100)
+  companyName   String? @map("company_name") @db.VarChar(255)
+
+  // Product info
+  productId        String? @map("product_id") @db.VarChar(255)
+  productName      String? @map("product_name") @db.VarChar(255)
+  productStyleCode String? @map("product_style_code") @db.VarChar(100)
+  productColor     String? @map("product_color") @db.VarChar(100)
+  productColorCode String? @map("product_color_code") @db.VarChar(50)
+  productImageUrl  String? @map("product_image_url") @db.Text
+
+  // Logo info
+  logoFileName        String?  @map("logo_file_name") @db.VarChar(255)
+  logoFileUrl         String?  @map("logo_file_url") @db.Text
+  logoFileSize        Int?     @map("logo_file_size")
+  logoFormat          String?  @map("logo_format") @db.VarChar(50)
+  logoWidth           Int?     @map("logo_width")
+  logoHeight          Int?     @map("logo_height")
+  logoQualityTier     String?  @map("logo_quality_tier") @db.VarChar(50)
+  logoQualityNotes    Json?    @map("logo_quality_notes")
+  logoHasTransparency Boolean? @map("logo_has_transparency")
+
+  // Placement
+  logoPositionX   Decimal? @map("logo_position_x")
+  logoPositionY   Decimal? @map("logo_position_y")
+  logoSizePercent Decimal? @map("logo_size_percent")
+
+  // Order details
+  estimatedQuantity String? @map("estimated_quantity") @db.VarChar(100)
+  quantity          Int?
+  sizes             Json?
+  additionalNotes   String? @map("additional_notes") @db.Text
+  enquiryType       String  @default("upload") @map("enquiry_type") @db.VarChar(50)
+
+  // Quote info
+  quoteAmount Decimal?  @map("quote_amount") @db.Decimal(10, 2)
+  quoteNotes  String?   @map("quote_notes") @db.Text
+  quoteSentAt DateTime? @map("quote_sent_at") @db.Timestamptz
+
+  // Metadata
+  source String @default("website") @db.VarChar(100)
+
+  // Relations
+  notes EnquiryNote[]
+
+  @@index([status], name: "idx_enquiries_status")
+  @@index([createdAt(sort: Desc)], name: "idx_enquiries_created")
+  @@map("clothing_enquiries")
+}
+
+model EnquiryNote {
+  id        String   @id @default(uuid()) @db.Uuid
+  enquiryId String   @map("enquiry_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  createdBy String?  @map("created_by") @db.Uuid
+  noteType  String   @default("note") @map("note_type") @db.VarChar(50)
+  content   String   @db.Text
+
+  // Relations
+  enquiry ClothingEnquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  author  AdminUser?      @relation(fields: [createdBy], references: [id])
+
+  @@index([enquiryId], name: "idx_notes_enquiry")
+  @@map("enquiry_notes")
+}
+
+// ============================================
+// PRODUCT TABLES
+// ============================================
+
+model ProductData {
+  id                       String   @id @default(uuid()) @db.Uuid
+  createdAt                DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt                DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Core identifiers
+  skuCode                  String   @map("sku_code") @db.VarChar(100)
+  alphaSkuCode             String?  @map("alpha_sku_code") @db.VarChar(100)
+  styleCode                String   @map("style_code") @db.VarChar(100)
+  manufacturerStyleCode    String?  @map("manufacturer_style_code") @db.VarChar(100)
+
+  // Brand and naming
+  brand                    String   @db.VarChar(255)
+  styleName                String   @map("style_name") @db.VarChar(500)
+  productType              String   @map("product_type") @db.VarChar(255)
+
+  // Color information
+  colourCode               String   @map("colour_code") @db.VarChar(50)
+  colourName               String   @map("colour_name") @db.VarChar(255)
+  primaryColour            String?  @map("primary_colour") @db.VarChar(100)
+  colourShade              String?  @map("colour_shade") @db.VarChar(100)
+  pantone                  String?  @db.VarChar(255)
+  rgb                      String?  @db.VarChar(255)
+  cmyk                     String?  @db.VarChar(255)
+  colourImage              String?  @map("colour_image") @db.Text
+  colourImageFileName      String?  @map("colour_image_file_name") @db.VarChar(255)
+
+  // Size information
+  sizeCode                 String   @map("size_code") @db.VarChar(50)
+  sizeName                 String   @map("size_name") @db.VarChar(100)
+  sizeRange                String?  @map("size_range") @db.VarChar(255)
+  sizingToFit              String?  @map("sizing_to_fit") @db.Text
+  sizeExclusions           String?  @map("size_exclusions") @db.Text
+  plusSizes                String?  @map("plus_sizes") @db.VarChar(50)
+  jacketLength             String?  @map("jacket_length") @db.VarChar(100)
+  legLength                String?  @map("leg_length") @db.VarChar(100)
+  sizeGuide                String?  @map("size_guide") @db.Text
+
+  // Product details
+  specification            String?  @db.Text
+  retailDescription        String?  @map("retail_description") @db.Text
+  productFeature1          String?  @map("product_feature_1") @db.Text
+  productFeature2          String?  @map("product_feature_2") @db.Text
+  productFeature3          String?  @map("product_feature_3") @db.Text
+  fabric                   String?  @db.Text
+  weightGsm                String?  @map("weight_gsm") @db.VarChar(255)
+  washingInstructions      String?  @map("washing_instructions") @db.Text
+
+  // Categorization
+  gender                   String?  @db.VarChar(50)
+  ageGroup                 String?  @map("age_group") @db.VarChar(50)
+  categorisation           String?  @db.Text
+  tag                      String?  @db.VarChar(50)
+  accreditations           String?  @db.Text
+  sustainableOrganic       String?  @map("sustainable_organic") @db.VarChar(50)
+
+  // Bag-specific fields
+  bagCapacity              String?  @map("bag_capacity") @db.VarChar(100)
+  printArea                String?  @map("print_area") @db.Text
+  embroideryInformation    String?  @map("embroidery_information") @db.Text
+  bagDimensions            String?  @map("bag_dimensions") @db.VarChar(255)
+
+  // Pricing
+  cartonQuantity           Int?     @map("carton_quantity")
+  packQuantity             Int?     @map("pack_quantity")
+  vatStatus                String?  @map("vat_status") @db.VarChar(50)
+  cartonPrice              Decimal? @map("carton_price") @db.Decimal(10, 2)
+  packPrice                Decimal? @map("pack_price") @db.Decimal(10, 2)
+  singlePrice              Decimal? @map("single_price") @db.Decimal(10, 2)
+
+  // Shipping and origin
+  commodityCode            String?  @map("commodity_code") @db.VarChar(50)
+  itemWeightKg             Decimal? @map("item_weight_kg") @db.Decimal(10, 3)
+  countryOfOrigin          String?  @map("country_of_origin") @db.VarChar(10)
+
+  // Status and images
+  skuStatus                String?  @map("sku_status") @db.VarChar(50)
+  primaryProductImageUrl   String?  @map("primary_product_image_url") @db.Text
+  primaryProductImageFileName String? @map("primary_product_image_file_name") @db.VarChar(255)
+  primaryImageLicenceExpiryDate String? @map("primary_image_licence_expiry_date") @db.VarChar(50)
+
+  // New product flags
+  newStyle                 String?  @map("new_style") @db.VarChar(10)
+  newColour                String?  @map("new_colour") @db.VarChar(10)
+  newSize                  String?  @map("new_size") @db.VarChar(10)
+
+  // Additional documents
+  specSheet                String?  @map("spec_sheet") @db.Text
+  eanCode                  String?  @map("ean_code") @db.VarChar(50)
+
+  @@unique([skuCode], name: "product_data_sku_unique")
+  @@index([styleCode], name: "idx_product_style_code")
+  @@index([productType], name: "idx_product_type")
+  @@index([brand], name: "idx_product_brand")
+  @@index([skuStatus], name: "idx_product_status")
+  @@map("product_data")
+}
+
+model Category {
+  id            String   @id @default(uuid()) @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  categoryKey   String   @unique @map("category_key") @db.VarChar(255)
+  displayName   String   @map("display_name") @db.VarChar(255)
+  description   String?  @db.Text
+  imageUrl      String?  @map("image_url") @db.Text
+  isActive      Boolean  @default(true) @map("is_active")
+  sortOrder     Int      @default(0) @map("sort_order")
+  categoryGroup String   @map("category_group") @db.VarChar(100)
+
+  @@index([categoryGroup], name: "idx_category_group")
+  @@index([isActive], name: "idx_category_active")
+  @@map("categories")
+}
+
+model RgbValue {
+  id        BigInt   @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  rgbText   String   @unique @map("rgb_text") @db.Text
+  hex       String?  @db.VarChar(10)
+
+  @@map("rgb_values")
+}
+
+model Brand {
+  id          String   @id @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  name        String   @unique @db.VarChar(255)
+  displayName String?  @map("display_name") @db.VarChar(255)
+  logoUrl     String?  @map("logo_url") @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
+
+  @@index([isActive], name: "idx_brand_active")
+  @@map("brands")
+}
+
+model ProductType {
+  id          String   @id @default(uuid()) @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  name        String   @unique @db.VarChar(255)
+  displayName String?  @map("display_name") @db.VarChar(255)
+  description String?  @db.Text
+  imageUrl    String?  @map("image_url") @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
+
+  @@index([isActive], name: "idx_product_type_active")
+  @@map("product_types")
+}

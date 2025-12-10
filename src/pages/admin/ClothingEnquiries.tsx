@@ -25,7 +25,7 @@ import {
   AlertCircle,
   Image as ImageIcon
 } from 'lucide-react';
-import { getEnquiries, getEnquiryCounts, ClothingEnquiry } from '../../lib/enquiry-service';
+import { enquiriesApi, ClothingEnquiry, EnquiryCounts } from '../../lib/api';
 
 // Status configuration with colors
 const statusConfig: Record<string, { color: string; bgColor: string; label: string; icon: React.ReactNode }> = {
@@ -51,7 +51,9 @@ const PAGE_SIZE = 12;
 const ClothingEnquiries: React.FC = () => {
   const navigate = useNavigate();
   const [enquiries, setEnquiries] = useState<ClothingEnquiry[]>([]);
-  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [counts, setCounts] = useState<EnquiryCounts>({
+    new: 0, in_progress: 0, quoted: 0, approved: 0, in_production: 0, completed: 0, cancelled: 0, total: 0
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -72,10 +74,10 @@ const ClothingEnquiries: React.FC = () => {
     setError(null);
     try {
       const [enquiriesData, countsData] = await Promise.all([
-        getEnquiries(),
-        getEnquiryCounts(),
+        enquiriesApi.getAll(),
+        enquiriesApi.getCounts(),
       ]);
-      setEnquiries(enquiriesData);
+      setEnquiries(enquiriesData.enquiries);
       setCounts(countsData);
     } catch (err) {
       setError('Failed to load enquiries');
@@ -94,9 +96,9 @@ const ClothingEnquiries: React.FC = () => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return (
-          e.customer_name?.toLowerCase().includes(query) ||
-          e.customer_email?.toLowerCase().includes(query) ||
-          e.product_name?.toLowerCase().includes(query) ||
+          e.customerName?.toLowerCase().includes(query) ||
+          e.customerEmail?.toLowerCase().includes(query) ||
+          e.productName?.toLowerCase().includes(query) ||
           e.id?.toLowerCase().includes(query)
         );
       }
@@ -104,7 +106,7 @@ const ClothingEnquiries: React.FC = () => {
     })
     .sort((a, b) => {
       if (sortBy === 'date') {
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
       return a.status.localeCompare(b.status);
     });
@@ -121,12 +123,12 @@ const ClothingEnquiries: React.FC = () => {
     const headers = ['ID', 'Customer', 'Email', 'Phone', 'Product', 'Status', 'Created'];
     const rows = filteredEnquiries.map((e) => [
       e.id,
-      e.customer_name,
-      e.customer_email,
-      e.customer_phone,
-      e.product_name || '',
+      e.customerName,
+      e.customerEmail,
+      e.customerPhone,
+      e.productName || '',
       e.status,
-      new Date(e.created_at).toLocaleDateString(),
+      new Date(e.createdAt).toLocaleDateString(),
     ]);
 
     const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
@@ -380,7 +382,7 @@ const ClothingEnquiries: React.FC = () => {
                       </div>
                     </div>
                     <h3 className="font-semibold text-gray-900 neuzeit-font truncate">
-                      {enquiry.customer_name}
+                      {enquiry.customerName}
                     </h3>
                   </div>
 
@@ -389,10 +391,10 @@ const ClothingEnquiries: React.FC = () => {
                     {/* Product */}
                     <div className="flex items-start gap-3">
                       <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                        {enquiry.product_image_url ? (
+                        {enquiry.productImageUrl ? (
                           <img
-                            src={enquiry.product_image_url}
-                            alt={enquiry.product_name || ''}
+                            src={enquiry.productImageUrl}
+                            alt={enquiry.productName || ''}
                             className="w-full h-full object-cover"
                           />
                         ) : (
@@ -401,10 +403,10 @@ const ClothingEnquiries: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate neuzeit-font">
-                          {enquiry.product_name || 'No product specified'}
+                          {enquiry.productName || 'No product specified'}
                         </p>
-                        {enquiry.product_style_code && (
-                          <p className="text-xs text-gray-500">{enquiry.product_style_code}</p>
+                        {enquiry.productStyleCode && (
+                          <p className="text-xs text-gray-500">{enquiry.productStyleCode}</p>
                         )}
                       </div>
                     </div>
@@ -413,23 +415,23 @@ const ClothingEnquiries: React.FC = () => {
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-2 text-xs text-gray-600">
                         <Mail className="w-3.5 h-3.5 text-gray-400" />
-                        <span className="truncate">{enquiry.customer_email}</span>
+                        <span className="truncate">{enquiry.customerEmail}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-gray-600">
                         <Phone className="w-3.5 h-3.5 text-gray-400" />
-                        <span>{enquiry.customer_phone}</span>
+                        <span>{enquiry.customerPhone}</span>
                       </div>
                     </div>
 
                     {/* Logo Quality */}
-                    {enquiry.logo_quality_tier && (
+                    {enquiry.logoQualityTier && (
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-500">Logo Quality:</span>
                         <span
                           className="text-xs font-medium capitalize"
-                          style={{ color: qualityColors[enquiry.logo_quality_tier] }}
+                          style={{ color: qualityColors[enquiry.logoQualityTier] }}
                         >
-                          {enquiry.logo_quality_tier}
+                          {enquiry.logoQualityTier}
                         </span>
                       </div>
                     )}
@@ -439,7 +441,7 @@ const ClothingEnquiries: React.FC = () => {
                   <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-xs text-gray-500">
                       <Calendar className="w-3.5 h-3.5" />
-                      {formatDate(enquiry.created_at)}
+                      {formatDate(enquiry.createdAt)}
                     </div>
                     <button className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100">
                       <Eye className="w-4 h-4 text-gray-500" />
@@ -482,14 +484,14 @@ const ClothingEnquiries: React.FC = () => {
                       >
                         <td className="px-4 py-3">
                           <div>
-                            <p className="font-medium text-gray-900 text-sm">{enquiry.customer_name}</p>
-                            <p className="text-xs text-gray-500">{enquiry.customer_email}</p>
+                            <p className="font-medium text-gray-900 text-sm">{enquiry.customerName}</p>
+                            <p className="text-xs text-gray-500">{enquiry.customerEmail}</p>
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <p className="text-sm text-gray-900">{enquiry.product_name || '-'}</p>
-                          {enquiry.product_style_code && (
-                            <p className="text-xs text-gray-500">{enquiry.product_style_code}</p>
+                          <p className="text-sm text-gray-900">{enquiry.productName || '-'}</p>
+                          {enquiry.productStyleCode && (
+                            <p className="text-xs text-gray-500">{enquiry.productStyleCode}</p>
                           )}
                         </td>
                         <td className="px-4 py-3">
@@ -505,19 +507,19 @@ const ClothingEnquiries: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          {enquiry.logo_quality_tier ? (
+                          {enquiry.logoQualityTier ? (
                             <span
                               className="text-xs font-medium capitalize"
-                              style={{ color: qualityColors[enquiry.logo_quality_tier] }}
+                              style={{ color: qualityColors[enquiry.logoQualityTier] }}
                             >
-                              {enquiry.logo_quality_tier}
+                              {enquiry.logoQualityTier}
                             </span>
                           ) : (
                             <span className="text-xs text-gray-400">-</span>
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm text-gray-600">{formatDate(enquiry.created_at)}</span>
+                          <span className="text-sm text-gray-600">{formatDate(enquiry.createdAt)}</span>
                         </td>
                         <td className="px-4 py-3">
                           <button className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors">

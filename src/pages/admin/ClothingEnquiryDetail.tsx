@@ -25,14 +25,7 @@ import {
   Hash,
   MapPin
 } from 'lucide-react';
-import {
-  getEnquiryById,
-  updateEnquiryStatus,
-  addEnquiryNote,
-  getEnquiryNotes,
-  ClothingEnquiry,
-  EnquiryNote
-} from '../../lib/enquiry-service';
+import { enquiriesApi, ClothingEnquiry, EnquiryNote } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 
 // Status configuration
@@ -57,7 +50,7 @@ const qualityColors: Record<string, { color: string; label: string }> = {
 const ClothingEnquiryDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { adminUser } = useAuth();
+  const { user } = useAuth();
 
   const [enquiry, setEnquiry] = useState<ClothingEnquiry | null>(null);
   const [notes, setNotes] = useState<EnquiryNote[]>([]);
@@ -79,12 +72,9 @@ const ClothingEnquiryDetail: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const [enquiryData, notesData] = await Promise.all([
-        getEnquiryById(id),
-        getEnquiryNotes(id),
-      ]);
+      const enquiryData = await enquiriesApi.getById(id);
       setEnquiry(enquiryData);
-      setNotes(notesData);
+      setNotes(enquiryData?.notes || []);
     } catch (err) {
       setError('Failed to load enquiry details');
       console.error(err);
@@ -94,15 +84,15 @@ const ClothingEnquiryDetail: React.FC = () => {
   };
 
   const handleStatusChange = async (newStatus: string) => {
-    if (!enquiry || !adminUser) return;
+    if (!enquiry || !user) return;
 
     setUpdatingStatus(true);
     try {
-      await updateEnquiryStatus(enquiry.id, newStatus, adminUser.id);
+      await enquiriesApi.updateStatus(enquiry.id, newStatus);
       setEnquiry({ ...enquiry, status: newStatus });
-      // Reload notes to show the status change activity
-      const notesData = await getEnquiryNotes(enquiry.id);
-      setNotes(notesData);
+      // Reload enquiry to get updated notes
+      const updatedEnquiry = await enquiriesApi.getById(enquiry.id);
+      setNotes(updatedEnquiry?.notes || []);
     } catch (err) {
       console.error('Failed to update status:', err);
     } finally {
@@ -111,15 +101,15 @@ const ClothingEnquiryDetail: React.FC = () => {
   };
 
   const handleAddNote = async () => {
-    if (!enquiry || !adminUser || !newNote.trim()) return;
+    if (!enquiry || !user || !newNote.trim()) return;
 
     setSubmittingNote(true);
     try {
-      await addEnquiryNote(enquiry.id, newNote.trim(), adminUser.id);
-      setNewNote('');
-      // Reload notes
-      const notesData = await getEnquiryNotes(enquiry.id);
-      setNotes(notesData);
+      const note = await enquiriesApi.addNote(enquiry.id, newNote.trim());
+      if (note) {
+        setNewNote('');
+        setNotes([note, ...notes]);
+      }
     } catch (err) {
       console.error('Failed to add note:', err);
     } finally {
@@ -204,7 +194,7 @@ const ClothingEnquiryDetail: React.FC = () => {
               <span className="text-sm font-mono text-gray-500">#{enquiry.id.slice(0, 8)}</span>
             </div>
             <p className="text-gray-600 text-sm neuzeit-font mt-1">
-              Submitted {formatDate(enquiry.created_at)}
+              Submitted {formatDate(enquiry.createdAt)}
             </p>
           </div>
         </div>
@@ -238,11 +228,11 @@ const ClothingEnquiryDetail: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Name</label>
-                  <p className="text-gray-900 font-medium neuzeit-font mt-1">{enquiry.customer_name}</p>
+                  <p className="text-gray-900 font-medium neuzeit-font mt-1">{enquiry.customerName}</p>
                 </div>
                 <div>
                   <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Company</label>
-                  <p className="text-gray-900 neuzeit-font mt-1">{enquiry.company_name || '-'}</p>
+                  <p className="text-gray-900 neuzeit-font mt-1">{enquiry.companyName || '-'}</p>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -253,10 +243,10 @@ const ClothingEnquiryDetail: React.FC = () => {
                   <div>
                     <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Email</label>
                     <a
-                      href={`mailto:${enquiry.customer_email}`}
+                      href={`mailto:${enquiry.customerEmail}`}
                       className="block text-gray-900 hover:text-[#64a70b] neuzeit-font mt-0.5"
                     >
-                      {enquiry.customer_email}
+                      {enquiry.customerEmail}
                     </a>
                   </div>
                 </div>
@@ -267,10 +257,10 @@ const ClothingEnquiryDetail: React.FC = () => {
                   <div>
                     <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Phone</label>
                     <a
-                      href={`tel:${enquiry.customer_phone}`}
+                      href={`tel:${enquiry.customerPhone}`}
                       className="block text-gray-900 hover:text-[#64a70b] neuzeit-font mt-0.5"
                     >
-                      {enquiry.customer_phone}
+                      {enquiry.customerPhone}
                     </a>
                   </div>
                 </div>
@@ -290,10 +280,10 @@ const ClothingEnquiryDetail: React.FC = () => {
               <div className="flex flex-col md:flex-row gap-5">
                 {/* Product Image */}
                 <div className="w-32 h-32 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {enquiry.product_image_url ? (
+                  {enquiry.productImageUrl ? (
                     <img
-                      src={enquiry.product_image_url}
-                      alt={enquiry.product_name || ''}
+                      src={enquiry.productImageUrl}
+                      alt={enquiry.productName || ''}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -305,21 +295,21 @@ const ClothingEnquiryDetail: React.FC = () => {
                 <div className="flex-1 space-y-3">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 neuzeit-font">
-                      {enquiry.product_name || 'No product specified'}
+                      {enquiry.productName || 'No product specified'}
                     </h3>
-                    {enquiry.product_style_code && (
+                    {enquiry.productStyleCode && (
                       <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-1">
                         <Hash className="w-3.5 h-3.5" />
-                        {enquiry.product_style_code}
+                        {enquiry.productStyleCode}
                       </p>
                     )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    {enquiry.product_color && (
+                    {enquiry.productColor && (
                       <div className="flex items-center gap-2">
                         <Palette className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">{enquiry.product_color}</span>
+                        <span className="text-sm text-gray-700">{enquiry.productColor}</span>
                       </div>
                     )}
                     {enquiry.quantity && (
@@ -351,7 +341,7 @@ const ClothingEnquiryDetail: React.FC = () => {
           </div>
 
           {/* Logo Info Card */}
-          {(enquiry.logo_file_url || enquiry.logo_quality_tier) && (
+          {(enquiry.logoFileUrl || enquiry.logoQualityTier) && (
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
                 <h2 className="font-semibold text-gray-900 neuzeit-font flex items-center gap-2">
@@ -362,10 +352,10 @@ const ClothingEnquiryDetail: React.FC = () => {
               <div className="p-5">
                 <div className="flex flex-col md:flex-row gap-5">
                   {/* Logo Preview */}
-                  {enquiry.logo_file_url && (
+                  {enquiry.logoFileUrl && (
                     <div className="w-40 h-40 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0 bg-gray-50">
                       <img
-                        src={enquiry.logo_file_url}
+                        src={enquiry.logoFileUrl}
                         alt="Customer Logo"
                         className="max-w-full max-h-full object-contain"
                       />
@@ -375,48 +365,37 @@ const ClothingEnquiryDetail: React.FC = () => {
                   {/* Logo Analysis */}
                   <div className="flex-1 space-y-4">
                     {/* Quality Tier */}
-                    {enquiry.logo_quality_tier && (
+                    {enquiry.logoQualityTier && (
                       <div>
                         <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Quality Assessment</label>
                         <div className="flex items-center gap-2 mt-1.5">
                           <span
                             className="px-3 py-1.5 rounded-full text-sm font-medium"
                             style={{
-                              backgroundColor: `${qualityColors[enquiry.logo_quality_tier]?.color}15`,
-                              color: qualityColors[enquiry.logo_quality_tier]?.color,
+                              backgroundColor: `${qualityColors[enquiry.logoQualityTier]?.color}15`,
+                              color: qualityColors[enquiry.logoQualityTier]?.color,
                             }}
                           >
-                            {qualityColors[enquiry.logo_quality_tier]?.label}
+                            {qualityColors[enquiry.logoQualityTier]?.label}
                           </span>
                         </div>
                       </div>
                     )}
 
                     {/* Logo Dimensions */}
-                    {(enquiry.logo_width && enquiry.logo_height) && (
+                    {(enquiry.logoWidth && enquiry.logoHeight) && (
                       <div>
                         <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Dimensions</label>
                         <p className="text-gray-700 neuzeit-font mt-1">
-                          {enquiry.logo_width} x {enquiry.logo_height}px
+                          {enquiry.logoWidth} x {enquiry.logoHeight}px
                         </p>
                       </div>
                     )}
 
-                    {/* Placement */}
-                    {enquiry.logo_placement && (
-                      <div>
-                        <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Placement</label>
-                        <div className="flex items-center gap-2 mt-1.5">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-700 capitalize">{enquiry.logo_placement}</span>
-                        </div>
-                      </div>
-                    )}
-
                     {/* Download Button */}
-                    {enquiry.logo_file_url && (
+                    {enquiry.logoFileUrl && (
                       <a
-                        href={enquiry.logo_file_url}
+                        href={enquiry.logoFileUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors neuzeit-font"
@@ -432,7 +411,7 @@ const ClothingEnquiryDetail: React.FC = () => {
           )}
 
           {/* Additional Notes from Customer */}
-          {enquiry.additional_notes && (
+          {enquiry.additionalNotes && (
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
                 <h2 className="font-semibold text-gray-900 neuzeit-font flex items-center gap-2">
@@ -441,7 +420,7 @@ const ClothingEnquiryDetail: React.FC = () => {
                 </h2>
               </div>
               <div className="p-5">
-                <p className="text-gray-700 whitespace-pre-wrap neuzeit-font">{enquiry.additional_notes}</p>
+                <p className="text-gray-700 whitespace-pre-wrap neuzeit-font">{enquiry.additionalNotes}</p>
               </div>
             </div>
           )}
@@ -475,14 +454,14 @@ const ClothingEnquiryDetail: React.FC = () => {
               {/* Action Buttons */}
               <div className="space-y-2">
                 <a
-                  href={`mailto:${enquiry.customer_email}?subject=RE: Clothing Enquiry #${enquiry.id.slice(0, 8)}`}
+                  href={`mailto:${enquiry.customerEmail}?subject=RE: Clothing Enquiry #${enquiry.id.slice(0, 8)}`}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#64a70b] text-white hover:bg-[#578f09] transition-colors neuzeit-font text-sm font-medium"
                 >
                   <Mail className="w-4 h-4" />
                   Email Customer
                 </a>
                 <a
-                  href={`tel:${enquiry.customer_phone}`}
+                  href={`tel:${enquiry.customerPhone}`}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors neuzeit-font text-sm"
                 >
                   <Phone className="w-4 h-4" />
@@ -538,7 +517,7 @@ const ClothingEnquiryDetail: React.FC = () => {
                       {/* Timeline dot */}
                       <div
                         className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 ${
-                          note.note_type === 'status_change'
+                          note.noteType === 'status_change'
                             ? 'bg-[#64a70b] border-[#64a70b]'
                             : 'bg-white border-gray-300'
                         }`}
@@ -547,17 +526,17 @@ const ClothingEnquiryDetail: React.FC = () => {
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-xs text-gray-500">
-                            {formatDateRelative(note.created_at)}
+                            {formatDateRelative(note.createdAt)}
                           </span>
-                          {note.note_type === 'status_change' && (
+                          {note.noteType === 'status_change' && (
                             <span className="px-1.5 py-0.5 bg-gray-100 rounded text-xs text-gray-600">
                               Status Change
                             </span>
                           )}
                         </div>
                         <p className="text-sm text-gray-700 neuzeit-font">{note.content}</p>
-                        {note.created_by_name && (
-                          <p className="text-xs text-gray-400 mt-1">by {note.created_by_name}</p>
+                        {note.author?.name && (
+                          <p className="text-xs text-gray-400 mt-1">by {note.author.name}</p>
                         )}
                       </div>
                     </div>
@@ -575,11 +554,11 @@ const ClothingEnquiryDetail: React.FC = () => {
             <div className="p-5 space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Created</span>
-                <span className="text-gray-900">{formatDate(enquiry.created_at)}</span>
+                <span className="text-gray-900">{formatDate(enquiry.createdAt)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Last Updated</span>
-                <span className="text-gray-900">{formatDate(enquiry.updated_at)}</span>
+                <span className="text-gray-900">{formatDate(enquiry.updatedAt)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Enquiry ID</span>

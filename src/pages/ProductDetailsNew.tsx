@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, Check, ChevronRight, ChevronLeft, Ruler, Sparkles, Shirt, Droplets, Award, Info, ZoomIn, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Product, ColorVariant } from '../lib/supabase';
-import { supabase } from '../lib/supabase';
+import { Product, ColorVariant, getProductsByStyleCode, getRgbValues } from '../lib/supabase';
 import { cartUtils } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import LogoCustomizerModal, { LogoOverlayConfig } from '../components/LogoCustomizerModal';
@@ -77,25 +76,16 @@ const ProductDetailsNew: React.FC = () => {
       try {
         setLoading(true);
 
-        // Fetch product data
-        const { data, error } = await supabase.from('product_data').select('*').eq('style_code', styleCode);
+        // Fetch product data via API
+        const data = await getProductsByStyleCode(styleCode);
 
-        if (error) throw error;
         if (!data || data.length === 0) {
           setError('Product not found');
           return;
         }
 
-        // Fetch hex color lookup table
-        const { data: rgbData } = await supabase.from('rgb_values').select('rgb_text, hex');
-        const hexLookup = new Map<string, string>();
-        rgbData?.forEach(row => {
-          if (row.rgb_text && row.hex) {
-            // Normalize the rgb_text (handle multiple spaces)
-            const normalized = row.rgb_text.replace(/\s+/g, ' ').trim();
-            hexLookup.set(normalized, row.hex);
-          }
-        });
+        // Fetch hex color lookup table via API
+        const hexLookup = await getRgbValues();
 
         const allVariants = data as Product[];
         // Filter out discontinued items

@@ -39,7 +39,7 @@ const AdminLayoutNew: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarPinned, setSidebarPinned] = useState(true);
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
-  const { isAuthenticated, isLoading, adminUser, signOut, isAdmin } = useAuth();
+  const { isAuthenticated, isLoading, user, signOut, isAdmin } = useAuth();
 
   useEffect(() => {
     // Redirect to login if not authenticated
@@ -103,7 +103,7 @@ const AdminLayoutNew: React.FC = () => {
     return null;
   }
 
-  const username = adminUser?.name || adminUser?.email?.split('@')[0] || 'Admin';
+  const username = user?.name || user?.email?.split('@')[0] || 'Admin';
 
   // Navigation items with sections
   const navItems: NavItem[] = [
@@ -243,7 +243,7 @@ const AdminLayoutNew: React.FC = () => {
             </div>
             <div className={`transition-opacity duration-300 min-w-0 ${sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
               <p className="text-white font-semibold text-sm truncate">{username}</p>
-              <p className="text-gray-500 text-xs capitalize">{adminUser?.role || 'Staff'}</p>
+              <p className="text-gray-500 text-xs capitalize">{user?.role || 'Staff'}</p>
             </div>
           </div>
         </div>

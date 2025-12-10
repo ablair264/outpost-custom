@@ -4,7 +4,9 @@ import { X } from 'lucide-react';
 import SmartSearchChat, { ChatMessage } from './SmartSearchChat';
 import SmartSearchResults from './SmartSearchResults';
 import { SearchProduct } from './SmartSearchProductCard';
-import { supabase } from '../../lib/supabase';
+
+// API endpoint for product search
+const API_BASE = '/.netlify/functions/products';
 
 interface ConversationalSmartSearchProps {
   isOpen: boolean;
@@ -72,7 +74,7 @@ const ConversationalSmartSearch: React.FC<ConversationalSmartSearchProps> = ({
     }
   }, [isOpen]);
 
-  // Execute search against Supabase using extracted criteria
+  // Execute search via Netlify function API
   const executeSearch = async (searchQuery: {
     keywords?: string[];
     category?: string;
@@ -84,55 +86,42 @@ const ConversationalSmartSearch: React.FC<ConversationalSmartSearchProps> = ({
     gender?: string;
   }): Promise<SearchProduct[]> => {
     try {
-      let query = supabase
-        .from('product_styles')
-        .select('id, style_code, style_name, brand, product_type, price_min, price_max, primary_product_image_url, available_colors, gender, sustainable_organic')
-        .eq('is_live', true)
-        .limit(24);
+      // Build query params for API
+      const params = new URLSearchParams();
+      params.set('limit', '24');
 
-      // Apply category filter
       if (searchQuery.category) {
-        query = query.ilike('product_type', `%${searchQuery.category}%`);
+        params.set('productType', searchQuery.category);
       }
-
-      // Apply brand filter
       if (searchQuery.brand) {
-        query = query.ilike('brand', `%${searchQuery.brand}%`);
+        params.set('brand', searchQuery.brand);
       }
-
-      // Apply price filters
       if (searchQuery.priceMin !== undefined && searchQuery.priceMin !== null) {
-        query = query.gte('price_min', searchQuery.priceMin);
+        params.set('priceMin', searchQuery.priceMin.toString());
       }
       if (searchQuery.priceMax !== undefined && searchQuery.priceMax !== null) {
-        query = query.lte('price_min', searchQuery.priceMax);
+        params.set('priceMax', searchQuery.priceMax.toString());
       }
-
-      // Apply gender filter
       if (searchQuery.gender) {
-        query = query.eq('gender', searchQuery.gender);
+        params.set('gender', searchQuery.gender);
       }
-
-      // Apply sustainability filter
-      if (searchQuery.sustainable) {
-        query = query.not('sustainable_organic', 'is', null);
-      }
-
-      // If we have keywords, use full-text search
       if (searchQuery.keywords && searchQuery.keywords.length > 0) {
-        const searchTerms = searchQuery.keywords.join(' & ');
-        query = query.textSearch('search_vector', searchTerms, { type: 'websearch' });
+        params.set('search', searchQuery.keywords.join(' '));
       }
 
-      const { data, error } = await query;
+      const response = await fetch(`${API_BASE}/styles?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error('Search request failed');
+      }
 
-      if (error) {
-        console.error('Search error:', error);
+      const data = await response.json();
+
+      if (!data.success || !data.styles) {
         return [];
       }
 
       // Transform to SearchProduct format
-      return (data || []).map(item => ({
+      return data.styles.map((item: any) => ({
         id: item.id?.toString() || item.style_code,
         sku: item.style_code,
         title: item.style_name,

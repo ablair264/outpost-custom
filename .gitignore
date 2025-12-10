@@ -111,3 +111,5 @@ dist-ssr/
 /journal-scrapers
 /reference
 /sql
+
+/generated/prisma

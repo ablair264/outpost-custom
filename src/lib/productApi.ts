@@ -1,5 +1,24 @@
-import { supabase } from './supabase';
+// Product API - connects to Neon via Netlify Functions
 import { Product } from './supabase';
+
+const API_BASE = '/.netlify/functions/products';
+
+async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+    ...options,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error.error || 'Request failed');
+  }
+
+  return response.json();
+}
 
 export interface ProductFilters {
   searchQuery?: string;
@@ -46,102 +65,45 @@ export async function getFilteredProducts(
   pageSize: number = 12
 ): Promise<ProductsResponse> {
   try {
-    let query = supabase
-      .from('product_data')
-      .select('*', { count: 'exact' });
+    const params = new URLSearchParams();
+    params.set('productType', categoryKey);
 
-    // Base category filter
-    query = query.eq('product_type', categoryKey);
-
-    // Apply filters
     if (filters.searchQuery) {
-      // Search across multiple fields
-      query = query.or(`style_name.ilike.%${filters.searchQuery}%,brand.ilike.%${filters.searchQuery}%,retail_description.ilike.%${filters.searchQuery}%`);
+      params.set('search', filters.searchQuery);
     }
-
-    if (filters.productTypes?.length) {
-      query = query.in('product_type', filters.productTypes);
-    }
-
-    if (filters.sizes?.length) {
-      query = query.in('size_name', filters.sizes);
-    }
-
-    if (filters.colors?.length) {
-      query = query.in('primary_colour', filters.colors);
-    }
-
-    if (filters.colorShades?.length) {
-      query = query.in('colour_shade', filters.colorShades);
-    }
-
     if (filters.brands?.length) {
-      query = query.in('brand', filters.brands);
+      params.set('brand', filters.brands.join(','));
     }
-
     if (filters.genders?.length) {
-      query = query.in('gender', filters.genders);
+      params.set('gender', filters.genders.join(','));
     }
-
-    if (filters.ageGroups?.length) {
-      query = query.in('age_group', filters.ageGroups);
+    if (filters.sizes?.length) {
+      params.set('sizes', filters.sizes.join(','));
     }
-
-    if (filters.sustainableOrganic?.length) {
-      query = query.in('sustainable_organic', filters.sustainableOrganic);
+    if (filters.colors?.length) {
+      params.set('colors', filters.colors.join(','));
     }
-
-    // Price range filter
     if (filters.priceMin !== undefined) {
-      query = query.gte('single_price', filters.priceMin.toString());
+      params.set('priceMin', filters.priceMin.toString());
     }
     if (filters.priceMax !== undefined) {
-      query = query.lte('single_price', filters.priceMax.toString());
+      params.set('priceMax', filters.priceMax.toString());
     }
 
-    // Material filter (requires text search in fabric field)
-    if (filters.materials?.length) {
-      const materialConditions = filters.materials.map(material => 
-        `fabric.ilike.%${material}%`
-      ).join(',');
-      query = query.or(materialConditions);
-    }
+    params.set('limit', pageSize.toString());
+    params.set('offset', ((page - 1) * pageSize).toString());
 
-    // Category filter (requires text search in categorisation field)
-    if (filters.categories?.length) {
-      const categoryConditions = filters.categories.map(category => 
-        `categorisation.ilike.%${category}%`
-      ).join(',');
-      query = query.or(categoryConditions);
-    }
+    const response = await apiFetch<{
+      success: boolean;
+      products: Product[];
+      total: number;
+    }>(`?${params.toString()}`);
 
-    // Accreditations filter
-    if (filters.accreditations?.length) {
-      const accredConditions = filters.accreditations.map(accred => 
-        `accreditations.ilike.%${accred}%`
-      ).join(',');
-      query = query.or(accredConditions);
-    }
-
-    // Pagination
-    const startIndex = (page - 1) * pageSize;
-    query = query.range(startIndex, startIndex + pageSize - 1);
-
-    // Order by style_code for consistent grouping
-    query = query.order('style_code').order('colour_code');
-
-    const { data: products, count, error } = await query;
-
-    if (error) {
-      console.error('Error fetching filtered products:', error);
-      throw error;
-    }
-
-    const totalPages = Math.ceil((count || 0) / pageSize);
+    const totalPages = Math.ceil((response.total || 0) / pageSize);
 
     return {
-      products: products || [],
-      totalCount: count || 0,
+      products: response.products || [],
+      totalCount: response.total || 0,
       totalPages,
       currentPage: page
     };
@@ -158,22 +120,18 @@ export async function getFilteredProducts(
 
 export async function getFilterOptions(categoryKey: string): Promise<FilterOptions> {
   try {
-    // Get a sample of products to extract filter options
-    const { data: products, error } = await supabase
-      .from('product_data')
-      .select('*')
-      .eq('product_type', categoryKey)
-      .limit(1000); // Get a representative sample
+    // Get products for this category to extract filter options
+    const response = await apiFetch<{
+      success: boolean;
+      products: Product[];
+    }>(`?productType=${encodeURIComponent(categoryKey)}&limit=1000`);
 
-    if (error || !products) {
-      throw error;
-    }
+    const products = response.products || [];
 
     // Extract unique values
     const materials = new Set<string>();
     const categories = new Set<string>();
-    const accreditationsRaw: { accreditations: string }[] = [];
-    
+
     products.forEach(product => {
       // Extract materials from fabric
       if (product.fabric) {
@@ -183,19 +141,19 @@ export async function getFilterOptions(categoryKey: string): Promise<FilterOptio
           'Twill', 'French Terry', 'Silk', 'Linen', 'Nylon', 'Viscose',
           'Acrylic', 'Spandex', 'Elastane', 'Polyamide', 'Modal', 'Bamboo'
         ];
-        
+
         commonMaterials.forEach(material => {
-          if (product.fabric.toLowerCase().includes(material.toLowerCase())) {
+          if (product.fabric?.toLowerCase().includes(material.toLowerCase())) {
             materials.add(material);
           }
         });
       }
-      
+
       // Extract categories
       if (product.categorisation) {
         product.categorisation.split('|').forEach((cat: string) => {
           const trimmedCat = cat.trim();
-          if (trimmedCat && 
+          if (trimmedCat &&
               !trimmedCat.includes('Top 1000') &&
               !trimmedCat.includes('DM') &&
               !trimmedCat.includes('Raladeal') &&
@@ -206,17 +164,12 @@ export async function getFilterOptions(categoryKey: string): Promise<FilterOptio
           }
         });
       }
-      
-      // Collect accreditations
-      if (product.accreditations) {
-        accreditationsRaw.push({ accreditations: product.accreditations });
-      }
     });
-    
+
     const prices = products
       .map(p => parseFloat(p.single_price))
       .filter(p => !isNaN(p) && p > 0);
-    
+
     return {
       materials: Array.from(materials).sort(),
       categories: Array.from(categories).sort(),
@@ -231,7 +184,7 @@ export async function getFilterOptions(categoryKey: string): Promise<FilterOptio
       brands: Array.from(new Set(products.map(p => p.brand).filter(Boolean))).sort(),
       genders: Array.from(new Set(products.map(p => p.gender).filter(Boolean))).sort(),
       ageGroups: Array.from(new Set(products.map(p => p.age_group).filter((age): age is string => Boolean(age)))).sort(),
-      accreditations: [] // Will be populated from the accreditationsRaw
+      accreditations: []
     };
   } catch (error) {
     console.error('Error getting filter options:', error);

@@ -16,13 +16,7 @@ import {
   Check,
   RefreshCw
 } from 'lucide-react';
-import {
-  AdminUser,
-  getAdminUsers,
-  createAdminUser,
-  updateAdminUser,
-  deleteAdminUser
-} from '../../lib/auth-service';
+import { authApi, AdminUser } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 
 // Role badge colors
@@ -39,7 +33,7 @@ interface UserFormData {
 }
 
 const AdminUsers: React.FC = () => {
-  const { isAdmin, adminUser: currentAdmin } = useAuth();
+  const { isAdmin, user: currentAdmin } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +62,7 @@ const AdminUsers: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAdminUsers();
+      const data = await authApi.getUsers();
       setUsers(data);
     } catch (err) {
       setError('Failed to load users');
@@ -98,7 +92,7 @@ const AdminUsers: React.FC = () => {
     setFormError(null);
 
     try {
-      const result = await createAdminUser(
+      const result = await authApi.createUser(
         formData.email,
         formData.password || '',
         formData.name || undefined,
@@ -126,7 +120,7 @@ const AdminUsers: React.FC = () => {
     setFormError(null);
 
     try {
-      const success = await updateAdminUser(editingUser.id, {
+      const success = await authApi.updateUser(editingUser.id, {
         name: formData.name,
         role: formData.role,
       });
@@ -152,7 +146,7 @@ const AdminUsers: React.FC = () => {
     setFormError(null);
 
     try {
-      const success = await deleteAdminUser(deletingUser.id);
+      const success = await authApi.deleteUser(deletingUser.id);
 
       if (success) {
         setDeletingUser(null);
@@ -169,7 +163,7 @@ const AdminUsers: React.FC = () => {
 
   const handleToggleActive = async (user: AdminUser) => {
     try {
-      await updateAdminUser(user.id, { is_active: !user.is_active });
+      await authApi.updateUser(user.id, { isActive: !user.isActive });
       loadUsers();
     } catch (err) {
       console.error('Failed to toggle user status:', err);
@@ -346,12 +340,12 @@ const AdminUsers: React.FC = () => {
                         onClick={() => handleToggleActive(user)}
                         disabled={user.id === currentAdmin?.id}
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-                          user.is_active
+                          user.isActive
                             ? 'bg-green-50 text-green-600 hover:bg-green-100'
                             : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                         } ${user.id === currentAdmin?.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                       >
-                        {user.is_active ? (
+                        {user.isActive ? (
                           <>
                             <UserCheck className="w-3.5 h-3.5" />
                             Active
@@ -367,7 +361,7 @@ const AdminUsers: React.FC = () => {
                     <td className="px-5 py-4">
                       <span className="text-sm text-gray-600 flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                        {formatDate(user.created_at)}
+                        {formatDate(user.createdAt)}
                       </span>
                     </td>
                     <td className="px-5 py-4">

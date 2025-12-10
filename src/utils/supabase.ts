@@ -1,13 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+// Shop Content API - Uses Netlify Functions to connect to Neon PostgreSQL
+// No longer uses Supabase directly
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const SHOP_API_BASE = '/.netlify/functions/shop';
 
 // Types
 export interface BentoTile {
@@ -58,280 +52,218 @@ export interface AccordionItem {
   updated_at: string;
 }
 
-// Fetch functions
-export async function fetchBentoTiles(section: 'left' | 'right'): Promise<BentoTile[]> {
-  const { data, error } = await supabase
-    .from('bento_tiles')
-    .select('*')
-    .eq('grid_section', section)
-    .eq('is_active', true)
-    .order('grid_position', { ascending: true });
+// Helper function for API calls
+async function shopApiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(`${SHOP_API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+  });
 
-  if (error) {
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `API error: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+// ============ BENTO TILES ============
+
+export async function fetchBentoTiles(section: 'left' | 'right'): Promise<BentoTile[]> {
+  try {
+    const response = await shopApiFetch<{ success: boolean; tiles: BentoTile[] }>(
+      `/bento-tiles?section=${section}&activeOnly=true`
+    );
+    return response.tiles || [];
+  } catch (error) {
     console.error('Error fetching bento tiles:', error);
     return [];
   }
-
-  return data || [];
-}
-
-export async function fetchAdvertisementSlides(): Promise<AdSlide[]> {
-  const { data, error } = await supabase
-    .from('advertisement_slides')
-    .select('*')
-    .eq('is_active', true)
-    .order('order_position', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching advertisement slides:', error);
-    return [];
-  }
-
-  return data || [];
-}
-
-export async function fetchAllAdvertisementSlides(): Promise<AdSlide[]> {
-  const { data, error } = await supabase
-    .from('advertisement_slides')
-    .select('*')
-    .order('order_position', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching all advertisement slides:', error);
-    return [];
-  }
-
-  return data || [];
 }
 
 export async function fetchAllBentoTiles(): Promise<BentoTile[]> {
-  const { data, error } = await supabase
-    .from('bento_tiles')
-    .select('*')
-    .order('grid_section', { ascending: true })
-    .order('grid_position', { ascending: true });
-
-  if (error) {
+  try {
+    const response = await shopApiFetch<{ success: boolean; tiles: BentoTile[] }>(
+      '/bento-tiles'
+    );
+    return response.tiles || [];
+  } catch (error) {
     console.error('Error fetching all bento tiles:', error);
     return [];
   }
-
-  return data || [];
 }
 
-// CRUD functions for Advertisement Slides
-export async function createAdvertisementSlide(slide: Omit<AdSlide, 'id' | 'created_at' | 'updated_at'>): Promise<AdSlide | null> {
-  const { data, error } = await supabase
-    .from('advertisement_slides')
-    .insert([slide])
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error creating advertisement slide:', error);
-    return null;
-  }
-
-  return data;
-}
-
-export async function updateAdvertisementSlide(id: string, updates: Partial<AdSlide>): Promise<AdSlide | null> {
-  // Remove updated_at from updates as it's handled by database trigger
-  const { updated_at, created_at, ...cleanUpdates } = updates as any;
-
-  console.log('updateAdvertisementSlide called with:', { id, updates, cleanUpdates });
-
-  // Check if cleanUpdates is empty
-  if (Object.keys(cleanUpdates).length === 0) {
-    console.error('No valid fields to update after filtering');
-    return null;
-  }
-
-  const { data, error } = await supabase
-    .from('advertisement_slides')
-    .update(cleanUpdates)
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error updating advertisement slide:', error);
-    return null;
-  }
-
-  console.log('Update successful:', data);
-  return data;
-}
-
-export async function deleteAdvertisementSlide(id: string): Promise<boolean> {
-  const { error } = await supabase
-    .from('advertisement_slides')
-    .delete()
-    .eq('id', id);
-
-  if (error) {
-    console.error('Error deleting advertisement slide:', error);
-    return false;
-  }
-
-  return true;
-}
-
-// CRUD functions for Bento Tiles
 export async function createBentoTile(tile: Omit<BentoTile, 'id' | 'created_at' | 'updated_at'>): Promise<BentoTile | null> {
-  const { data, error } = await supabase
-    .from('bento_tiles')
-    .insert([tile])
-    .select()
-    .single();
-
-  if (error) {
+  try {
+    const response = await shopApiFetch<{ success: boolean; tile: BentoTile }>(
+      '/bento-tiles',
+      {
+        method: 'POST',
+        body: JSON.stringify(tile),
+      }
+    );
+    return response.tile || null;
+  } catch (error) {
     console.error('Error creating bento tile:', error);
     return null;
   }
-
-  return data;
 }
 
 export async function updateBentoTile(id: string, updates: Partial<BentoTile>): Promise<BentoTile | null> {
-  // Remove updated_at from updates as it's handled by database trigger
   const { updated_at, created_at, ...cleanUpdates } = updates as any;
 
-  console.log('updateBentoTile called with:', { id, updates, cleanUpdates });
-
-  // Check if cleanUpdates is empty
   if (Object.keys(cleanUpdates).length === 0) {
     console.error('No valid fields to update after filtering');
     return null;
   }
 
-  const { data, error } = await supabase
-    .from('bento_tiles')
-    .update(cleanUpdates)
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) {
+  try {
+    const response = await shopApiFetch<{ success: boolean; tile: BentoTile }>(
+      `/bento-tiles/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(cleanUpdates),
+      }
+    );
+    return response.tile || null;
+  } catch (error) {
     console.error('Error updating bento tile:', error);
     return null;
   }
-
-  console.log('Update successful:', data);
-  return data;
 }
 
 export async function deleteBentoTile(id: string): Promise<boolean> {
-  const { error } = await supabase
-    .from('bento_tiles')
-    .delete()
-    .eq('id', id);
-
-  if (error) {
+  try {
+    await shopApiFetch<{ success: boolean }>(`/bento-tiles/${id}`, {
+      method: 'DELETE',
+    });
+    return true;
+  } catch (error) {
     console.error('Error deleting bento tile:', error);
     return false;
   }
-
-  return true;
 }
 
-// Image Upload Functions
-export async function uploadImage(file: File, folder: 'slides' | 'tiles'): Promise<string | null> {
+// ============ ADVERTISEMENT SLIDES ============
+
+export async function fetchAdvertisementSlides(): Promise<AdSlide[]> {
   try {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-
-    const { data, error } = await supabase.storage
-      .from('shop-images')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (error) {
-      console.error('Error uploading image:', error);
-      return null;
-    }
-
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('shop-images')
-      .getPublicUrl(data.path);
-
-    return publicUrl;
+    const response = await shopApiFetch<{ success: boolean; slides: AdSlide[] }>(
+      '/slides?activeOnly=true'
+    );
+    return response.slides || [];
   } catch (error) {
-    console.error('Error uploading image:', error);
+    console.error('Error fetching advertisement slides:', error);
+    return [];
+  }
+}
+
+export async function fetchAllAdvertisementSlides(): Promise<AdSlide[]> {
+  try {
+    const response = await shopApiFetch<{ success: boolean; slides: AdSlide[] }>(
+      '/slides'
+    );
+    return response.slides || [];
+  } catch (error) {
+    console.error('Error fetching all advertisement slides:', error);
+    return [];
+  }
+}
+
+export async function createAdvertisementSlide(slide: Omit<AdSlide, 'id' | 'created_at' | 'updated_at'>): Promise<AdSlide | null> {
+  try {
+    const response = await shopApiFetch<{ success: boolean; slide: AdSlide }>(
+      '/slides',
+      {
+        method: 'POST',
+        body: JSON.stringify(slide),
+      }
+    );
+    return response.slide || null;
+  } catch (error) {
+    console.error('Error creating advertisement slide:', error);
     return null;
   }
 }
 
-export async function deleteImage(url: string): Promise<boolean> {
+export async function updateAdvertisementSlide(id: string, updates: Partial<AdSlide>): Promise<AdSlide | null> {
+  const { updated_at, created_at, ...cleanUpdates } = updates as any;
+
+  if (Object.keys(cleanUpdates).length === 0) {
+    console.error('No valid fields to update after filtering');
+    return null;
+  }
+
   try {
-    // Extract path from URL
-    const urlParts = url.split('/shop-images/');
-    if (urlParts.length < 2) return false;
+    const response = await shopApiFetch<{ success: boolean; slide: AdSlide }>(
+      `/slides/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(cleanUpdates),
+      }
+    );
+    return response.slide || null;
+  } catch (error) {
+    console.error('Error updating advertisement slide:', error);
+    return null;
+  }
+}
 
-    const path = urlParts[1];
-
-    const { error } = await supabase.storage
-      .from('shop-images')
-      .remove([path]);
-
-    if (error) {
-      console.error('Error deleting image:', error);
-      return false;
-    }
-
+export async function deleteAdvertisementSlide(id: string): Promise<boolean> {
+  try {
+    await shopApiFetch<{ success: boolean }>(`/slides/${id}`, {
+      method: 'DELETE',
+    });
     return true;
   } catch (error) {
-    console.error('Error deleting image:', error);
+    console.error('Error deleting advertisement slide:', error);
     return false;
   }
 }
 
-// Hero Grid Image Functions
-export async function fetchHeroGridImages(): Promise<HeroGridImage[]> {
-  const { data, error } = await supabase
-    .from('hero_grid_images')
-    .select('*')
-    .eq('is_active', true)
-    .order('position', { ascending: true });
+// ============ HERO GRID IMAGES ============
 
-  if (error) {
+export async function fetchHeroGridImages(): Promise<HeroGridImage[]> {
+  try {
+    const response = await shopApiFetch<{ success: boolean; images: HeroGridImage[] }>(
+      '/hero-images?activeOnly=true'
+    );
+    return response.images || [];
+  } catch (error) {
     console.error('Error fetching hero grid images:', error);
     return [];
   }
-
-  return data || [];
 }
 
 export async function fetchAllHeroGridImages(): Promise<HeroGridImage[]> {
-  const { data, error } = await supabase
-    .from('hero_grid_images')
-    .select('*')
-    .order('position', { ascending: true });
-
-  if (error) {
+  try {
+    const response = await shopApiFetch<{ success: boolean; images: HeroGridImage[] }>(
+      '/hero-images'
+    );
+    return response.images || [];
+  } catch (error) {
     console.error('Error fetching all hero grid images:', error);
     return [];
   }
-
-  return data || [];
 }
 
 export async function createHeroGridImage(image: Omit<HeroGridImage, 'id' | 'created_at' | 'updated_at'>): Promise<HeroGridImage | null> {
-  const { data, error } = await supabase
-    .from('hero_grid_images')
-    .insert([image])
-    .select()
-    .single();
-
-  if (error) {
+  try {
+    const response = await shopApiFetch<{ success: boolean; image: HeroGridImage }>(
+      '/hero-images',
+      {
+        method: 'POST',
+        body: JSON.stringify(image),
+      }
+    );
+    return response.image || null;
+  } catch (error) {
     console.error('Error creating hero grid image:', error);
     return null;
   }
-
-  return data;
 }
 
 export async function updateHeroGridImage(id: string, updates: Partial<HeroGridImage>): Promise<HeroGridImage | null> {
@@ -342,78 +274,73 @@ export async function updateHeroGridImage(id: string, updates: Partial<HeroGridI
     return null;
   }
 
-  const { data, error } = await supabase
-    .from('hero_grid_images')
-    .update(cleanUpdates)
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) {
+  try {
+    const response = await shopApiFetch<{ success: boolean; image: HeroGridImage }>(
+      `/hero-images/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(cleanUpdates),
+      }
+    );
+    return response.image || null;
+  } catch (error) {
     console.error('Error updating hero grid image:', error);
     return null;
   }
-
-  return data;
 }
 
 export async function deleteHeroGridImage(id: string): Promise<boolean> {
-  const { error } = await supabase
-    .from('hero_grid_images')
-    .delete()
-    .eq('id', id);
-
-  if (error) {
+  try {
+    await shopApiFetch<{ success: boolean }>(`/hero-images/${id}`, {
+      method: 'DELETE',
+    });
+    return true;
+  } catch (error) {
     console.error('Error deleting hero grid image:', error);
     return false;
   }
-
-  return true;
 }
 
-// Accordion Item Functions
-export async function fetchAccordionItems(): Promise<AccordionItem[]> {
-  const { data, error } = await supabase
-    .from('accordion_items')
-    .select('*')
-    .eq('is_active', true)
-    .order('order_position', { ascending: true });
+// ============ ACCORDION ITEMS ============
 
-  if (error) {
+export async function fetchAccordionItems(): Promise<AccordionItem[]> {
+  try {
+    const response = await shopApiFetch<{ success: boolean; items: AccordionItem[] }>(
+      '/accordion?activeOnly=true'
+    );
+    return response.items || [];
+  } catch (error) {
     console.error('Error fetching accordion items:', error);
     return [];
   }
-
-  return data || [];
 }
 
 export async function fetchAllAccordionItems(): Promise<AccordionItem[]> {
-  const { data, error } = await supabase
-    .from('accordion_items')
-    .select('*')
-    .order('order_position', { ascending: true });
-
-  if (error) {
+  try {
+    const response = await shopApiFetch<{ success: boolean; items: AccordionItem[] }>(
+      '/accordion'
+    );
+    return response.items || [];
+  } catch (error) {
     console.error('Error fetching all accordion items:', error);
     return [];
   }
-
-  return data || [];
 }
 
 export async function createAccordionItem(item: Omit<AccordionItem, 'id' | 'created_at' | 'updated_at'>): Promise<AccordionItem | null> {
-  const { data, error } = await supabase
-    .from('accordion_items')
-    .insert([item])
-    .select()
-    .single();
-
-  if (error) {
+  try {
+    const response = await shopApiFetch<{ success: boolean; item: AccordionItem }>(
+      '/accordion',
+      {
+        method: 'POST',
+        body: JSON.stringify(item),
+      }
+    );
+    return response.item || null;
+  } catch (error) {
     console.error('Error creating accordion item:', error);
     return null;
   }
-
-  return data;
 }
 
 export async function updateAccordionItem(id: string, updates: Partial<AccordionItem>): Promise<AccordionItem | null> {
@@ -424,31 +351,45 @@ export async function updateAccordionItem(id: string, updates: Partial<Accordion
     return null;
   }
 
-  const { data, error } = await supabase
-    .from('accordion_items')
-    .update(cleanUpdates)
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) {
+  try {
+    const response = await shopApiFetch<{ success: boolean; item: AccordionItem }>(
+      `/accordion/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(cleanUpdates),
+      }
+    );
+    return response.item || null;
+  } catch (error) {
     console.error('Error updating accordion item:', error);
     return null;
   }
-
-  return data;
 }
 
 export async function deleteAccordionItem(id: string): Promise<boolean> {
-  const { error } = await supabase
-    .from('accordion_items')
-    .delete()
-    .eq('id', id);
-
-  if (error) {
+  try {
+    await shopApiFetch<{ success: boolean }>(`/accordion/${id}`, {
+      method: 'DELETE',
+    });
+    return true;
+  } catch (error) {
     console.error('Error deleting accordion item:', error);
     return false;
   }
+}
 
-  return true;
+// ============ IMAGE UPLOAD FUNCTIONS ============
+// TODO: These will be migrated to use Cloudflare R2
+// For now, images should be uploaded manually and URLs stored in the database
+
+export async function uploadImage(file: File, folder: 'slides' | 'tiles'): Promise<string | null> {
+  // TODO: Implement Cloudflare R2 upload
+  console.warn('Image upload not yet implemented - please upload images manually and provide URLs');
+  return null;
+}
+
+export async function deleteImage(url: string): Promise<boolean> {
+  // TODO: Implement Cloudflare R2 delete
+  console.warn('Image delete not yet implemented');
+  return false;
 }

@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, Send, X, Sparkles, User, Search, Lightbulb } from 'lucide-react';
 import SmartSearchResults from './search/SmartSearchResults';
 import { SearchProduct } from './search/SmartSearchProductCard';
-import { supabase } from '../lib/supabase';
+
+const API_BASE = '/.netlify/functions/products';
 
 type ChatMessage = {
   id: string;
@@ -124,7 +125,7 @@ const UnifiedChatWidget: React.FC = () => {
     };
   }, []);
 
-  // Execute product search
+  // Execute product search using Netlify API
   const executeSearch = async (searchQuery: {
     keywords?: string[];
     category?: string;
@@ -133,33 +134,32 @@ const UnifiedChatWidget: React.FC = () => {
     priceMin?: number;
   }): Promise<SearchProduct[]> => {
     try {
-      let query = supabase
-        .from('product_styles')
-        .select('id, style_code, style_name, brand, product_type, price_min, price_max, primary_product_image_url, available_colors')
-        .eq('is_live', true)
-        .limit(24);
+      const params = new URLSearchParams();
+      params.set('limit', '24');
 
       if (searchQuery.category) {
-        query = query.ilike('product_type', `%${searchQuery.category}%`);
+        params.set('productType', searchQuery.category);
       }
       if (searchQuery.brand) {
-        query = query.ilike('brand', `%${searchQuery.brand}%`);
+        params.set('brand', searchQuery.brand);
       }
       if (searchQuery.priceMin !== undefined && searchQuery.priceMin !== null) {
-        query = query.gte('price_min', searchQuery.priceMin);
+        params.set('priceMin', searchQuery.priceMin.toString());
       }
       if (searchQuery.priceMax !== undefined && searchQuery.priceMax !== null) {
-        query = query.lte('price_min', searchQuery.priceMax);
+        params.set('priceMax', searchQuery.priceMax.toString());
       }
       if (searchQuery.keywords && searchQuery.keywords.length > 0) {
-        const searchTerms = searchQuery.keywords.join(' & ');
-        query = query.textSearch('search_vector', searchTerms, { type: 'websearch' });
+        params.set('search', searchQuery.keywords.join(' '));
       }
 
-      const { data, error } = await query;
-      if (error) return [];
+      const response = await fetch(`${API_BASE}/styles?${params.toString()}`);
+      if (!response.ok) return [];
 
-      return (data || []).map(item => ({
+      const data = await response.json();
+      const styles = data.styles || [];
+
+      return styles.map((item: any) => ({
         id: item.id?.toString() || item.style_code,
         sku: item.style_code,
         title: item.style_name,

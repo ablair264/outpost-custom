@@ -1,5 +1,24 @@
-import { supabase } from './supabase';
+// Product Browser API - connects to Neon via Netlify Functions
 import { Product } from './supabase';
+
+const API_BASE = '/.netlify/functions/products';
+
+async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+    ...options,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error.error || 'Request failed');
+  }
+
+  return response.json();
+}
 
 export interface ProductFilters {
   searchQuery?: string;
@@ -56,137 +75,90 @@ export async function getAllProducts(
   try {
     console.log('🗄️ Database query starting with filters:', filters);
 
-    // Use the optimized product_styles table instead of product_data
-    // Filter out discontinued products by default
-    let stylesQuery = supabase
-      .from('product_styles')
-      .select('*', { count: 'exact' })
-      .eq('is_live', true);
+    // Build query params
+    const params = new URLSearchParams();
 
-    // Apply filters - much faster with the aggregated table
+    if (filters.productTypes?.length) {
+      params.set('productType', filters.productTypes.join(','));
+    }
+    if (filters.brands?.length) {
+      params.set('brand', filters.brands.join(','));
+    }
+    if (filters.genders?.length) {
+      params.set('gender', filters.genders.join(','));
+    }
+    if (filters.sizes?.length) {
+      params.set('sizes', filters.sizes.join(','));
+    }
+    if (filters.colors?.length) {
+      params.set('colors', filters.colors.join(','));
+    }
+    if (filters.priceMin !== undefined) {
+      params.set('priceMin', filters.priceMin.toString());
+    }
+    if (filters.priceMax !== undefined) {
+      params.set('priceMax', filters.priceMax.toString());
+    }
     if (filters.searchQuery) {
-      // Use full-text search instead of ilike
-      const searchTerms = filters.searchQuery
-        .toLowerCase()
-        .replace(/[^\w\s]/g, ' ')
-        .split(/\s+/)
-        .filter(word => word.length > 2 && !['the', 'and', 'for', 'with', 'need', 'want', 'looking'].includes(word))
-        .join(' & ');
+      params.set('search', filters.searchQuery);
+    }
 
-      if (searchTerms) {
-        stylesQuery = stylesQuery.textSearch('search_vector', searchTerms);
+    params.set('limit', pageSize.toString());
+    params.set('offset', ((page - 1) * pageSize).toString());
+
+    // First get the styles
+    const stylesResponse = await apiFetch<{
+      success: boolean;
+      styles: any[];
+      total: number;
+      totalPages: number;
+      currentPage: number;
+    }>(`/styles?${params.toString()}`);
+
+    if (!stylesResponse.success || !stylesResponse.styles?.length) {
+      return {
+        products: [],
+        totalCount: 0,
+        totalPages: 0,
+        currentPage: page,
+        hasNextPage: false,
+        hasPrevPage: false
+      };
+    }
+
+    // Get variants for these styles
+    const styleCodes = stylesResponse.styles.map(s => s.style_code);
+    const variantsParams = new URLSearchParams();
+    variantsParams.set('styleCode', styleCodes[0]); // For now, get one at a time or batch
+
+    // Fetch all variants for the matched styles
+    const allProducts: Product[] = [];
+    for (const style of stylesResponse.styles) {
+      try {
+        const variantsResponse = await apiFetch<{ success: boolean; products: Product[] }>(
+          `/styles/${encodeURIComponent(style.style_code)}/variants`
+        );
+        if (variantsResponse.products) {
+          allProducts.push(...variantsResponse.products);
+        }
+      } catch (e) {
+        console.warn(`Failed to fetch variants for ${style.style_code}`);
       }
     }
 
-    if (filters.productTypes?.length) {
-      stylesQuery = stylesQuery.in('product_type', filters.productTypes);
-    }
-
-    if (filters.brands?.length) {
-      stylesQuery = stylesQuery.in('brand', filters.brands);
-    }
-
-    if (filters.genders?.length) {
-      stylesQuery = stylesQuery.in('gender', filters.genders);
-    }
-
-    if (filters.ageGroups?.length) {
-      stylesQuery = stylesQuery.in('age_group', filters.ageGroups);
-    }
-
-    if (filters.sustainableOrganic?.length) {
-      stylesQuery = stylesQuery.in('sustainable_organic', filters.sustainableOrganic);
-    }
-
-    // Price range filtering on aggregated min/max prices
-    if (filters.priceMin !== undefined) {
-      stylesQuery = stylesQuery.gte('price_min', filters.priceMin);
-    }
-    if (filters.priceMax !== undefined) {
-      stylesQuery = stylesQuery.lte('price_max', filters.priceMax);
-    }
-
-    // Array containment for sizes and colors (much faster with GIN indexes)
-    if (filters.sizes?.length) {
-      stylesQuery = stylesQuery.overlaps('available_sizes', filters.sizes);
-    }
-
-    if (filters.colors?.length) {
-      stylesQuery = stylesQuery.overlaps('available_colors', filters.colors);
-    }
-
-    if (filters.colorShades?.length) {
-      stylesQuery = stylesQuery.overlaps('color_shades', filters.colorShades);
-    }
-
-    // Text search filters (still using ilike but on fewer rows)
-    if (filters.materials?.length) {
-      const materialConditions = filters.materials.map(material =>
-        `fabric.ilike.%${material}%`
-      ).join(',');
-      stylesQuery = stylesQuery.or(materialConditions);
-    }
-
-    if (filters.categories?.length) {
-      const categoryConditions = filters.categories.map(category =>
-        `categorisation.ilike.%${category}%`
-      ).join(',');
-      stylesQuery = stylesQuery.or(categoryConditions);
-    }
-
-    if (filters.accreditations?.length) {
-      const accredConditions = filters.accreditations.map(accred =>
-        `accreditations.ilike.%${accred}%`
-      ).join(',');
-      stylesQuery = stylesQuery.or(accredConditions);
-    }
-
-    // Apply pagination and ordering
-    const startIndex = (page - 1) * pageSize;
-    stylesQuery = stylesQuery
-      .order('price_min', { ascending: true })
-      .range(startIndex, startIndex + pageSize - 1);
-
-    const { data: styles, count, error } = await stylesQuery;
-
-    if (error) {
-      console.error('❌ Error fetching styles:', error);
-      throw error;
-    }
-
     console.log('📊 Query result:', {
-      stylesFound: styles?.length || 0,
-      totalCount: count || 0,
+      stylesFound: stylesResponse.styles.length,
+      totalCount: stylesResponse.total,
       page,
       pageSize
     });
 
-    // Fetch all variants for the matched styles (excluding discontinued)
-    const styleCodesInPage = styles?.map(s => s.style_code) || [];
-
-    let productsQuery = supabase
-      .from('product_data')
-      .select('*')
-      .in('style_code', styleCodesInPage)
-      .neq('sku_status', 'Discontinued')
-      .order('style_code', { ascending: true })
-      .order('id', { ascending: true });
-
-    const { data: products, error: productsError } = await productsQuery;
-
-    if (productsError) {
-      console.error('❌ Error fetching product variants:', productsError);
-      throw productsError;
-    }
-
-    const totalPages = Math.ceil((count || 0) / pageSize);
-
     return {
-      products: products || [],
-      totalCount: count || 0,
-      totalPages,
+      products: allProducts,
+      totalCount: stylesResponse.total,
+      totalPages: stylesResponse.totalPages,
       currentPage: page,
-      hasNextPage: page < totalPages,
+      hasNextPage: page < stylesResponse.totalPages,
       hasPrevPage: page > 1
     };
   } catch (error) {
@@ -209,21 +181,19 @@ export async function getSizesForProductTypes(productTypes: string[]): Promise<s
   }
 
   try {
-    const { data, error } = await supabase
-      .from('product_styles')
-      .select('available_sizes')
-      .in('product_type', productTypes);
+    const params = new URLSearchParams();
+    params.set('productType', productTypes.join(','));
+    params.set('limit', '1000');
 
-    if (error) {
-      console.error('Error fetching sizes for product types:', error);
-      return [];
-    }
+    const response = await apiFetch<{ success: boolean; styles: any[] }>(
+      `/styles?${params.toString()}`
+    );
 
     // Flatten and deduplicate all sizes
     const allSizes = new Set<string>();
-    data?.forEach(row => {
-      if (row.available_sizes) {
-        row.available_sizes.forEach((size: string) => allSizes.add(size));
+    response.styles?.forEach(style => {
+      if (style.available_sizes) {
+        style.available_sizes.forEach((size: string) => allSizes.add(size));
       }
     });
 
@@ -236,74 +206,54 @@ export async function getSizesForProductTypes(productTypes: string[]): Promise<s
 
 export async function getFilterOptions(): Promise<FilterOptions> {
   try {
-    // Use RPC to call the optimized PostgreSQL function for distinct values
-    // This ensures we get ALL distinct values without pagination limits
-    const { data: filterData, error: rpcError } = await supabase.rpc('get_filter_options');
+    const response = await apiFetch<{
+      success: boolean;
+      productTypes?: string[];
+      brands?: string[];
+      genders?: string[];
+      ageGroups?: string[];
+      priceRange?: { min: number; max: number };
+      sizes?: string[];
+      colors?: string[];
+      colorShades?: string[];
+    }>('/filter-options');
 
-    if (rpcError) {
-      console.error('RPC error:', rpcError);
-      throw rpcError;
-    }
+    // Get brand logos
+    const brandsResponse = await apiFetch<{
+      success: boolean;
+      brands: Array<{ id: string; name: string; logo_url?: string }>;
+    }>('/brands');
 
-    // Get additional data
-    const [brandLogosResult, materialsResult] = await Promise.all([
-      supabase.from('brand_logos').select('*').order('name'),
-      supabase.rpc('extract_materials')
-    ]);
-
-    // Parse the JSON response from the function
-    const productTypes = (filterData?.productTypes as string[]) || [];
-    const brandsFromDB = (filterData?.brands as string[]) || [];
-    const genders = (filterData?.genders as string[]) || [];
-    const ageGroups = (filterData?.ageGroups as string[]) || [];
-    const priceRange = (filterData?.priceRange as { min: number; max: number }) || { min: 0, max: 1000 };
-    const sizes = (filterData?.sizes as string[]) || [];
-    const colors = (filterData?.colors as string[]) || [];
-    const colorShades = (filterData?.colorShades as string[]) || [];
-    const materials = (materialsResult.data as string[]) || [];
-
-    // Build brand options with logos
-    let brandOptions: BrandOption[] = [];
-    if (brandLogosResult.data && brandLogosResult.data.length > 0) {
-      const logoMap = new Map(
-        brandLogosResult.data.map(b => [b.name, b.logo_url])
-      );
-
-      brandOptions = brandsFromDB.map((name, index) => ({
-        id: logoMap.has(name) ? `brand-${name}` : `fallback-${index}`,
+    const brandOptions: BrandOption[] = (response.brands || []).map((name, index) => {
+      const brandWithLogo = brandsResponse.brands?.find(b => b.name === name);
+      return {
+        id: brandWithLogo?.id || `brand-${index}`,
         name,
-        logo_url: logoMap.get(name) || undefined
-      }));
-    } else {
-      brandOptions = brandsFromDB.map((name, index) => ({
-        id: `brand-${index}`,
-        name
-      }));
-    }
+        logo_url: brandWithLogo?.logo_url
+      };
+    });
 
-    console.log('📊 Filter options loaded (optimized with RPC):', {
-      productTypesCount: productTypes.length,
-      sizesCount: sizes.length,
-      colorsCount: colors.length,
-      brandsCount: brandsFromDB.length,
-      brandOptionsCount: brandOptions.length,
-      gendersCount: genders.length,
-      ageGroupsCount: ageGroups.length,
-      materialsCount: materials.length
+    console.log('📊 Filter options loaded:', {
+      productTypesCount: response.productTypes?.length || 0,
+      sizesCount: response.sizes?.length || 0,
+      colorsCount: response.colors?.length || 0,
+      brandsCount: response.brands?.length || 0,
+      gendersCount: response.genders?.length || 0,
+      ageGroupsCount: response.ageGroups?.length || 0
     });
 
     return {
-      materials: materials.sort(),
+      materials: [], // TODO: Add materials endpoint if needed
       categories: [],
-      priceRange,
-      productTypes: productTypes.sort(),
-      sizes: sizes.sort(),
-      colors: colors.sort(),
-      colorShades: colorShades.sort(),
-      brands: brandsFromDB.sort(),
+      priceRange: response.priceRange || { min: 0, max: 1000 },
+      productTypes: (response.productTypes || []).sort(),
+      sizes: (response.sizes || []).sort(),
+      colors: (response.colors || []).sort(),
+      colorShades: (response.colorShades || []).sort(),
+      brands: (response.brands || []).sort(),
       brandOptions,
-      genders: genders.sort(),
-      ageGroups: ageGroups.sort(),
+      genders: (response.genders || []).sort(),
+      ageGroups: (response.ageGroups || []).sort(),
       accreditations: []
     };
   } catch (error) {

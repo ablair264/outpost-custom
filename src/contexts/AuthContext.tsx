@@ -1,24 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { User, Session } from '@supabase/supabase-js';
-import {
-  AdminUser,
-  getCurrentUser,
-  getCurrentAdminUser,
-  getSession,
-  signIn as authSignIn,
-  signOut as authSignOut,
-  onAuthStateChange,
-} from '../lib/auth-service';
+import { authApi, AdminUser, getAuthToken } from '../lib/api';
 
 interface AuthContextType {
-  user: User | null;
-  adminUser: AdminUser | null;
-  session: Session | null;
+  user: AdminUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  signOut: () => Promise<void>;
+  signOut: () => void;
   refreshUser: () => Promise<void>;
 }
 
@@ -29,103 +18,72 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const isAuthenticated = !!user && !!adminUser && adminUser.is_active;
-  const isAdmin = adminUser?.role === 'admin';
+  const isAuthenticated = !!user && user.isActive;
+  const isAdmin = user?.role === 'admin';
 
-  // Initialize auth state
+  // Initialize auth state from stored token
   useEffect(() => {
     const initAuth = async () => {
       try {
         setIsLoading(true);
-        const currentSession = await getSession();
-        setSession(currentSession);
 
-        if (currentSession?.user) {
-          setUser(currentSession.user);
-          const admin = await getCurrentAdminUser();
-          setAdminUser(admin);
-        } else {
+        // Check if we have a stored token
+        const token = getAuthToken();
+        if (!token) {
           setUser(null);
-          setAdminUser(null);
+          setIsLoading(false);
+          return;
         }
+
+        // Validate token by getting current user
+        const currentUser = await authApi.getCurrentUser();
+        setUser(currentUser);
       } catch (error) {
         console.error('Auth init error:', error);
         setUser(null);
-        setAdminUser(null);
-        setSession(null);
       } finally {
         setIsLoading(false);
       }
     };
 
     initAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = onAuthStateChange(async (event, newSession) => {
-      console.log('Auth state changed:', event);
-      setSession(newSession);
-
-      if (newSession?.user) {
-        setUser(newSession.user);
-        const admin = await getCurrentAdminUser();
-        setAdminUser(admin);
-      } else {
-        setUser(null);
-        setAdminUser(null);
-      }
-
-      setIsLoading(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
-    const result = await authSignIn(email, password);
+    try {
+      const result = await authApi.login(email, password);
 
-    if (result.success) {
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
-      const admin = await getCurrentAdminUser();
-      setAdminUser(admin);
+      if (result.success && result.user) {
+        setUser(result.user);
+      }
+
+      return { success: result.success, error: result.error };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'An error occurred',
+      };
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
-    return result;
   };
 
-  const signOut = async () => {
-    setIsLoading(true);
-    await authSignOut();
+  const signOut = () => {
+    authApi.logout();
     setUser(null);
-    setAdminUser(null);
-    setSession(null);
-    setIsLoading(false);
   };
 
   const refreshUser = async () => {
-    const currentUser = await getCurrentUser();
+    const currentUser = await authApi.getCurrentUser();
     setUser(currentUser);
-    if (currentUser) {
-      const admin = await getCurrentAdminUser();
-      setAdminUser(admin);
-    } else {
-      setAdminUser(null);
-    }
   };
 
   const value: AuthContextType = {
     user,
-    adminUser,
-    session,
     isLoading,
     isAuthenticated,
     isAdmin,

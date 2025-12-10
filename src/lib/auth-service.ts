@@ -1,59 +1,107 @@
-import { supabase } from './supabase';
-import type { User, Session } from '@supabase/supabase-js';
+// Auth Service - connects to Neon via Netlify Functions
+// No longer uses Supabase Auth
+
+const AUTH_API_BASE = '/.netlify/functions/auth';
+const TOKEN_KEY = 'auth_token';
 
 export interface AdminUser {
   id: string;
-  auth_user_id: string | null;
   email: string;
   name: string | null;
   role: 'admin' | 'staff';
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
 }
 
+// For compatibility with old code
 export interface AuthState {
-  user: User | null;
+  user: AdminUser | null;
   adminUser: AdminUser | null;
-  session: Session | null;
+  session: { token: string } | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+}
+
+// Helper for API calls
+async function authApiFetch<T>(
+  endpoint: string,
+  options?: RequestInit,
+  includeToken = false
+): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (includeToken) {
+    const token = getStoredToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+
+  const response = await fetch(`${AUTH_API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      ...headers,
+      ...options?.headers,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Request failed');
+  }
+
+  return data;
+}
+
+// Token storage helpers
+function getStoredToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+function setStoredToken(token: string): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(TOKEN_KEY, token);
+  }
+}
+
+function removeStoredToken(): void {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+}
+
+// Get the stored auth token (for use in other API calls)
+export function getAuthToken(): string | null {
+  return getStoredToken();
 }
 
 // Sign in with email and password
 export async function signIn(
   email: string,
   password: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; user?: AdminUser }> {
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const response = await authApiFetch<{
+      success: boolean;
+      token: string;
+      user: AdminUser;
+      error?: string;
+    }>('/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
     });
 
-    if (error) {
-      console.error('Sign in error:', error);
-      return { success: false, error: error.message };
+    if (response.success && response.token) {
+      setStoredToken(response.token);
+      return { success: true, user: response.user };
     }
 
-    if (!data.user) {
-      return { success: false, error: 'No user returned' };
-    }
-
-    // Check if user exists in admin_users table
-    const adminUser = await getAdminUserByAuthId(data.user.id);
-    if (!adminUser) {
-      // User exists in auth but not admin_users - sign them out
-      await supabase.auth.signOut();
-      return { success: false, error: 'You do not have admin access' };
-    }
-
-    if (!adminUser.is_active) {
-      await supabase.auth.signOut();
-      return { success: false, error: 'Your account has been deactivated' };
-    }
-
-    return { success: true };
+    return { success: false, error: response.error || 'Login failed' };
   } catch (error) {
     console.error('Sign in error:', error);
     return {
@@ -65,119 +113,58 @@ export async function signIn(
 
 // Sign out
 export async function signOut(): Promise<void> {
-  try {
-    await supabase.auth.signOut();
-  } catch (error) {
-    console.error('Sign out error:', error);
-  }
+  removeStoredToken();
 }
 
-// Get current session
-export async function getSession(): Promise<Session | null> {
+// Get current session (check if token exists and is valid)
+export async function getSession(): Promise<{ token: string } | null> {
+  const token = getStoredToken();
+  if (!token) return null;
+
+  // Verify token is still valid by calling /me
   try {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-      console.error('Get session error:', error);
-      return null;
-    }
-    return data.session;
-  } catch (error) {
-    console.error('Get session error:', error);
+    await getCurrentUser();
+    return { token };
+  } catch {
+    removeStoredToken();
     return null;
   }
 }
 
-// Get current auth user
-export async function getCurrentUser(): Promise<User | null> {
+// Get current user from token
+export async function getCurrentUser(): Promise<AdminUser | null> {
+  const token = getStoredToken();
+  if (!token) return null;
+
   try {
-    const { data, error } = await supabase.auth.getUser();
-    if (error) {
-      console.error('Get user error:', error);
-      return null;
-    }
-    return data.user;
-  } catch (error) {
-    console.error('Get user error:', error);
+    const response = await authApiFetch<{ success: boolean; user: AdminUser }>(
+      '/me',
+      { method: 'GET' },
+      true
+    );
+    return response.user || null;
+  } catch {
+    // Token is invalid or expired
+    removeStoredToken();
     return null;
   }
 }
 
-// Get admin user by auth user ID
-export async function getAdminUserByAuthId(
-  authUserId: string
-): Promise<AdminUser | null> {
-  try {
-    const { data, error } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('auth_user_id', authUserId)
-      .single();
-
-    if (error) {
-      // Not found is not an error for our purposes
-      if (error.code === 'PGRST116') {
-        return null;
-      }
-      console.error('Get admin user error:', error);
-      return null;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Get admin user error:', error);
-    return null;
-  }
-}
-
-// Get admin user by email (for checking before linking)
-export async function getAdminUserByEmail(
-  email: string
-): Promise<AdminUser | null> {
-  try {
-    const { data, error } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('email', email)
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null;
-      }
-      console.error('Get admin user by email error:', error);
-      return null;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Get admin user by email error:', error);
-    return null;
-  }
-}
-
-// Get current admin user (combines auth user + admin user data)
+// Alias for compatibility
 export async function getCurrentAdminUser(): Promise<AdminUser | null> {
-  try {
-    const user = await getCurrentUser();
-    if (!user) return null;
-
-    return await getAdminUserByAuthId(user.id);
-  } catch (error) {
-    console.error('Get current admin user error:', error);
-    return null;
-  }
+  return getCurrentUser();
 }
 
 // Check if current user is admin
 export async function isAdmin(): Promise<boolean> {
-  const adminUser = await getCurrentAdminUser();
-  return adminUser?.role === 'admin';
+  const user = await getCurrentUser();
+  return user?.role === 'admin';
 }
 
-// Check if current user is authenticated admin user
+// Check if current user is authenticated
 export async function isAuthenticatedAdmin(): Promise<boolean> {
-  const adminUser = await getCurrentAdminUser();
-  return adminUser !== null && adminUser.is_active;
+  const user = await getCurrentUser();
+  return user !== null && user.isActive;
 }
 
 // Create a new admin user (admin only)
@@ -188,64 +175,58 @@ export async function createAdminUser(
   role: 'admin' | 'staff' = 'staff'
 ): Promise<{ success: boolean; error?: string; user?: AdminUser }> {
   try {
-    // First create the auth user
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-    });
+    const response = await authApiFetch<{
+      success: boolean;
+      user?: AdminUser;
+      error?: string;
+    }>(
+      '/register',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email, password, name, role }),
+      },
+      true
+    );
 
-    if (authError) {
-      // If admin API not available, try signUp (user will need to confirm email)
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (signUpError) {
-        return { success: false, error: signUpError.message };
-      }
-
-      // Create admin_users record
-      const { data: adminUser, error: insertError } = await supabase
-        .from('admin_users')
-        .insert([{
-          auth_user_id: signUpData.user?.id,
-          email,
-          name: name || null,
-          role,
-          is_active: true,
-        }])
-        .select()
-        .single();
-
-      if (insertError) {
-        return { success: false, error: insertError.message };
-      }
-
-      return { success: true, user: adminUser };
-    }
-
-    // Create admin_users record
-    const { data: adminUser, error: insertError } = await supabase
-      .from('admin_users')
-      .insert([{
-        auth_user_id: authData.user?.id,
-        email,
-        name: name || null,
-        role,
-        is_active: true,
-      }])
-      .select()
-      .single();
-
-    if (insertError) {
-      return { success: false, error: insertError.message };
-    }
-
-    return { success: true, user: adminUser };
+    return {
+      success: response.success,
+      user: response.user,
+      error: response.error,
+    };
   } catch (error) {
     console.error('Create admin user error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'An error occurred',
+    };
+  }
+}
+
+// Setup initial admin user (only works if no users exist)
+export async function setupInitialAdmin(
+  email: string,
+  password: string,
+  name?: string
+): Promise<{ success: boolean; error?: string; user?: AdminUser }> {
+  try {
+    const response = await authApiFetch<{
+      success: boolean;
+      token?: string;
+      user?: AdminUser;
+      error?: string;
+    }>('/setup', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, name }),
+    });
+
+    if (response.success && response.token) {
+      setStoredToken(response.token);
+      return { success: true, user: response.user };
+    }
+
+    return { success: false, error: response.error || 'Setup failed' };
+  } catch (error) {
+    console.error('Setup error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred',
@@ -256,19 +237,17 @@ export async function createAdminUser(
 // Update admin user
 export async function updateAdminUser(
   id: string,
-  updates: Partial<Pick<AdminUser, 'name' | 'role' | 'is_active'>>
+  updates: Partial<Pick<AdminUser, 'name' | 'role' | 'isActive'>>
 ): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('admin_users')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id);
-
-    if (error) {
-      console.error('Update admin user error:', error);
-      return false;
-    }
-
+    await authApiFetch<{ success: boolean }>(
+      `/users/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(updates),
+      },
+      true
+    );
     return true;
   } catch (error) {
     console.error('Update admin user error:', error);
@@ -276,19 +255,14 @@ export async function updateAdminUser(
   }
 }
 
-// Delete admin user (soft delete - sets is_active to false)
+// Delete admin user (soft delete - sets isActive to false)
 export async function deleteAdminUser(id: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('admin_users')
-      .update({ is_active: false, updated_at: new Date().toISOString() })
-      .eq('id', id);
-
-    if (error) {
-      console.error('Delete admin user error:', error);
-      return false;
-    }
-
+    await authApiFetch<{ success: boolean }>(
+      `/users/${id}`,
+      { method: 'DELETE' },
+      true
+    );
     return true;
   } catch (error) {
     console.error('Delete admin user error:', error);
@@ -299,26 +273,48 @@ export async function deleteAdminUser(id: string): Promise<boolean> {
 // Get all admin users
 export async function getAdminUsers(): Promise<AdminUser[]> {
   try {
-    const { data, error } = await supabase
-      .from('admin_users')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Get admin users error:', error);
-      return [];
-    }
-
-    return data || [];
+    const response = await authApiFetch<{ success: boolean; users: AdminUser[] }>(
+      '/users',
+      { method: 'GET' },
+      true
+    );
+    return response.users || [];
   } catch (error) {
     console.error('Get admin users error:', error);
     return [];
   }
 }
 
-// Listen for auth state changes
+// Listen for auth state changes (simplified - no real-time updates)
+// This is provided for compatibility but doesn't do real-time like Supabase
 export function onAuthStateChange(
-  callback: (event: string, session: Session | null) => void
-) {
-  return supabase.auth.onAuthStateChange(callback);
+  callback: (event: string, session: { token: string } | null) => void
+): { data: { subscription: { unsubscribe: () => void } } } {
+  // Check auth state on load
+  const token = getStoredToken();
+  if (token) {
+    // Verify it's still valid
+    getCurrentUser().then(user => {
+      if (user) {
+        callback('SIGNED_IN', { token });
+      } else {
+        callback('SIGNED_OUT', null);
+      }
+    });
+  } else {
+    callback('SIGNED_OUT', null);
+  }
+
+  // Return unsubscribe function (no-op since we don't have real-time)
+  return {
+    data: {
+      subscription: {
+        unsubscribe: () => {},
+      },
+    },
+  };
 }
+
+// Compatibility exports for old code that used Supabase types
+export type User = AdminUser;
+export type Session = { token: string };

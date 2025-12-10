@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Product } from '../lib/supabase';
-import { supabase } from '../lib/supabase';
+import { Product, getProductsByStyleCode } from '../lib/supabase';
 import './ProductDetails.css';
 import LogoCustomizerModal, { LogoOverlayConfig } from '../components/LogoCustomizerModal';
 import ImageModal from '../components/ImageModal';
@@ -96,12 +95,8 @@ const ProductDetails: React.FC = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const { data, error } = await supabase
-          .from('product_data')
-          .select('*')
-          .eq('style_code', styleCode);
+        const data = await getProductsByStyleCode(styleCode);
 
-        if (error) throw error;
         if (!data || data.length === 0) {
           setError('Product not found');
           return;

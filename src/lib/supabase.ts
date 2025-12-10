@@ -1,9 +1,24 @@
-import { createClient } from '@supabase/supabase-js';
+// Database API - connects to Neon via Netlify Functions
+// No longer using Supabase - all queries go through /.netlify/functions/products
 
-const supabaseUrl = 'https://ptmpshcuvhshcwbpaqit.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0bXBzaGN1dmhzaGN3YnBhcWl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1ODExNDIsImV4cCI6MjA3NDE1NzE0Mn0.Nrt89ux7TWCwPojWDgtDk3wXbeyT51ruMjmuzcvnlCY';
+const API_BASE = '/.netlify/functions/products';
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+    ...options,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error.error || 'Request failed');
+  }
+
+  return response.json();
+}
 
 // Product data types
 export interface Product {
@@ -15,7 +30,7 @@ export interface Product {
   product_type: string;
   primary_colour: string;
   primary_product_image_url: string;
-  single_price: string; // Changed to string since it comes as string from DB
+  single_price: string;
   gender: string;
   categorisation: string;
   colour_code: string;
@@ -25,7 +40,6 @@ export interface Product {
   size_name: string;
   size_range: string;
   rgb: string;
-  // Additional fields from the full product data
   fabric?: string;
   colour_shade?: string;
   age_group?: string;
@@ -33,19 +47,16 @@ export interface Product {
   sustainable_organic?: string;
   specification?: string;
   retail_description?: string;
-  // Care and features
   washing_instructions?: string;
   product_feature_1?: string;
   product_feature_2?: string;
   product_feature_3?: string;
   tag?: string;
   weight_gsm?: string;
-  // Sizing details
   sizing_to_fit?: string;
   size_exclusions?: string;
   jacket_length?: string;
   leg_length?: string;
-  // Status
   sku_status?: string;
 }
 
@@ -63,145 +74,6 @@ export interface CategoryData {
   created_at: string;
   updated_at: string;
 }
-
-// Get categories with product counts from the categories table
-export const getCategoriesWithCounts = async (): Promise<CategoryData[]> => {
-  try {
-    console.log('Fetching categories with counts from Supabase...');
-    
-    // First, get all categories
-    const { data: categories, error: categoriesError } = await supabase
-      .from('categories')
-      .select('*')
-      .order('sort_order');
-    
-    if (categoriesError) {
-      console.error('Categories error:', categoriesError);
-      throw categoriesError;
-    }
-    
-    // Then get product counts for each category
-    const categoriesWithCounts = await Promise.all(
-      (categories || []).map(async (category) => {
-        const { count, error: countError } = await supabase
-          .from('product_data')
-          .select('*', { count: 'exact', head: true })
-          .eq('product_type', category.category_key);
-        
-        if (countError) {
-          console.warn(`Error counting products for ${category.category_key}:`, countError);
-        }
-        
-        return {
-          ...category,
-          product_count: count || 0
-        };
-      })
-    );
-    
-    console.log('Categories with counts received:', categoriesWithCounts?.length, 'items');
-    return categoriesWithCounts || [];
-  } catch (error) {
-    console.error('Error fetching categories with counts:', error);
-    return [];
-  }
-};
-
-// Legacy function for backwards compatibility
-export const getProductCategories = async () => {
-  const categories = await getCategoriesWithCounts();
-  return categories.map(cat => ({
-    name: cat.category_key,
-    productCount: cat.product_count
-  }));
-};
-
-// Update category image
-export const updateCategoryImage = async (categoryKey: string, imageUrl: string): Promise<boolean> => {
-  try {
-    const { data, error } = await supabase
-      .rpc('update_category_image', {
-        p_category_key: categoryKey,
-        p_image_url: imageUrl
-      });
-    
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Error updating category image:', error);
-    return false;
-  }
-};
-
-// Toggle category status
-export const toggleCategoryStatus = async (categoryKey: string): Promise<boolean> => {
-  try {
-    const { data, error } = await supabase
-      .rpc('toggle_category_status', {
-        p_category_key: categoryKey
-      });
-    
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Error toggling category status:', error);
-    return false;
-  }
-};
-
-// Update category details
-export const updateCategory = async (
-  id: string, 
-  updates: Partial<Pick<CategoryData, 'display_name' | 'description' | 'category_group' | 'sort_order' | 'is_active'>>
-): Promise<boolean> => {
-  try {
-    const { error } = await supabase
-      .from('categories')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id);
-    
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    console.error('Error updating category:', error);
-    return false;
-  }
-};
-
-// Get active categories only
-export const getActiveCategories = async (): Promise<CategoryData[]> => {
-  try {
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('sort_order');
-    
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching active categories:', error);
-    return [];
-  }
-};
-
-// Get products by category (excludes discontinued products)
-export const getProductsByCategory = async (category: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('product_data')
-      .select('*')
-      .eq('product_type', category)
-      .neq('sku_status', 'Discontinued')
-      .limit(50);
-
-    if (error) throw error;
-    return data || [];
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    return [];
-  }
-};
 
 // Color variant information
 export interface ColorVariant {
@@ -227,7 +99,6 @@ export interface GroupedProduct {
   specification?: string;
   retail_description?: string;
   fabric?: string;
-  // Aggregated variant data
   variants: Product[];
   colors: ColorVariant[];
   sizes: string[];
@@ -238,16 +109,123 @@ export interface GroupedProduct {
   };
 }
 
-// Group products by style_code only (combining all color and size variants)
+// Product type/collection interface
+export interface ProductType {
+  product_type: string;
+  product_count: number;
+  total_variants: number;
+}
+
+// ============ API Functions ============
+
+// Get categories with product counts
+export const getCategoriesWithCounts = async (): Promise<CategoryData[]> => {
+  try {
+    console.log('Fetching categories from Neon...');
+    const response = await apiFetch<{ success: boolean; categories: CategoryData[] }>('/categories');
+    console.log('Categories received:', response.categories?.length, 'items');
+    return response.categories || [];
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+};
+
+// Legacy function for backwards compatibility
+export const getProductCategories = async () => {
+  const categories = await getCategoriesWithCounts();
+  return categories.map(cat => ({
+    name: cat.category_key,
+    productCount: cat.product_count
+  }));
+};
+
+// Update category image
+export const updateCategoryImage = async (categoryKey: string, imageUrl: string): Promise<boolean> => {
+  try {
+    // First get the category ID
+    const categories = await getCategoriesWithCounts();
+    const category = categories.find(c => c.category_key === categoryKey);
+    if (!category) return false;
+
+    await apiFetch(`/categories/${category.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ image_url: imageUrl }),
+    });
+    return true;
+  } catch (error) {
+    console.error('Error updating category image:', error);
+    return false;
+  }
+};
+
+// Toggle category status
+export const toggleCategoryStatus = async (categoryKey: string): Promise<boolean> => {
+  try {
+    const categories = await getCategoriesWithCounts();
+    const category = categories.find(c => c.category_key === categoryKey);
+    if (!category) return false;
+
+    await apiFetch(`/categories/${category.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ is_active: !category.is_active }),
+    });
+    return true;
+  } catch (error) {
+    console.error('Error toggling category status:', error);
+    return false;
+  }
+};
+
+// Update category details
+export const updateCategory = async (
+  id: string,
+  updates: Partial<Pick<CategoryData, 'display_name' | 'description' | 'category_group' | 'sort_order' | 'is_active'>>
+): Promise<boolean> => {
+  try {
+    await apiFetch(`/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+    return true;
+  } catch (error) {
+    console.error('Error updating category:', error);
+    return false;
+  }
+};
+
+// Get active categories only
+export const getActiveCategories = async (): Promise<CategoryData[]> => {
+  try {
+    const response = await apiFetch<{ success: boolean; categories: CategoryData[] }>('/categories?activeOnly=true');
+    return response.categories || [];
+  } catch (error) {
+    console.error('Error fetching active categories:', error);
+    return [];
+  }
+};
+
+// Get products by category (excludes discontinued products)
+export const getProductsByCategory = async (category: string): Promise<Product[]> => {
+  try {
+    const response = await apiFetch<{ success: boolean; products: Product[] }>(
+      `?productType=${encodeURIComponent(category)}&limit=50`
+    );
+    return response.products || [];
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+};
+
+// Group products by style_code (combining all color and size variants)
 export const groupProductVariants = (products: Product[]): GroupedProduct[] => {
   const grouped = new Map<string, GroupedProduct>();
 
   products.forEach((product) => {
-    // Group only by style_code to combine all color/size variants
     const key = product.style_code;
 
     if (!grouped.has(key)) {
-      // Create new grouped product entry
       const price = parseFloat(product.single_price) || 0;
       grouped.set(key, {
         style_code: product.style_code,
@@ -279,11 +257,9 @@ export const groupProductVariants = (products: Product[]): GroupedProduct[] => {
         },
       });
     } else {
-      // Add variant to existing group
       const group = grouped.get(key)!;
       group.variants.push(product);
 
-      // Add color if not already present
       const colorExists = group.colors.some(c => c.colour_code === product.colour_code);
       if (!colorExists) {
         group.colors.push({
@@ -295,12 +271,10 @@ export const groupProductVariants = (products: Product[]): GroupedProduct[] => {
         });
       }
 
-      // Add size if not already present
       if (!group.sizes.includes(product.size_name)) {
         group.sizes.push(product.size_name);
       }
 
-      // Update price range
       const price = parseFloat(product.single_price) || 0;
       group.price_range.min = Math.min(group.price_range.min, price);
       group.price_range.max = Math.max(group.price_range.max, price);
@@ -310,95 +284,96 @@ export const groupProductVariants = (products: Product[]): GroupedProduct[] => {
   return Array.from(grouped.values());
 };
 
-// Fetch and group products for carousel (excludes discontinued products)
+// Fetch and group products for carousel
 export const getGroupedProductsForCarousel = async (limit: number = 12): Promise<GroupedProduct[]> => {
   try {
-    // Fetch a large sample to ensure we get enough unique style codes
-    // Since products have multiple variants (colors/sizes), we need many rows
-    const { data, error } = await supabase
-      .from('product_data')
-      .select('*')
-      .neq('sku_status', 'Discontinued')
-      .limit(200); // Fetch 200 rows to ensure variety
-
-    if (error) throw error;
-
-    // Group the products by style_code
-    const grouped = groupProductVariants(data || []);
-
-    // Return only the requested number of unique products
-    return grouped.slice(0, limit);
+    const response = await apiFetch<{ success: boolean; products: GroupedProduct[] }>(
+      `/carousel?limit=${limit}`
+    );
+    return response.products || [];
   } catch (error) {
-    console.error('Error fetching grouped products:', error);
+    console.error('Error fetching carousel products:', error);
     return [];
   }
 };
 
-// Product type/collection interface
-export interface ProductType {
-  product_type: string;
-  product_count: number;
-  total_variants: number;
-}
-
-// Get all unique product types with counts (excludes discontinued products)
+// Get all unique product types with counts
 export const getProductTypes = async (): Promise<ProductType[]> => {
   try {
-    // Fetch all live products
-    const { data, error } = await supabase
-      .from('product_data')
-      .select('product_type, style_code, sku_status')
-      .neq('sku_status', 'Discontinued');
+    const response = await apiFetch<{ success: boolean; productTypes: string[] }>('/filter-options');
 
-    if (error) throw error;
+    // Get counts from categories
+    const categories = await getCategoriesWithCounts();
+    const categoryMap = new Map(categories.map(c => [c.category_key, c.product_count]));
 
-    // Group by product_type and count unique style_codes
-    const typeMap = new Map<string, Set<string>>();
-    let totalVariants = new Map<string, number>();
-
-    data?.forEach(item => {
-      if (item.product_type) {
-        if (!typeMap.has(item.product_type)) {
-          typeMap.set(item.product_type, new Set());
-          totalVariants.set(item.product_type, 0);
-        }
-        typeMap.get(item.product_type)!.add(item.style_code);
-        totalVariants.set(item.product_type, (totalVariants.get(item.product_type) || 0) + 1);
-      }
-    });
-
-    // Convert to array format
-    const productTypes: ProductType[] = Array.from(typeMap.entries()).map(([product_type, styleCodes]) => ({
-      product_type,
-      product_count: styleCodes.size,
-      total_variants: totalVariants.get(product_type) || 0,
+    return (response.productTypes || []).map(pt => ({
+      product_type: pt,
+      product_count: categoryMap.get(pt) || 0,
+      total_variants: 0
     }));
-
-    // Sort by product count descending
-    return productTypes.sort((a, b) => b.product_count - a.product_count);
   } catch (error) {
     console.error('Error fetching product types:', error);
     return [];
   }
 };
 
-// Get grouped products by product type/collection (excludes discontinued products)
+// Get grouped products by product type/collection
 export const getGroupedProductsByType = async (productType: string): Promise<GroupedProduct[]> => {
   try {
-    const { data, error } = await supabase
-      .from('product_data')
-      .select('*')
-      .eq('product_type', productType)
-      .neq('sku_status', 'Discontinued');
-
-    if (error) throw error;
-
-    // Group the products by style_code
-    const grouped = groupProductVariants(data || []);
-
-    return grouped;
+    const response = await apiFetch<{ success: boolean; products: Product[] }>(
+      `?productType=${encodeURIComponent(productType)}&limit=500`
+    );
+    return groupProductVariants(response.products || []);
   } catch (error) {
     console.error('Error fetching products by type:', error);
     return [];
   }
+};
+
+// Get RGB values lookup table
+export const getRgbValues = async (): Promise<Map<string, string>> => {
+  try {
+    const response = await apiFetch<{ success: boolean; rgbValues: Array<{ rgb_text: string; hex: string }> }>(
+      '/rgb-values'
+    );
+    const lookup = new Map<string, string>();
+    response.rgbValues?.forEach(row => {
+      if (row.rgb_text && row.hex) {
+        const normalized = row.rgb_text.replace(/\s+/g, ' ').trim();
+        lookup.set(normalized, row.hex);
+      }
+    });
+    return lookup;
+  } catch (error) {
+    console.error('Error fetching RGB values:', error);
+    return new Map();
+  }
+};
+
+// Get products by style code (for product detail page)
+export const getProductsByStyleCode = async (styleCode: string): Promise<Product[]> => {
+  try {
+    const response = await apiFetch<{ success: boolean; products: Product[] }>(
+      `/styles/${encodeURIComponent(styleCode)}/variants`
+    );
+    return response.products || [];
+  } catch (error) {
+    console.error('Error fetching product by style code:', error);
+    return [];
+  }
+};
+
+// Export a dummy supabase object for backward compatibility with imports
+// This prevents import errors in files that haven't been updated yet
+export const supabase = {
+  from: (table: string) => {
+    console.warn(`Direct supabase.from('${table}') called - use API functions instead`);
+    return {
+      select: () => Promise.resolve({ data: [], error: new Error('Use API functions instead of direct Supabase calls') }),
+      insert: () => Promise.resolve({ data: null, error: new Error('Use API functions instead') }),
+      update: () => Promise.resolve({ data: null, error: new Error('Use API functions instead') }),
+      delete: () => Promise.resolve({ data: null, error: new Error('Use API functions instead') }),
+    };
+  },
+  rpc: () => Promise.resolve({ data: null, error: new Error('Use API functions instead') }),
 };

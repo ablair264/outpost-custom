@@ -1,11 +1,14 @@
-import { supabase } from './supabase';
+// Enquiry Service - connects to Neon via Netlify Functions
+// No longer uses Supabase
+
+const ENQUIRY_API_BASE = '/.netlify/functions/enquiries';
 
 // Types matching the database schema
 export interface ClothingEnquiry {
   id: string;
   created_at: string;
   updated_at: string;
-  status: string; // 'new' | 'in_progress' | 'quoted' | 'approved' | 'in_production' | 'completed' | 'cancelled'
+  status: string;
   assigned_to?: string;
 
   // Contact info
@@ -25,7 +28,7 @@ export interface ClothingEnquiry {
   // Logo info
   logo_file_name?: string;
   logo_file_url?: string;
-  logo_url?: string; // Alias for logo_file_url for convenience
+  logo_url?: string;
   logo_file_size?: number;
   logo_format?: string;
   logo_width?: number;
@@ -46,7 +49,7 @@ export interface ClothingEnquiry {
   quantity?: number;
   sizes?: Record<string, number>;
   additional_notes?: string;
-  notes?: string; // Alias for additional_notes
+  notes?: string;
   enquiry_type: 'upload' | 'design_help' | 'consultation';
 
   // Quote info
@@ -98,29 +101,20 @@ export interface ContactFormData {
 }
 
 export interface SubmitEnquiryRequest {
-  // Contact
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-
-  // Product
   productId?: string;
   productName: string;
   productStyleCode?: string;
   productColor?: string;
   productColorCode?: string;
   productImageUrl?: string;
-
-  // Logo data
-  logoData?: string; // Base64 data URL
+  logoData?: string;
   logoAnalysis?: LogoAnalysis;
-
-  // Placement
   logoPositionX?: number;
   logoPositionY?: number;
   logoSizePercent?: number;
-
-  // Details
   estimatedQuantity?: string;
   additionalNotes?: string;
   enquiryType: 'upload' | 'design_help' | 'consultation';
@@ -133,6 +127,36 @@ export interface SubmitEnquiryResponse {
   error?: string;
 }
 
+// Helper for API calls
+async function enquiryApiFetch<T>(
+  endpoint: string,
+  options?: RequestInit,
+  token?: string
+): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${ENQUIRY_API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      ...headers,
+      ...options?.headers,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(error.error || 'Request failed');
+  }
+
+  return response.json();
+}
+
 // Generate a short reference number for customer communications
 function generateEnquiryRef(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -143,158 +167,45 @@ function generateEnquiryRef(): string {
   return ref;
 }
 
-// Upload logo file to Supabase Storage
-async function uploadLogoFile(
-  logoDataUrl: string,
-  enquiryId: string
-): Promise<{ url: string; fileName: string } | null> {
-  try {
-    // Extract file type and data from data URL
-    const matches = logoDataUrl.match(/^data:([^;]+);base64,(.+)$/);
-    if (!matches) {
-      console.error('Invalid data URL format');
-      return null;
-    }
-
-    const mimeType = matches[1];
-    const base64Data = matches[2];
-
-    // Determine file extension
-    const extMap: Record<string, string> = {
-      'image/png': 'png',
-      'image/jpeg': 'jpg',
-      'image/jpg': 'jpg',
-      'image/svg+xml': 'svg',
-    };
-    const extension = extMap[mimeType] || 'png';
-
-    // Convert base64 to blob
-    const byteCharacters = atob(base64Data);
-    const byteArrays: Uint8Array[] = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-      const slice = byteCharacters.slice(offset, offset + 512);
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-      byteArrays.push(new Uint8Array(byteNumbers));
-    }
-
-    const blob = new Blob(byteArrays, { type: mimeType });
-
-    // Generate unique filename
-    const fileName = `enquiries/${enquiryId}/logo-${Date.now()}.${extension}`;
-
-    // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
-      .from('logo-uploads')
-      .upload(fileName, blob, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: mimeType,
-      });
-
-    if (error) {
-      console.error('Error uploading logo:', error);
-      return null;
-    }
-
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('logo-uploads')
-      .getPublicUrl(data.path);
-
-    return {
-      url: publicUrl,
-      fileName: `logo.${extension}`,
-    };
-  } catch (error) {
-    console.error('Error in uploadLogoFile:', error);
-    return null;
-  }
-}
-
-// Submit a new clothing enquiry
+// Submit a new clothing enquiry (public endpoint)
 export async function submitClothingEnquiry(
   request: SubmitEnquiryRequest
 ): Promise<SubmitEnquiryResponse> {
   try {
-    // Generate enquiry reference
     const enquiryRef = generateEnquiryRef();
 
-    // Create the enquiry record first (without logo URL)
-    const enquiryData: Partial<ClothingEnquiry> = {
-      status: 'new',
-      customer_name: request.customerName,
-      customer_email: request.customerEmail,
-      customer_phone: request.customerPhone,
-      product_id: request.productId,
-      product_name: request.productName,
-      product_style_code: request.productStyleCode,
-      product_color: request.productColor,
-      product_color_code: request.productColorCode,
-      product_image_url: request.productImageUrl,
-      logo_position_x: request.logoPositionX,
-      logo_position_y: request.logoPositionY,
-      logo_size_percent: request.logoSizePercent,
-      estimated_quantity: request.estimatedQuantity,
-      additional_notes: request.additionalNotes,
-      enquiry_type: request.enquiryType,
-      source: 'website',
+    // Build the request body for the API
+    const requestBody = {
+      customerName: request.customerName,
+      customerEmail: request.customerEmail,
+      customerPhone: request.customerPhone,
+      productId: request.productId,
+      productName: request.productName,
+      productStyleCode: request.productStyleCode,
+      productColor: request.productColor,
+      productColorCode: request.productColorCode,
+      productImageUrl: request.productImageUrl,
+      logoFileUrl: request.logoData, // TODO: Handle file upload to Cloudflare R2
+      logoAnalysis: request.logoAnalysis,
+      logoPositionX: request.logoPositionX,
+      logoPositionY: request.logoPositionY,
+      logoSizePercent: request.logoSizePercent,
+      estimatedQuantity: request.estimatedQuantity,
+      additionalNotes: request.additionalNotes,
+      enquiryType: request.enquiryType,
     };
 
-    // Add logo analysis if available
-    if (request.logoAnalysis) {
-      enquiryData.logo_file_name = request.logoAnalysis.fileName;
-      enquiryData.logo_file_size = request.logoAnalysis.fileSize;
-      enquiryData.logo_format = request.logoAnalysis.format;
-      enquiryData.logo_width = request.logoAnalysis.width;
-      enquiryData.logo_height = request.logoAnalysis.height;
-      enquiryData.logo_quality_tier = request.logoAnalysis.qualityTier;
-      enquiryData.logo_quality_notes = request.logoAnalysis.qualityNotes;
-      enquiryData.logo_has_transparency = request.logoAnalysis.hasTransparency;
-    }
-
-    // Insert the enquiry
-    const { data: enquiry, error: insertError } = await supabase
-      .from('clothing_enquiries')
-      .insert([enquiryData])
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error('Error inserting enquiry:', insertError);
-      return {
-        success: false,
-        error: 'Failed to submit enquiry. Please try again.',
-      };
-    }
-
-    // Upload logo file if provided
-    if (request.logoData) {
-      const uploadResult = await uploadLogoFile(request.logoData, enquiry.id);
-
-      if (uploadResult) {
-        // Update enquiry with logo URL
-        const { error: updateError } = await supabase
-          .from('clothing_enquiries')
-          .update({ logo_file_url: uploadResult.url })
-          .eq('id', enquiry.id);
-
-        if (updateError) {
-          console.error('Error updating logo URL:', updateError);
-          // Don't fail the whole submission, logo was uploaded
-        }
+    const response = await enquiryApiFetch<{ success: boolean; enquiryId: string }>(
+      '/submit',
+      {
+        method: 'POST',
+        body: JSON.stringify(requestBody),
       }
-    }
-
-    // Add initial note
-    await addEnquiryNote(enquiry.id, `Enquiry ${enquiryRef} submitted via website`, undefined, 'system');
+    );
 
     return {
       success: true,
-      enquiryId: enquiry.id,
+      enquiryId: response.enquiryId,
       enquiryRef,
     };
   } catch (error) {
@@ -306,118 +217,71 @@ export async function submitClothingEnquiry(
   }
 }
 
-// Add a note to an enquiry
-export async function addEnquiryNote(
-  enquiryId: string,
-  content: string,
-  createdBy?: string,
-  noteType: EnquiryNote['note_type'] = 'note'
-): Promise<boolean> {
-  try {
-    const { error } = await supabase
-      .from('enquiry_notes')
-      .insert([{
-        enquiry_id: enquiryId,
-        note_type: noteType,
-        content,
-        created_by: createdBy,
-      }]);
-
-    if (error) {
-      console.error('Error adding note:', error);
-      return false;
-    }
-
-    return true;
-  } catch (error) {
-    console.error('Error in addEnquiryNote:', error);
-    return false;
-  }
-}
-
-// Get all enquiries (for admin)
+// Get all enquiries (requires auth token)
 export async function getEnquiries(
   options?: {
-    status?: ClothingEnquiry['status'];
+    status?: string;
     limit?: number;
     offset?: number;
-  }
+  },
+  token?: string
 ): Promise<ClothingEnquiry[]> {
   try {
-    let query = supabase
-      .from('clothing_enquiries')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const params = new URLSearchParams();
+    if (options?.status) params.set('status', options.status);
+    if (options?.limit) params.set('limit', options.limit.toString());
+    if (options?.offset) params.set('offset', options.offset.toString());
 
-    if (options?.status) {
-      query = query.eq('status', options.status);
-    }
+    const queryString = params.toString();
+    const endpoint = queryString ? `?${queryString}` : '';
 
-    if (options?.limit) {
-      query = query.limit(options.limit);
-    }
+    const response = await enquiryApiFetch<{ success: boolean; enquiries: any[] }>(
+      endpoint,
+      { method: 'GET' },
+      token
+    );
 
-    if (options?.offset) {
-      query = query.range(options.offset, options.offset + (options.limit || 20) - 1);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Error fetching enquiries:', error);
-      return [];
-    }
-
-    return data || [];
+    // Map from camelCase API response to snake_case used in frontend
+    return (response.enquiries || []).map(mapEnquiryFromApi);
   } catch (error) {
     console.error('Error in getEnquiries:', error);
     return [];
   }
 }
 
-// Get a single enquiry by ID
-export async function getEnquiryById(id: string): Promise<ClothingEnquiry | null> {
+// Get a single enquiry by ID (requires auth token)
+export async function getEnquiryById(id: string, token?: string): Promise<ClothingEnquiry | null> {
   try {
-    const { data, error } = await supabase
-      .from('clothing_enquiries')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const response = await enquiryApiFetch<{ success: boolean; enquiry: any }>(
+      `/${id}`,
+      { method: 'GET' },
+      token
+    );
 
-    if (error) {
-      console.error('Error fetching enquiry:', error);
-      return null;
-    }
-
-    return data;
+    return response.enquiry ? mapEnquiryFromApi(response.enquiry) : null;
   } catch (error) {
     console.error('Error in getEnquiryById:', error);
     return null;
   }
 }
 
-// Get notes for an enquiry
-export async function getEnquiryNotes(enquiryId: string): Promise<EnquiryNote[]> {
+// Get notes for an enquiry (requires auth token)
+export async function getEnquiryNotes(enquiryId: string, token?: string): Promise<EnquiryNote[]> {
   try {
-    const { data, error } = await supabase
-      .from('enquiry_notes')
-      .select(`
-        *,
-        admin_users:created_by (name)
-      `)
-      .eq('enquiry_id', enquiryId)
-      .order('created_at', { ascending: false });
+    const response = await enquiryApiFetch<{ success: boolean; notes: any[] }>(
+      `/${enquiryId}/notes`,
+      { method: 'GET' },
+      token
+    );
 
-    if (error) {
-      console.error('Error fetching notes:', error);
-      return [];
-    }
-
-    // Map the joined data to include created_by_name
-    return (data || []).map(note => ({
-      ...note,
-      created_by_name: note.admin_users?.name || null,
-      admin_users: undefined,
+    return (response.notes || []).map(note => ({
+      id: note.id,
+      enquiry_id: note.enquiryId,
+      created_at: note.createdAt,
+      created_by: note.createdBy,
+      created_by_name: note.author?.name || null,
+      note_type: note.noteType,
+      content: note.content,
     }));
   } catch (error) {
     console.error('Error in getEnquiryNotes:', error);
@@ -425,26 +289,46 @@ export async function getEnquiryNotes(enquiryId: string): Promise<EnquiryNote[]>
   }
 }
 
-// Update enquiry status
+// Add a note to an enquiry (requires auth token)
+export async function addEnquiryNote(
+  enquiryId: string,
+  content: string,
+  createdBy?: string,
+  noteType: EnquiryNote['note_type'] = 'note',
+  token?: string
+): Promise<boolean> {
+  try {
+    await enquiryApiFetch<{ success: boolean }>(
+      `/${enquiryId}/notes`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ content, noteType }),
+      },
+      token
+    );
+    return true;
+  } catch (error) {
+    console.error('Error in addEnquiryNote:', error);
+    return false;
+  }
+}
+
+// Update enquiry status (requires auth token)
 export async function updateEnquiryStatus(
   id: string,
   status: string,
-  updatedBy?: string
+  updatedBy?: string,
+  token?: string
 ): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('clothing_enquiries')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error updating status:', error);
-      return false;
-    }
-
-    // Add status change note
-    await addEnquiryNote(id, `Status changed to ${status}`, updatedBy, 'status_change');
-
+    await enquiryApiFetch<{ success: boolean }>(
+      `/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ status }),
+      },
+      token
+    );
     return true;
   } catch (error) {
     console.error('Error in updateEnquiryStatus:', error);
@@ -452,31 +336,27 @@ export async function updateEnquiryStatus(
   }
 }
 
-// Update enquiry with quote information
+// Update enquiry with quote information (requires auth token)
 export async function updateEnquiryQuote(
   id: string,
   quoteAmount: number,
-  quoteNotes?: string
+  quoteNotes?: string,
+  token?: string
 ): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from('clothing_enquiries')
-      .update({
-        quote_amount: quoteAmount,
-        quote_notes: quoteNotes,
-        quote_sent_at: new Date().toISOString(),
-        status: 'quoted',
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error updating quote:', error);
-      return false;
-    }
-
-    await addEnquiryNote(id, `Quote sent: £${quoteAmount.toFixed(2)}${quoteNotes ? ` - ${quoteNotes}` : ''}`, undefined, 'quote_sent');
-
+    await enquiryApiFetch<{ success: boolean }>(
+      `/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({
+          status: 'quoted',
+          quoteAmount,
+          quoteNotes,
+          quoteSentAt: new Date().toISOString(),
+        }),
+      },
+      token
+    );
     return true;
   } catch (error) {
     console.error('Error in updateEnquiryQuote:', error);
@@ -484,37 +364,58 @@ export async function updateEnquiryQuote(
   }
 }
 
-// Get enquiry counts by status (for dashboard)
-export async function getEnquiryCounts(): Promise<Record<string, number>> {
+// Get enquiry counts by status (requires auth token)
+export async function getEnquiryCounts(token?: string): Promise<Record<string, number>> {
   try {
-    const { data, error } = await supabase
-      .from('clothing_enquiries')
-      .select('status');
-
-    if (error) {
-      console.error('Error fetching counts:', error);
-      return {};
-    }
-
-    const counts: Record<string, number> = {
-      new: 0,
-      in_progress: 0,
-      quoted: 0,
-      approved: 0,
-      in_production: 0,
-      completed: 0,
-      cancelled: 0,
-      total: 0,
-    };
-
-    data?.forEach((item) => {
-      counts[item.status] = (counts[item.status] || 0) + 1;
-      counts.total++;
-    });
-
-    return counts;
+    const response = await enquiryApiFetch<{ success: boolean; counts: Record<string, number> }>(
+      '/counts',
+      { method: 'GET' },
+      token
+    );
+    return response.counts || {};
   } catch (error) {
     console.error('Error in getEnquiryCounts:', error);
     return {};
   }
+}
+
+// Helper to map API response (camelCase) to frontend format (snake_case)
+function mapEnquiryFromApi(apiEnquiry: any): ClothingEnquiry {
+  return {
+    id: apiEnquiry.id,
+    created_at: apiEnquiry.createdAt,
+    updated_at: apiEnquiry.updatedAt,
+    status: apiEnquiry.status,
+    assigned_to: apiEnquiry.assignedTo,
+    customer_name: apiEnquiry.customerName,
+    customer_email: apiEnquiry.customerEmail,
+    customer_phone: apiEnquiry.customerPhone,
+    company_name: apiEnquiry.companyName,
+    product_id: apiEnquiry.productId,
+    product_name: apiEnquiry.productName,
+    product_style_code: apiEnquiry.productStyleCode,
+    product_color: apiEnquiry.productColor,
+    product_color_code: apiEnquiry.productColorCode,
+    product_image_url: apiEnquiry.productImageUrl,
+    logo_file_name: apiEnquiry.logoFileName,
+    logo_file_url: apiEnquiry.logoFileUrl,
+    logo_url: apiEnquiry.logoFileUrl,
+    logo_file_size: apiEnquiry.logoFileSize,
+    logo_format: apiEnquiry.logoFormat,
+    logo_width: apiEnquiry.logoWidth,
+    logo_height: apiEnquiry.logoHeight,
+    logo_quality_tier: apiEnquiry.logoQualityTier,
+    logo_quality_notes: apiEnquiry.logoQualityNotes,
+    logo_has_transparency: apiEnquiry.logoHasTransparency,
+    logo_position_x: apiEnquiry.logoPositionX,
+    logo_position_y: apiEnquiry.logoPositionY,
+    logo_size_percent: apiEnquiry.logoSizePercent,
+    estimated_quantity: apiEnquiry.estimatedQuantity,
+    additional_notes: apiEnquiry.additionalNotes,
+    enquiry_type: apiEnquiry.enquiryType,
+    quote_amount: apiEnquiry.quoteAmount,
+    quote_notes: apiEnquiry.quoteNotes,
+    quote_sent_at: apiEnquiry.quoteSentAt,
+    source: apiEnquiry.source || 'website',
+  };
 }
