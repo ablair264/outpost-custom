@@ -1,42 +1,14 @@
-// Netlify Function: Smart Search (re-implemented)
-// - Grounds the LLM with live catalog metadata (from products API)
-// - Validates AI filters against real data
-// - Queries database via products API to return concrete product suggestions alongside filters
+// Netlify Function: Smart Search
+// Uses Neon serverless driver for database queries
+// Grounds the LLM with live catalog metadata
 
-import fs from 'fs';
-import path from 'path';
-import { PrismaClient } from '@prisma/client';
+import { neon } from '@neondatabase/serverless';
 
-const prisma = new PrismaClient();
+const sql = neon(process.env.DATABASE_URL);
 
 const CACHE_TTL_MS = Number(process.env.SMART_SEARCH_CACHE_MS || 15 * 60 * 1000); // 15 mins
 const SAMPLE_PRODUCTS_FOR_AI = 60;
 const MAX_RESULTS = 24;
-
-// ------------------------------ Fallback summary (local JSON) ----------------
-let productSummary = null;
-function loadProductSummaryFallback() {
-  if (productSummary) return productSummary;
-  const paths = [
-    path.join(process.cwd(), 'public', 'product-summary.json'),
-    path.join(process.cwd(), 'build', 'product-summary.json'),
-    '/var/task/public/product-summary.json',
-    '/opt/build/repo/public/product-summary.json',
-    '/opt/build/repo/build/product-summary.json'
-  ];
-  for (const p of paths) {
-    if (fs.existsSync(p)) {
-      try {
-        productSummary = JSON.parse(fs.readFileSync(p, 'utf8'));
-        console.log(`[smart-search] Loaded fallback summary from ${p}`);
-        break;
-      } catch (err) {
-        console.warn('[smart-search] Failed to parse fallback summary', err);
-      }
-    }
-  }
-  return productSummary;
-}
 
 // ------------------------------ Reference data cache -------------------------
 let referenceCache = { loadedAt: 0, data: null };
@@ -47,18 +19,19 @@ async function loadReferenceData() {
   }
 
   try {
-    // Load product types from database
-    const productTypesData = await prisma.productType.findMany({
-      select: { name: true },
-      orderBy: { name: 'asc' }
-    });
-    const productTypes = productTypesData.map(t => t.name).filter(Boolean);
+    // Load product types
+    const productTypesData = await sql`
+      SELECT DISTINCT product_type FROM product_styles
+      WHERE product_type IS NOT NULL AND is_live = true
+      ORDER BY product_type
+    `;
+    const productTypes = productTypesData.map(t => t.product_type).filter(Boolean);
 
-    // Load price range from product_styles
-    const priceStats = await prisma.$queryRaw`
+    // Load price range
+    const priceStats = await sql`
       SELECT MIN(price_min) as min_price, MAX(price_max) as max_price
       FROM product_styles
-      WHERE price_min IS NOT NULL AND price_max IS NOT NULL
+      WHERE price_min IS NOT NULL AND price_max IS NOT NULL AND is_live = true
     `;
     const priceRange = {
       min: Math.floor(Number(priceStats[0]?.min_price) || 0),
@@ -66,35 +39,20 @@ async function loadReferenceData() {
     };
 
     // Load brands
-    const brandsData = await prisma.$queryRaw`
-      SELECT DISTINCT brand FROM product_styles WHERE brand IS NOT NULL ORDER BY brand
+    const brandsData = await sql`
+      SELECT DISTINCT brand FROM product_styles WHERE brand IS NOT NULL AND is_live = true ORDER BY brand
     `;
     const brands = brandsData.map(b => b.brand).filter(Boolean);
 
     // Load sample products
-    const sampleProducts = await prisma.$queryRaw`
+    const sampleProducts = await sql`
       SELECT style_code, style_name, brand, product_type, price_min, price_max,
              fabric, categorisation, sustainable_organic, retail_description,
              primary_product_image_url
       FROM product_styles
-      WHERE product_type IS NOT NULL
+      WHERE product_type IS NOT NULL AND is_live = true
       LIMIT ${SAMPLE_PRODUCTS_FOR_AI}
     `;
-
-    // Fallback to local summary if database fetch fails
-    if ((!productTypes.length || !sampleProducts.length) && loadProductSummaryFallback()) {
-      const summary = productSummary;
-      referenceCache = {
-        loadedAt: Date.now(),
-        data: {
-          productTypes: summary.metadata?.product_types || [],
-          priceRange: summary.metadata?.price_range || { min: 0, max: 0 },
-          brands: summary.metadata?.brands || [],
-          sampleProducts: summary.products?.slice(0, SAMPLE_PRODUCTS_FOR_AI) || []
-        }
-      };
-      return referenceCache.data;
-    }
 
     referenceCache = {
       loadedAt: Date.now(),
@@ -118,20 +76,11 @@ async function loadReferenceData() {
       }
     };
 
+    console.log(`[smart-search] Loaded reference data: ${productTypes.length} types, ${brands.length} brands`);
     return referenceCache.data;
   } catch (error) {
     console.error('[smart-search] Error loading reference data:', error);
-    // Fallback to local summary
-    if (loadProductSummaryFallback()) {
-      const summary = productSummary;
-      return {
-        productTypes: summary.metadata?.product_types || [],
-        priceRange: summary.metadata?.price_range || { min: 0, max: 0 },
-        brands: summary.metadata?.brands || [],
-        sampleProducts: summary.products?.slice(0, SAMPLE_PRODUCTS_FOR_AI) || []
-      };
-    }
-    return { productTypes: [], priceRange: { min: 0, max: 0 }, brands: [], sampleProducts: [] };
+    return { productTypes: [], priceRange: { min: 0, max: 100 }, brands: [], sampleProducts: [] };
   }
 }
 
@@ -142,7 +91,7 @@ function extractKeywords(text = '') {
     .replace(/[^\w\s]/g, ' ')
     .split(/\s+/)
     .filter(Boolean)
-    .filter(w => !['the', 'and', 'for', 'with', 'need', 'want', 'looking', 'please', 'some'].includes(w));
+    .filter(w => !['the', 'and', 'for', 'with', 'need', 'want', 'looking', 'please', 'some', 'a', 'an', 'i', 'me', 'my'].includes(w));
 }
 
 function clampPrice(value, range) {
@@ -155,7 +104,7 @@ function clampPrice(value, range) {
 function buildSampleForPrompt(sampleProducts) {
   return sampleProducts.slice(0, 20).map((p, i) => {
     const price = p.price_range
-      ? `£${p.price_range.min}-${p.price_range.max}`
+      ? `£${p.price_range.min}-£${p.price_range.max}`
       : `£${Number(p.single_price || 0).toFixed(2)}`;
     return `${i + 1}. ${p.brand || 'Unknown'} ${p.style_name || p.style_code} (${p.product_type || 'Uncategorised'}) - ${price}${
       p.sustainable_organic?.toLowerCase().includes('yes') ? ' [SUSTAINABLE]' : ''
@@ -192,6 +141,7 @@ function generateFallbackFilters(query, reference) {
     { key: 'polo', type: 'Polos' },
     { key: 't shirt', type: 'T-Shirts' },
     { key: 'tshirt', type: 'T-Shirts' },
+    { key: 't-shirt', type: 'T-Shirts' },
     { key: 'hoodie', type: 'Hoodies' },
     { key: 'sweatshirt', type: 'Sweatshirts' },
     { key: 'jacket', type: 'Jackets' },
@@ -199,7 +149,15 @@ function generateFallbackFilters(query, reference) {
     { key: 'bag', type: 'Bags' },
     { key: 'tote', type: 'Bags' },
     { key: 'gift', type: 'Gifts' },
-    { key: 'workwear', type: 'Workwear' }
+    { key: 'workwear', type: 'Workwear' },
+    { key: 'cap', type: 'Caps' },
+    { key: 'hat', type: 'Caps' },
+    { key: 'beanie', type: 'Beanies' },
+    { key: 'fleece', type: 'Fleeces' },
+    { key: 'shirt', type: 'Shirts' },
+    { key: 'shorts', type: 'Shorts' },
+    { key: 'trouser', type: 'Trousers' },
+    { key: 'pant', type: 'Trousers' }
   ];
 
   const detected = typeMap
@@ -238,19 +196,19 @@ async function queryProducts(filters, queryText) {
   let paramIndex = 1;
 
   if (filters.productTypes?.length) {
-    conditions.push(`product_type = ANY($${paramIndex})`);
+    conditions.push(`product_type = ANY($${paramIndex}::text[])`);
     params.push(filters.productTypes);
     paramIndex++;
   }
 
   if (filters.brands?.length) {
-    conditions.push(`brand = ANY($${paramIndex})`);
+    conditions.push(`brand = ANY($${paramIndex}::text[])`);
     params.push(filters.brands);
     paramIndex++;
   }
 
   if (filters.genders?.length) {
-    conditions.push(`gender = ANY($${paramIndex})`);
+    conditions.push(`gender = ANY($${paramIndex}::text[])`);
     params.push(filters.genders);
     paramIndex++;
   }
@@ -273,16 +231,13 @@ async function queryProducts(filters, queryText) {
 
   // Default to adult/unisex unless the user explicitly asks for kids/youth
   if (!wantsKids) {
-    const kidWords = ['Kids', 'Kid', 'Youth', 'Child', 'Children', 'Childrens', 'Junior', 'Infant', 'Toddler', 'Boys', 'Girls'];
-    conditions.push(`(age_group IS NULL OR age_group NOT IN (${kidWords.map((_, i) => `$${paramIndex + i}`).join(', ')}))`);
-    params.push(...kidWords);
-    paramIndex += kidWords.length;
+    conditions.push(`(age_group IS NULL OR age_group NOT IN ('Kids', 'Kid', 'Youth', 'Child', 'Children', 'Childrens', 'Junior', 'Infant', 'Toddler', 'Boys', 'Girls'))`);
   }
 
   // Full-text search if we have keywords
   const keywords = extractKeywords(queryText);
   if (keywords.length) {
-    const searchTerms = keywords.join(' & ');
+    const searchTerms = keywords.join(' | '); // OR search
     conditions.push(`search_vector @@ to_tsquery('english', $${paramIndex})`);
     params.push(searchTerms);
     paramIndex++;
@@ -295,7 +250,7 @@ async function queryProducts(filters, queryText) {
 
   // Material filter
   if (filters.materials?.length) {
-    const materialConditions = filters.materials.map((_, i) => `fabric ILIKE $${paramIndex + i}`);
+    const materialConditions = filters.materials.map((m, i) => `fabric ILIKE $${paramIndex + i}`);
     conditions.push(`(${materialConditions.join(' OR ')})`);
     params.push(...filters.materials.map(m => `%${m}%`));
     paramIndex += filters.materials.length;
@@ -313,7 +268,7 @@ async function queryProducts(filters, queryText) {
   `;
 
   try {
-    const results = await prisma.$queryRawUnsafe(query, ...params);
+    const results = await sql.query(query, params);
     return results.map(item => ({
       style_code: item.style_code,
       style_name: item.style_name,
@@ -375,33 +330,42 @@ Rules:
 
 async function runOpenAI(fullQuery, reference) {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
-  const { default: OpenAI } = await import('openai');
-  const client = new OpenAI({ apiKey });
-
-  const prompt = buildPrompt(fullQuery, reference);
-  const completion = await client.chat.completions.create({
-    model: process.env.AI_MODEL || 'gpt-4o-mini',
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a concise assistant that only returns valid JSON. Never include prose outside JSON.'
-      },
-      { role: 'user', content: prompt }
-    ],
-    temperature: Number(process.env.AI_TEMPERATURE ?? 0.2),
-    max_tokens: Number(process.env.AI_MAX_TOKENS ?? 600)
-  });
-
-  const text = completion.choices?.[0]?.message?.content || '{}';
-  let json;
-  try {
-    json = JSON.parse(text);
-  } catch {
-    const match = text.match(/\{[\s\S]*\}/);
-    json = match ? JSON.parse(match[0]) : null;
+  if (!apiKey) {
+    console.log('[smart-search] No OpenAI API key, using fallback');
+    return null;
   }
-  return json;
+
+  try {
+    const { default: OpenAI } = await import('openai');
+    const client = new OpenAI({ apiKey });
+
+    const prompt = buildPrompt(fullQuery, reference);
+    const completion = await client.chat.completions.create({
+      model: process.env.AI_MODEL || 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a concise assistant that only returns valid JSON. Never include prose outside JSON.'
+        },
+        { role: 'user', content: prompt }
+      ],
+      temperature: Number(process.env.AI_TEMPERATURE ?? 0.2),
+      max_tokens: Number(process.env.AI_MAX_TOKENS ?? 600)
+    });
+
+    const text = completion.choices?.[0]?.message?.content || '{}';
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch {
+      const match = text.match(/\{[\s\S]*\}/);
+      json = match ? JSON.parse(match[0]) : null;
+    }
+    return json;
+  } catch (error) {
+    console.error('[smart-search] OpenAI error:', error);
+    return null;
+  }
 }
 
 // ------------------------------ Handler -------------------------------------
@@ -417,8 +381,11 @@ export async function handler(event) {
     const selectedQuestions = payload.selectedQuestions || [];
     const fullQuery = [query, ...selectedQuestions].filter(Boolean).join('. ');
 
+    console.log(`[smart-search] Query: "${fullQuery}"`);
+
     const reference = await loadReferenceData();
     if (!reference.productTypes?.length) {
+      console.error('[smart-search] No product types loaded');
       throw new Error('Reference metadata unavailable');
     }
 
@@ -428,6 +395,8 @@ export async function handler(event) {
     const validatedFilters = filtersFromAI
       ? validateFilters(filtersFromAI, reference)
       : generateFallbackFilters(fullQuery, reference);
+
+    console.log(`[smart-search] Filters:`, validatedFilters);
 
     // 2) Apply budget band nudges if provided
     if (aiJson?.budgetBand === 'budget' && !validatedFilters.priceMax) {
@@ -439,6 +408,7 @@ export async function handler(event) {
 
     // 3) Query database for concrete matches
     const results = await queryProducts(validatedFilters, fullQuery);
+    console.log(`[smart-search] Found ${results.length} results`);
 
     return {
       statusCode: 200,
@@ -456,7 +426,7 @@ export async function handler(event) {
   } catch (error) {
     console.error('[smart-search] Error:', error);
     // Fallback: best-effort filters using cached metadata
-    const reference = referenceCache.data || loadProductSummaryFallback() || { productTypes: [], priceRange: { min: 0, max: 0 } };
+    const reference = referenceCache.data || { productTypes: [], priceRange: { min: 0, max: 100 }, brands: [] };
     const fallbackFilters = reference.productTypes?.length
       ? generateFallbackFilters(JSON.parse(event.body || '{}').query || '', reference)
       : {};

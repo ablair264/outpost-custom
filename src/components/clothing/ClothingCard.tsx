@@ -439,35 +439,35 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
             </div>
 
             {/* Mobile: Refined compact layout */}
-            <div className="flex sm:hidden p-3 gap-3">
-              {/* Image - clean square with shadow */}
-              <div
-                className="w-[90px] h-[90px] bg-white flex-shrink-0 rounded-xl overflow-hidden relative shadow-lg shadow-black/20"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  onClick={onClose}
-                  className="absolute top-1.5 left-1.5 z-20 p-1 rounded-full bg-black/40 backdrop-blur-sm"
+            <div className="flex sm:hidden flex-col p-3 gap-3 overflow-hidden">
+              {/* Top row: Image + Info */}
+              <div className="flex gap-3">
+                {/* Image - clean square with shadow */}
+                <div
+                  className="w-[80px] h-[80px] bg-white flex-shrink-0 rounded-xl overflow-hidden relative shadow-md"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <X className="w-2.5 h-2.5 text-white" />
-                </button>
-                <img
-                  src={currentImage !== 'Not available'
-                    ? currentImage
-                    : `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`
-                  }
-                  alt={productGroup.style_name}
-                  className="w-full h-full object-contain p-2"
-                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                    e.currentTarget.src = `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`;
-                  }}
-                />
-              </div>
+                  <button
+                    onClick={onClose}
+                    className="absolute top-1 left-1 z-20 p-0.5 rounded-full bg-black/40"
+                  >
+                    <X className="w-2.5 h-2.5 text-white" />
+                  </button>
+                  <img
+                    src={currentImage !== 'Not available'
+                      ? currentImage
+                      : `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`
+                    }
+                    alt={productGroup.style_name}
+                    className="w-full h-full object-contain p-1.5"
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                      e.currentTarget.src = `https://via.placeholder.com/300x300/ffffff/78BE20?text=${encodeURIComponent(productGroup.style_name?.slice(0, 2) || 'P')}`;
+                    }}
+                  />
+                </div>
 
-              {/* Content */}
-              <div className="flex-1 min-w-0 flex flex-col justify-between">
-                {/* Top: Brand + Name + Price */}
-                <div>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
                   <p className="text-[9px] font-bold tracking-[0.15em] uppercase mb-0.5" style={{ color: clothingColors.accent }}>
                     {productGroup.brand}
                   </p>
@@ -480,42 +480,44 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                     </p>
                   )}
                 </div>
+              </div>
 
-                {/* Bottom: Colors/Sizes + CTA */}
-                <div className="flex items-end justify-between gap-2 mt-2" onClick={(e) => e.stopPropagation()}>
-                  {/* Colors & Sizes info */}
-                  <div className="flex flex-col gap-1">
-                    {productGroup.colors.length > 0 && (
-                      <div className="flex items-center gap-1.5">
-                        <div className="flex -space-x-1">
-                          {productGroup.colors.slice(0, 4).map((color, i) => (
-                            <div
-                              key={color.code}
-                              className="w-4 h-4 rounded-full ring-1 ring-white/20"
-                              style={{ backgroundColor: color.rgb }}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-[10px] text-white/50">
-                          {productGroup.colors.length} colour{productGroup.colors.length !== 1 ? 's' : ''}
-                        </span>
+              {/* Bottom row: Colors/Sizes + CTA */}
+              <div className="flex items-center justify-between gap-2" onClick={(e) => e.stopPropagation()}>
+                {/* Colors & Sizes info */}
+                <div className="flex items-center gap-3 min-w-0">
+                  {productGroup.colors.length > 0 && (
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex -space-x-1">
+                        {productGroup.colors.slice(0, 4).map((color, i) => (
+                          <div
+                            key={color.code}
+                            className="w-5 h-5 rounded-full ring-1 ring-white/20"
+                            style={{ backgroundColor: color.rgb }}
+                          />
+                        ))}
                       </div>
-                    )}
-                    {sizeRange && (
-                      <span className="text-[10px] text-white/50">{sizeRange}</span>
-                    )}
-                  </div>
-
-                  {/* CTA - compact */}
-                  <button
-                    onClick={() => navigate(`/products/${productGroup.style_code}`)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg font-semibold text-xs text-white flex-shrink-0"
-                    style={{ backgroundColor: clothingColors.accent }}
-                  >
-                    View
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
+                      {productGroup.colors.length > 1 && (
+                        <span className="text-[11px] text-white/50">
+                          {productGroup.colors.length} colours
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {sizeRange && (
+                    <span className="text-[11px] text-white/50 truncate">{sizeRange}</span>
+                  )}
                 </div>
+
+                {/* CTA */}
+                <button
+                  onClick={() => navigate(`/products/${productGroup.style_code}`)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm text-white flex-shrink-0"
+                  style={{ backgroundColor: clothingColors.accent }}
+                >
+                  View Details
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
           </motion.div>
