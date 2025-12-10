@@ -1,21 +1,14 @@
 // Netlify Function: Smart Search (re-implemented)
-// - Grounds the LLM with live catalog metadata (product_types table + sampled products)
+// - Grounds the LLM with live catalog metadata (from products API)
 // - Validates AI filters against real data
-// - Queries Supabase to return concrete product suggestions alongside filters
+// - Queries database via products API to return concrete product suggestions alongside filters
 
 import fs from 'fs';
 import path from 'path';
-import { createClient } from '@supabase/supabase-js';
+import { PrismaClient } from '@prisma/client';
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ptmpshcuvhshcwbpaqit.supabase.co';
-// Prefer service role for server-side filtering; fall back to anon for local dev
-const SUPABASE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_ANON_KEY ||
-  process.env.SUPABASE_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0bXBzaGN1dmhzaGN3YnBhcWl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1ODExNDIsImV4cCI6MjA3NDE1NzE0Mn0.Nrt89ux7TWCwPojWDgtDk3wXbeyT51ruMjmuzcvnlCY';
+const prisma = new PrismaClient();
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const CACHE_TTL_MS = Number(process.env.SMART_SEARCH_CACHE_MS || 15 * 60 * 1000); // 15 mins
 const SAMPLE_PRODUCTS_FOR_AI = 60;
 const MAX_RESULTS = 24;
@@ -53,64 +46,68 @@ async function loadReferenceData() {
     return referenceCache.data;
   }
 
-  // Use optimized product_styles table for much faster reference data loading
-  const productTypesPromise = supabase.from('product_types').select('name').order('name');
+  try {
+    // Load product types from database
+    const productTypesData = await prisma.productType.findMany({
+      select: { name: true },
+      orderBy: { name: 'asc' }
+    });
+    const productTypes = productTypesData.map(t => t.name).filter(Boolean);
 
-  const priceRangePromise = supabase
-    .from('product_styles')
-    .select('price_min, price_max')
-    .not('price_min', 'is', null)
-    .not('price_max', 'is', null);
-
-  const brandsPromise = supabase
-    .from('product_styles')
-    .select('brand')
-    .not('brand', 'is', null);
-
-  const samplePromise = supabase
-    .from('product_styles')
-    .select(
-      'style_code, style_name, brand, product_type, price_min, price_max, fabric, categorisation, sustainable_organic, retail_description, primary_product_image_url'
-    )
-    .not('product_type', 'is', null)
-    .limit(SAMPLE_PRODUCTS_FOR_AI);
-
-  const [typesRes, priceRes, brandsRes, sampleRes] = await Promise.allSettled([
-    productTypesPromise,
-    priceRangePromise,
-    brandsPromise,
-    samplePromise
-  ]);
-
-  const productTypes =
-    typesRes.status === 'fulfilled'
-      ? (typesRes.value.data || []).map(t => t.name).filter(Boolean)
-      : [];
-
-  // Calculate price range from aggregated min/max
-  let priceRange = { min: 0, max: 0 };
-  if (priceRes.status === 'fulfilled' && priceRes.value.data?.length) {
-    const prices = priceRes.value.data;
-    priceRange = {
-      min: Math.floor(Math.min(...prices.map(p => p.price_min).filter(Boolean))),
-      max: Math.ceil(Math.max(...prices.map(p => p.price_max).filter(Boolean)))
+    // Load price range from product_styles
+    const priceStats = await prisma.$queryRaw`
+      SELECT MIN(price_min) as min_price, MAX(price_max) as max_price
+      FROM product_styles
+      WHERE price_min IS NOT NULL AND price_max IS NOT NULL
+    `;
+    const priceRange = {
+      min: Math.floor(Number(priceStats[0]?.min_price) || 0),
+      max: Math.ceil(Number(priceStats[0]?.max_price) || 0)
     };
-  }
 
-  const brands =
-    brandsRes.status === 'fulfilled'
-      ? Array.from(new Set((brandsRes.value.data || []).map(b => b.brand).filter(Boolean))).sort()
-      : [];
+    // Load brands
+    const brandsData = await prisma.$queryRaw`
+      SELECT DISTINCT brand FROM product_styles WHERE brand IS NOT NULL ORDER BY brand
+    `;
+    const brands = brandsData.map(b => b.brand).filter(Boolean);
 
-  // Convert product_styles format to match expected sample format
-  const sampleProducts =
-    sampleRes.status === 'fulfilled'
-      ? (sampleRes.value.data || []).map(s => ({
+    // Load sample products
+    const sampleProducts = await prisma.$queryRaw`
+      SELECT style_code, style_name, brand, product_type, price_min, price_max,
+             fabric, categorisation, sustainable_organic, retail_description,
+             primary_product_image_url
+      FROM product_styles
+      WHERE product_type IS NOT NULL
+      LIMIT ${SAMPLE_PRODUCTS_FOR_AI}
+    `;
+
+    // Fallback to local summary if database fetch fails
+    if ((!productTypes.length || !sampleProducts.length) && loadProductSummaryFallback()) {
+      const summary = productSummary;
+      referenceCache = {
+        loadedAt: Date.now(),
+        data: {
+          productTypes: summary.metadata?.product_types || [],
+          priceRange: summary.metadata?.price_range || { min: 0, max: 0 },
+          brands: summary.metadata?.brands || [],
+          sampleProducts: summary.products?.slice(0, SAMPLE_PRODUCTS_FOR_AI) || []
+        }
+      };
+      return referenceCache.data;
+    }
+
+    referenceCache = {
+      loadedAt: Date.now(),
+      data: {
+        productTypes,
+        priceRange,
+        brands,
+        sampleProducts: sampleProducts.map(s => ({
           style_code: s.style_code,
           style_name: s.style_name,
           brand: s.brand,
           product_type: s.product_type,
-          single_price: s.price_min, // Use minimum price for display
+          single_price: s.price_min,
           price_range: { min: s.price_min, max: s.price_max },
           fabric: s.fabric,
           categorisation: s.categorisation,
@@ -118,29 +115,24 @@ async function loadReferenceData() {
           retail_description: s.retail_description,
           primary_product_image_url: s.primary_product_image_url
         }))
-      : [];
+      }
+    };
 
-  // Fallback to local summary if Supabase fetch fails
-  if ((!productTypes.length || !sampleProducts.length) && loadProductSummaryFallback()) {
-    const summary = productSummary;
-    referenceCache = {
-      loadedAt: Date.now(),
-      data: {
+    return referenceCache.data;
+  } catch (error) {
+    console.error('[smart-search] Error loading reference data:', error);
+    // Fallback to local summary
+    if (loadProductSummaryFallback()) {
+      const summary = productSummary;
+      return {
         productTypes: summary.metadata?.product_types || [],
         priceRange: summary.metadata?.price_range || { min: 0, max: 0 },
         brands: summary.metadata?.brands || [],
         sampleProducts: summary.products?.slice(0, SAMPLE_PRODUCTS_FOR_AI) || []
-      }
-    };
-    return referenceCache.data;
+      };
+    }
+    return { productTypes: [], priceRange: { min: 0, max: 0 }, brands: [], sampleProducts: [] };
   }
-
-  referenceCache = {
-    loadedAt: Date.now(),
-    data: { productTypes, priceRange, brands, sampleProducts }
-  };
-
-  return referenceCache.data;
 }
 
 // ------------------------------ Helpers -------------------------------------
@@ -234,74 +226,110 @@ function generateFallbackFilters(query, reference) {
 }
 
 async function queryProducts(filters, queryText) {
-  // Use the optimized product_styles table instead of product_data
-  let query = supabase
-    .from('product_styles')
-    .select(
-      'style_code, style_name, brand, product_type, primary_product_image_url, price_min, price_max, sustainable_organic, categorisation, retail_description'
-    )
-    .limit(MAX_RESULTS);
-
   const lowerQuery = (queryText || '').toLowerCase();
   const wantsKids = lowerQuery.includes('kid') || lowerQuery.includes('child') || lowerQuery.includes('youth');
   const workwearIntent = ['workwear', 'hi vis', 'hi-vis', 'safety', 'construction', 'industrial', 'trade', 'warehouse'].some(
     kw => lowerQuery.includes(kw)
   );
 
-  // Apply filters
-  if (filters.productTypes?.length) query = query.in('product_type', filters.productTypes);
-  if (filters.brands?.length) query = query.in('brand', filters.brands);
-  if (filters.genders?.length) query = query.in('gender', filters.genders);
-  if (filters.priceMin !== undefined) query = query.gte('price_min', filters.priceMin);
-  if (filters.priceMax !== undefined) query = query.lte('price_max', filters.priceMax);
-  if (filters.sustainable) query = query.ilike('sustainable_organic', '%yes%');
+  // Build WHERE conditions
+  const conditions = ['is_live = true'];
+  const params = [];
+  let paramIndex = 1;
+
+  if (filters.productTypes?.length) {
+    conditions.push(`product_type = ANY($${paramIndex})`);
+    params.push(filters.productTypes);
+    paramIndex++;
+  }
+
+  if (filters.brands?.length) {
+    conditions.push(`brand = ANY($${paramIndex})`);
+    params.push(filters.brands);
+    paramIndex++;
+  }
+
+  if (filters.genders?.length) {
+    conditions.push(`gender = ANY($${paramIndex})`);
+    params.push(filters.genders);
+    paramIndex++;
+  }
+
+  if (filters.priceMin !== undefined) {
+    conditions.push(`price_min >= $${paramIndex}`);
+    params.push(filters.priceMin);
+    paramIndex++;
+  }
+
+  if (filters.priceMax !== undefined) {
+    conditions.push(`price_max <= $${paramIndex}`);
+    params.push(filters.priceMax);
+    paramIndex++;
+  }
+
+  if (filters.sustainable) {
+    conditions.push(`sustainable_organic ILIKE '%yes%'`);
+  }
 
   // Default to adult/unisex unless the user explicitly asks for kids/youth
   if (!wantsKids) {
     const kidWords = ['Kids', 'Kid', 'Youth', 'Child', 'Children', 'Childrens', 'Junior', 'Infant', 'Toddler', 'Boys', 'Girls'];
-    kidWords.forEach(word => {
-      query = query.neq('age_group', word);
-    });
+    conditions.push(`(age_group IS NULL OR age_group NOT IN (${kidWords.map((_, i) => `$${paramIndex + i}`).join(', ')}))`);
+    params.push(...kidWords);
+    paramIndex += kidWords.length;
   }
 
-  // Use full-text search if we have keywords
+  // Full-text search if we have keywords
   const keywords = extractKeywords(queryText);
   if (keywords.length) {
-    // Convert keywords to tsquery format for full-text search
     const searchTerms = keywords.join(' & ');
-    query = query.textSearch('search_vector', searchTerms);
+    conditions.push(`search_vector @@ to_tsquery('english', $${paramIndex})`);
+    params.push(searchTerms);
+    paramIndex++;
   }
 
   // For explicit workwear intent, prefer items tagged workwear/safety
   if (workwearIntent) {
-    query = query.or('categorisation.ilike.%workwear%,categorisation.ilike.%safety%,categorisation.ilike.%hi vis%,categorisation.ilike.%hi-vis%');
+    conditions.push(`(categorisation ILIKE '%workwear%' OR categorisation ILIKE '%safety%' OR categorisation ILIKE '%hi vis%' OR categorisation ILIKE '%hi-vis%')`);
   }
 
   // Material filter
   if (filters.materials?.length) {
-    const materialConditions = filters.materials.map(m => `fabric.ilike.%${m}%`).join(',');
-    query = query.or(materialConditions);
+    const materialConditions = filters.materials.map((_, i) => `fabric ILIKE $${paramIndex + i}`);
+    conditions.push(`(${materialConditions.join(' OR ')})`);
+    params.push(...filters.materials.map(m => `%${m}%`));
+    paramIndex += filters.materials.length;
   }
 
-  // Order by price
-  query = query.order('price_min', { ascending: true });
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-  const { data, error } = await query;
-  if (error) throw error;
+  const query = `
+    SELECT style_code, style_name, brand, product_type, primary_product_image_url,
+           price_min, price_max, sustainable_organic, categorisation, retail_description
+    FROM product_styles
+    ${whereClause}
+    ORDER BY price_min ASC
+    LIMIT ${MAX_RESULTS}
+  `;
 
-  // Data is already grouped by style_code in product_styles table
-  return (data || []).map(item => ({
-    style_code: item.style_code,
-    style_name: item.style_name,
-    brand: item.brand,
-    product_type: item.product_type,
-    primary_product_image_url: item.primary_product_image_url,
-    sustainable_organic: item.sustainable_organic,
-    categorisation: item.categorisation,
-    retail_description: item.retail_description,
-    price_min: item.price_min,
-    price_max: item.price_max
-  }));
+  try {
+    const results = await prisma.$queryRawUnsafe(query, ...params);
+    return results.map(item => ({
+      style_code: item.style_code,
+      style_name: item.style_name,
+      brand: item.brand,
+      product_type: item.product_type,
+      primary_product_image_url: item.primary_product_image_url,
+      sustainable_organic: item.sustainable_organic,
+      categorisation: item.categorisation,
+      retail_description: item.retail_description,
+      price_min: item.price_min,
+      price_max: item.price_max
+    }));
+  } catch (error) {
+    console.error('[smart-search] Query error:', error);
+    return [];
+  }
 }
 
 function buildPrompt(fullQuery, reference) {
@@ -409,7 +437,7 @@ export async function handler(event) {
       validatedFilters.priceMin = Math.max(reference.priceRange.min || 0, 50);
     }
 
-    // 3) Query Supabase for concrete matches
+    // 3) Query database for concrete matches
     const results = await queryProducts(validatedFilters, fullQuery);
 
     return {
