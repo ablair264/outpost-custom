@@ -49,7 +49,9 @@
       "Bash(node scripts/import-products.js:*)",
       "Bash(node scripts/import-products.cjs:*)",
       "mcp__neon__run_sql",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "mcp__cloudflare-workers__accounts_list",
+      "mcp__cloudflare-workers__r2_bucket_create"
     ],
     "deny": [],
     "ask": []

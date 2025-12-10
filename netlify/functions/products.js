@@ -33,80 +33,66 @@ export async function handler(event) {
         styleCode
       } = params;
 
-      let query = `
-        SELECT * FROM product_data
-        WHERE sku_status != 'Discontinued'
-      `;
-      const queryParams = [];
-      let paramIndex = 1;
-
-      if (styleCode) {
-        query += ` AND style_code = $${paramIndex}`;
-        queryParams.push(styleCode);
-        paramIndex++;
+      // Build query using tagged template literals for safety
+      // For simple queries without dynamic filters, use tagged templates directly
+      if (styleCode && !productType && !brand && !gender && !search) {
+        const products = await sql`
+          SELECT * FROM product_data
+          WHERE sku_status != 'Discontinued' AND style_code = ${styleCode}
+          ORDER BY style_code, colour_code
+          LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}
+        `;
+        const countResult = await sql`
+          SELECT COUNT(*) as total FROM product_data
+          WHERE sku_status != 'Discontinued' AND style_code = ${styleCode}
+        `;
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            products,
+            total: parseInt(countResult[0]?.total || '0'),
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+          }),
+        };
       }
 
-      if (productType) {
-        query += ` AND product_type = $${paramIndex}`;
-        queryParams.push(productType);
-        paramIndex++;
-      }
+      // For complex queries with multiple optional filters, build dynamically
+      let products, total;
 
-      if (brand) {
-        query += ` AND brand = $${paramIndex}`;
-        queryParams.push(brand);
-        paramIndex++;
-      }
+      if (!productType && !brand && !gender && !search) {
+        // No filters - simple query
+        products = await sql`
+          SELECT * FROM product_data
+          WHERE sku_status != 'Discontinued'
+          ORDER BY style_code, colour_code
+          LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}
+        `;
+        const countResult = await sql`SELECT COUNT(*) as total FROM product_data WHERE sku_status != 'Discontinued'`;
+        total = parseInt(countResult[0]?.total || '0');
+      } else {
+        // Build filter conditions
+        const conditions = ["sku_status != 'Discontinued'"];
+        if (productType) conditions.push(`product_type = '${productType.replace(/'/g, "''")}'`);
+        if (brand) conditions.push(`brand = '${brand.replace(/'/g, "''")}'`);
+        if (gender) conditions.push(`gender = '${gender.replace(/'/g, "''")}'`);
+        if (search) {
+          const searchEscaped = search.replace(/'/g, "''");
+          conditions.push(`(style_name ILIKE '%${searchEscaped}%' OR brand ILIKE '%${searchEscaped}%' OR retail_description ILIKE '%${searchEscaped}%')`);
+        }
 
-      if (gender) {
-        query += ` AND gender = $${paramIndex}`;
-        queryParams.push(gender);
-        paramIndex++;
-      }
+        const whereClause = conditions.join(' AND ');
 
-      if (search) {
-        query += ` AND (style_name ILIKE $${paramIndex} OR brand ILIKE $${paramIndex} OR retail_description ILIKE $${paramIndex})`;
-        queryParams.push(`%${search}%`);
-        paramIndex++;
-      }
+        // Use sql.query for parameterized queries
+        const queryStr = `SELECT * FROM product_data WHERE ${whereClause} ORDER BY style_code, colour_code LIMIT $1 OFFSET $2`;
+        products = await sql.query(queryStr, [parseInt(limit), parseInt(offset)]);
 
-      query += ` ORDER BY style_code, colour_code LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-      queryParams.push(parseInt(limit), parseInt(offset));
-
-      const products = await sql(query, queryParams);
-
-      // Get total count
-      let countQuery = `SELECT COUNT(*) as total FROM product_data WHERE sku_status != 'Discontinued'`;
-      const countParams = [];
-      let countParamIndex = 1;
-
-      if (styleCode) {
-        countQuery += ` AND style_code = $${countParamIndex}`;
-        countParams.push(styleCode);
-        countParamIndex++;
+        const countStr = `SELECT COUNT(*) as total FROM product_data WHERE ${whereClause}`;
+        const countResult = await sql.query(countStr, []);
+        total = parseInt(countResult[0]?.total || '0');
       }
-      if (productType) {
-        countQuery += ` AND product_type = $${countParamIndex}`;
-        countParams.push(productType);
-        countParamIndex++;
-      }
-      if (brand) {
-        countQuery += ` AND brand = $${countParamIndex}`;
-        countParams.push(brand);
-        countParamIndex++;
-      }
-      if (gender) {
-        countQuery += ` AND gender = $${countParamIndex}`;
-        countParams.push(gender);
-        countParamIndex++;
-      }
-      if (search) {
-        countQuery += ` AND (style_name ILIKE $${countParamIndex} OR brand ILIKE $${countParamIndex} OR retail_description ILIKE $${countParamIndex})`;
-        countParams.push(`%${search}%`);
-      }
-
-      const countResult = await sql(countQuery, countParams);
-      const total = parseInt(countResult[0]?.total || '0');
 
       return {
         statusCode: 200,
@@ -136,73 +122,57 @@ export async function handler(event) {
         colors
       } = params;
 
-      let query = `SELECT * FROM product_styles WHERE is_live = true`;
-      const queryParams = [];
-      let paramIndex = 1;
+      // Build conditions
+      const conditions = ['is_live = true'];
 
       if (productType) {
-        const types = productType.split(',');
-        query += ` AND product_type = ANY($${paramIndex}::text[])`;
-        queryParams.push(types);
-        paramIndex++;
+        const types = productType.split(',').map(t => `'${t.replace(/'/g, "''")}'`).join(',');
+        conditions.push(`product_type IN (${types})`);
       }
 
       if (brand) {
-        const brands = brand.split(',');
-        query += ` AND brand = ANY($${paramIndex}::text[])`;
-        queryParams.push(brands);
-        paramIndex++;
+        const brands = brand.split(',').map(b => `'${b.replace(/'/g, "''")}'`).join(',');
+        conditions.push(`brand IN (${brands})`);
       }
 
       if (gender) {
-        const genders = gender.split(',');
-        query += ` AND gender = ANY($${paramIndex}::text[])`;
-        queryParams.push(genders);
-        paramIndex++;
+        const genders = gender.split(',').map(g => `'${g.replace(/'/g, "''")}'`).join(',');
+        conditions.push(`gender IN (${genders})`);
       }
 
       if (priceMin) {
-        query += ` AND price_max >= $${paramIndex}`;
-        queryParams.push(parseFloat(priceMin));
-        paramIndex++;
+        conditions.push(`price_max >= ${parseFloat(priceMin)}`);
       }
 
       if (priceMax) {
-        query += ` AND price_min <= $${paramIndex}`;
-        queryParams.push(parseFloat(priceMax));
-        paramIndex++;
+        conditions.push(`price_min <= ${parseFloat(priceMax)}`);
       }
 
       if (sizes) {
-        const sizeArr = sizes.split(',');
-        query += ` AND available_sizes && $${paramIndex}::text[]`;
-        queryParams.push(sizeArr);
-        paramIndex++;
+        const sizeArr = sizes.split(',').map(s => `'${s.replace(/'/g, "''")}'`).join(',');
+        conditions.push(`available_sizes && ARRAY[${sizeArr}]::text[]`);
       }
 
       if (colors) {
-        const colorArr = colors.split(',');
-        query += ` AND available_colors && $${paramIndex}::text[]`;
-        queryParams.push(colorArr);
-        paramIndex++;
+        const colorArr = colors.split(',').map(c => `'${c.replace(/'/g, "''")}'`).join(',');
+        conditions.push(`available_colors && ARRAY[${colorArr}]::text[]`);
       }
 
       if (search) {
-        query += ` AND search_vector @@ plainto_tsquery('english', $${paramIndex})`;
-        queryParams.push(search);
-        paramIndex++;
+        const searchEscaped = search.replace(/'/g, "''");
+        conditions.push(`search_vector @@ plainto_tsquery('english', '${searchEscaped}')`);
       }
 
-      // Get count first
-      const countQuery = query.replace('SELECT *', 'SELECT COUNT(*) as total');
-      const countResult = await sql(countQuery, queryParams);
+      const whereClause = conditions.join(' AND ');
+
+      // Get count
+      const countQuery = `SELECT COUNT(*) as total FROM product_styles WHERE ${whereClause}`;
+      const countResult = await sql.query(countQuery, []);
       const total = parseInt(countResult[0]?.total || '0');
 
-      // Add pagination
-      query += ` ORDER BY price_min ASC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-      queryParams.push(parseInt(limit), parseInt(offset));
-
-      const styles = await sql(query, queryParams);
+      // Get styles
+      const stylesQuery = `SELECT * FROM product_styles WHERE ${whereClause} ORDER BY price_min ASC LIMIT $1 OFFSET $2`;
+      const styles = await sql.query(stylesQuery, [parseInt(limit), parseInt(offset)]);
 
       return {
         statusCode: 200,
@@ -239,19 +209,20 @@ export async function handler(event) {
     if (method === 'GET' && path === '/categories') {
       const { activeOnly } = params;
 
-      let query = `
-        SELECT c.*,
-          (SELECT COUNT(DISTINCT style_code) FROM product_styles ps WHERE ps.product_type = c.category_key AND ps.is_live = true) as product_count
-        FROM categories c
-      `;
-
-      if (activeOnly === 'true') {
-        query += ` WHERE c.is_active = true`;
-      }
-
-      query += ` ORDER BY c.sort_order, c.display_name`;
-
-      const categories = await sql(query);
+      const categories = activeOnly === 'true'
+        ? await sql`
+            SELECT c.*,
+              (SELECT COUNT(DISTINCT style_code) FROM product_styles ps WHERE ps.product_type = c.category_key AND ps.is_live = true) as product_count
+            FROM categories c
+            WHERE c.is_active = true
+            ORDER BY c.sort_order, c.display_name
+          `
+        : await sql`
+            SELECT c.*,
+              (SELECT COUNT(DISTINCT style_code) FROM product_styles ps WHERE ps.product_type = c.category_key AND ps.is_live = true) as product_count
+            FROM categories c
+            ORDER BY c.sort_order, c.display_name
+          `;
 
       return {
         statusCode: 200,
@@ -265,46 +236,18 @@ export async function handler(event) {
       const id = path.split('/')[2];
       const data = JSON.parse(event.body);
 
-      const updateFields = [];
-      const updateValues = [];
-      let paramIndex = 1;
+      // Build SET clause dynamically
+      const updates = [];
+      if (data.display_name !== undefined) updates.push(`display_name = '${data.display_name.replace(/'/g, "''")}'`);
+      if (data.description !== undefined) updates.push(`description = '${(data.description || '').replace(/'/g, "''")}'`);
+      if (data.image_url !== undefined) updates.push(`image_url = '${(data.image_url || '').replace(/'/g, "''")}'`);
+      if (data.is_active !== undefined) updates.push(`is_active = ${data.is_active}`);
+      if (data.sort_order !== undefined) updates.push(`sort_order = ${data.sort_order}`);
+      if (data.category_group !== undefined) updates.push(`category_group = '${(data.category_group || '').replace(/'/g, "''")}'`);
+      updates.push('updated_at = NOW()');
 
-      if (data.display_name !== undefined) {
-        updateFields.push(`display_name = $${paramIndex}`);
-        updateValues.push(data.display_name);
-        paramIndex++;
-      }
-      if (data.description !== undefined) {
-        updateFields.push(`description = $${paramIndex}`);
-        updateValues.push(data.description);
-        paramIndex++;
-      }
-      if (data.image_url !== undefined) {
-        updateFields.push(`image_url = $${paramIndex}`);
-        updateValues.push(data.image_url);
-        paramIndex++;
-      }
-      if (data.is_active !== undefined) {
-        updateFields.push(`is_active = $${paramIndex}`);
-        updateValues.push(data.is_active);
-        paramIndex++;
-      }
-      if (data.sort_order !== undefined) {
-        updateFields.push(`sort_order = $${paramIndex}`);
-        updateValues.push(data.sort_order);
-        paramIndex++;
-      }
-      if (data.category_group !== undefined) {
-        updateFields.push(`category_group = $${paramIndex}`);
-        updateValues.push(data.category_group);
-        paramIndex++;
-      }
-
-      updateFields.push(`updated_at = NOW()`);
-      updateValues.push(id);
-
-      const query = `UPDATE categories SET ${updateFields.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
-      const result = await sql(query, updateValues);
+      const query = `UPDATE categories SET ${updates.join(', ')} WHERE id = $1 RETURNING *`;
+      const result = await sql.query(query, [id]);
 
       return {
         statusCode: 200,
@@ -353,7 +296,7 @@ export async function handler(event) {
 
     // GET /products/carousel - Get products for homepage carousel
     if (method === 'GET' && path === '/carousel') {
-      const { limit = '12' } = params;
+      const limitNum = parseInt(params.limit || '12');
 
       // Get random featured products
       const styles = await sql`
@@ -361,7 +304,7 @@ export async function handler(event) {
         WHERE is_live = true
         AND primary_product_image_url IS NOT NULL
         ORDER BY RANDOM()
-        LIMIT ${parseInt(limit)}
+        LIMIT ${limitNum}
       `;
 
       // Get variants for these styles

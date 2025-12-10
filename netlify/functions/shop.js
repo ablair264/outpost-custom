@@ -27,23 +27,19 @@ export default async (req, context) => {
         const section = url.searchParams.get('section');
         const activeOnly = url.searchParams.get('activeOnly') === 'true';
 
-        let query = 'SELECT * FROM bento_tiles';
-        const conditions = [];
-
-        if (section) {
-          conditions.push(`grid_section = '${section}'`);
+        if (section && activeOnly) {
+          const tiles = await sql`SELECT * FROM bento_tiles WHERE grid_section = ${section} AND is_active = true ORDER BY grid_section, grid_position ASC`;
+          return new Response(JSON.stringify({ success: true, tiles }), { headers });
+        } else if (section) {
+          const tiles = await sql`SELECT * FROM bento_tiles WHERE grid_section = ${section} ORDER BY grid_section, grid_position ASC`;
+          return new Response(JSON.stringify({ success: true, tiles }), { headers });
+        } else if (activeOnly) {
+          const tiles = await sql`SELECT * FROM bento_tiles WHERE is_active = true ORDER BY grid_section, grid_position ASC`;
+          return new Response(JSON.stringify({ success: true, tiles }), { headers });
+        } else {
+          const tiles = await sql`SELECT * FROM bento_tiles ORDER BY grid_section, grid_position ASC`;
+          return new Response(JSON.stringify({ success: true, tiles }), { headers });
         }
-        if (activeOnly) {
-          conditions.push('is_active = true');
-        }
-
-        if (conditions.length > 0) {
-          query += ' WHERE ' + conditions.join(' AND ');
-        }
-        query += ' ORDER BY grid_section, grid_position ASC';
-
-        const tiles = await sql(query);
-        return new Response(JSON.stringify({ success: true, tiles }), { headers });
       }
 
       if (method === 'POST') {
@@ -66,12 +62,6 @@ export default async (req, context) => {
         const body = await req.json();
         const { created_at, updated_at, id: _, ...updates } = body;
 
-        const setClauses = Object.keys(updates).map(key => `${key} = $${key}`);
-        if (setClauses.length === 0) {
-          return new Response(JSON.stringify({ success: false, error: 'No fields to update' }), { status: 400, headers });
-        }
-
-        // Build dynamic update
         const result = await sql`
           UPDATE bento_tiles
           SET title = COALESCE(${updates.title}, title),
@@ -102,11 +92,10 @@ export default async (req, context) => {
       if (method === 'GET') {
         const activeOnly = url.searchParams.get('activeOnly') === 'true';
 
-        let query = activeOnly
-          ? 'SELECT * FROM advertisement_slides WHERE is_active = true ORDER BY order_position ASC'
-          : 'SELECT * FROM advertisement_slides ORDER BY order_position ASC';
+        const slides = activeOnly
+          ? await sql`SELECT * FROM advertisement_slides WHERE is_active = true ORDER BY order_position ASC`
+          : await sql`SELECT * FROM advertisement_slides ORDER BY order_position ASC`;
 
-        const slides = await sql(query);
         return new Response(JSON.stringify({ success: true, slides }), { headers });
       }
 
@@ -155,11 +144,10 @@ export default async (req, context) => {
       if (method === 'GET') {
         const activeOnly = url.searchParams.get('activeOnly') === 'true';
 
-        let query = activeOnly
-          ? 'SELECT * FROM hero_grid_images WHERE is_active = true ORDER BY position ASC'
-          : 'SELECT * FROM hero_grid_images ORDER BY position ASC';
+        const images = activeOnly
+          ? await sql`SELECT * FROM hero_grid_images WHERE is_active = true ORDER BY position ASC`
+          : await sql`SELECT * FROM hero_grid_images ORDER BY position ASC`;
 
-        const images = await sql(query);
         return new Response(JSON.stringify({ success: true, images }), { headers });
       }
 
@@ -206,11 +194,10 @@ export default async (req, context) => {
       if (method === 'GET') {
         const activeOnly = url.searchParams.get('activeOnly') === 'true';
 
-        let query = activeOnly
-          ? 'SELECT * FROM accordion_items WHERE is_active = true ORDER BY order_position ASC'
-          : 'SELECT * FROM accordion_items ORDER BY order_position ASC';
+        const items = activeOnly
+          ? await sql`SELECT * FROM accordion_items WHERE is_active = true ORDER BY order_position ASC`
+          : await sql`SELECT * FROM accordion_items ORDER BY order_position ASC`;
 
-        const items = await sql(query);
         return new Response(JSON.stringify({ success: true, items }), { headers });
       }
 
