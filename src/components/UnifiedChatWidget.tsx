@@ -104,9 +104,12 @@ const UnifiedChatWidget: React.FC = () => {
     }
   }, [isClothingPage]);
 
-  // Proactive popup after idle time on clothing pages
+  // Proactive prompt after idle time on clothing pages (desktop only)
   useEffect(() => {
-    if (!isClothingPage || isOpen) {
+    // Check if mobile (sm breakpoint is 640px)
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+
+    if (!isClothingPage || isOpen || isMobile) {
       setIdleTime(0);
       setShowProactivePopup(false);
       return;
@@ -116,7 +119,7 @@ const UnifiedChatWidget: React.FC = () => {
       setIdleTime(prev => prev + 1);
     }, 1000);
 
-    // Show popup after 30 seconds of idle time
+    // Show expanded button text after 30 seconds of idle time
     if (idleTime >= 30 && !showProactivePopup) {
       setShowProactivePopup(true);
     }
@@ -475,45 +478,35 @@ const UnifiedChatWidget: React.FC = () => {
             </motion.div>
           ) : (
             <>
-              {/* Proactive popup */}
-              <AnimatePresence>
-                {showProactivePopup && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute bottom-20 right-0 bg-[#183028] rounded-xl p-4 shadow-xl border border-white/10 w-64"
-                  >
-                    <button
-                      onClick={() => setShowProactivePopup(false)}
-                      className="absolute top-2 right-2 text-white/40 hover:text-white/60"
-                    >
-                      <X size={16} />
-                    </button>
-                    <p className="text-sm text-white mb-3">Need help finding something?</p>
-                    <button
-                      onClick={() => handleOpen('smartsearch')}
-                      className="w-full py-2 bg-[#64a70b] text-white text-sm font-medium rounded-lg hover:bg-[#5a9608] transition-colors"
-                    >
-                      Start Smart Search
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Main toggle button - smaller on mobile */}
+              {/* Main toggle button - expands with prompt text on desktop after idle time */}
               <motion.button
                 initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                animate={{
+                  scale: showProactivePopup ? [1, 1.08, 1] : 1,
+                }}
+                transition={{
+                  scale: showProactivePopup ? {
+                    duration: 0.6,
+                    repeat: 2,
+                    repeatType: "reverse",
+                    ease: "easeInOut"
+                  } : {}
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => handleOpen()}
+                onClick={() => {
+                  setShowProactivePopup(false);
+                  handleOpen();
+                }}
                 className="flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2.5 sm:py-3 rounded-full bg-[#64a70b] text-white font-semibold shadow-lg shadow-[#64a70b]/30"
               >
                 {isClothingPage ? (
                   <>
                     <Lightbulb size={20} fill="currentColor" />
-                    <span className="hidden sm:inline">Smart Search</span>
+                    {/* Show expanded text on desktop when proactive popup would show */}
+                    <span className="hidden sm:inline">
+                      {showProactivePopup ? "Need help? Try Smart Search" : "Smart Search"}
+                    </span>
                   </>
                 ) : (
                   <>

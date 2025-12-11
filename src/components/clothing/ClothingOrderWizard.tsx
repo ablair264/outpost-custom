@@ -319,32 +319,32 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
             className="w-full"
           >
             {/* Header */}
-            <div className={`text-center ${isMobile ? 'mb-4' : 'mb-8 md:mb-10'}`}>
-              <div className={`inline-flex items-center gap-2 ${isMobile ? 'px-3 py-1' : 'px-4 py-1.5'} rounded-full bg-white/10 ${isMobile ? 'mb-2' : 'mb-4'}`}>
-                <Shirt className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} style={{ color: clothingColors.accent }} />
-                <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/70`}>Customise Your {productName}</span>
+            <div className={`text-center ${isMobile ? 'mb-6' : 'mb-8 md:mb-10'}`}>
+              <div className={`inline-flex items-center gap-2 ${isMobile ? 'px-3 py-1.5' : 'px-4 py-1.5'} rounded-full bg-white/10 ${isMobile ? 'mb-3' : 'mb-4'}`}>
+                <Shirt className="w-4 h-4" style={{ color: clothingColors.accent }} />
+                <span className="neuzeit-font text-sm text-white/70">Customise Your {productName}</span>
               </div>
-              <h2 className={`hearns-font ${isMobile ? 'text-xl' : 'text-3xl md:text-4xl'} text-white ${isMobile ? 'mb-1' : 'mb-3'}`}>
+              <h2 className={`hearns-font ${isMobile ? 'text-2xl' : 'text-3xl md:text-4xl'} text-white ${isMobile ? 'mb-2' : 'mb-3'}`}>
                 Do you have a logo?
               </h2>
-              <p className={`neuzeit-light-font ${isMobile ? 'text-sm' : 'text-base'} text-white/60 max-w-lg mx-auto`}>
+              <p className="neuzeit-light-font text-sm text-white/60 max-w-lg mx-auto">
                 Let us know and we'll guide you through the next steps
               </p>
             </div>
 
             {/* Two options */}
-            <div className={`grid ${isMobile ? 'grid-cols-1 gap-2' : 'md:grid-cols-2 gap-4 md:gap-6'} max-w-2xl mx-auto`}>
+            <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'md:grid-cols-2 gap-4 md:gap-6'} max-w-2xl mx-auto`}>
               <button
                 onClick={() => setStep('upload-logo')}
-                className={`group relative text-left ${isMobile ? 'p-3' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
+                className={`group relative text-left ${isMobile ? 'p-4' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
               >
-                <div className={`flex ${isMobile ? 'items-center gap-3' : 'flex-col'}`}>
-                  <div className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
-                    <Check className={isMobile ? 'w-5 h-5' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
+                <div className={`flex ${isMobile ? 'items-center gap-4' : 'flex-col'}`}>
+                  <div className={`${isMobile ? 'w-12 h-12' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
+                    <Check className={isMobile ? 'w-6 h-6' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
                   </div>
                   <div className="flex-1">
-                    <h3 className={`embossing-font ${isMobile ? 'text-sm' : 'text-lg'} text-white ${isMobile ? 'mb-0.5' : 'mb-2'} uppercase tracking-wide`}>Yes, I have a logo</h3>
-                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-xs' : 'text-sm mb-4'}`}>
+                    <h3 className={`embossing-font ${isMobile ? 'text-base' : 'text-lg'} text-white ${isMobile ? 'mb-1' : 'mb-2'} uppercase tracking-wide`}>Yes, I have a logo</h3>
+                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-sm' : 'text-sm mb-4'}`}>
                       I have my logo file ready to upload
                     </p>
                   </div>
@@ -354,22 +354,22 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                     </div>
                   )}
                   {isMobile && (
-                    <ArrowRight className="w-4 h-4 text-white/40 flex-shrink-0" />
+                    <ArrowRight className="w-5 h-5 text-white/40 flex-shrink-0" />
                   )}
                 </div>
               </button>
 
               <button
                 onClick={() => setStep('needs-help-options')}
-                className={`group relative text-left ${isMobile ? 'p-3' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
+                className={`group relative text-left ${isMobile ? 'p-4' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
               >
-                <div className={`flex ${isMobile ? 'items-center gap-3' : 'flex-col'}`}>
-                  <div className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
-                    <Palette className={isMobile ? 'w-5 h-5' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
+                <div className={`flex ${isMobile ? 'items-center gap-4' : 'flex-col'}`}>
+                  <div className={`${isMobile ? 'w-12 h-12' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
+                    <Palette className={isMobile ? 'w-6 h-6' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
                   </div>
                   <div className="flex-1">
-                    <h3 className={`embossing-font ${isMobile ? 'text-sm' : 'text-lg'} text-white ${isMobile ? 'mb-0.5' : 'mb-2'} uppercase tracking-wide`}>No, I need help</h3>
-                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-xs' : 'text-sm mb-4'}`}>
+                    <h3 className={`embossing-font ${isMobile ? 'text-base' : 'text-lg'} text-white ${isMobile ? 'mb-1' : 'mb-2'} uppercase tracking-wide`}>No, I need help</h3>
+                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-sm' : 'text-sm mb-4'}`}>
                       I need a logo designed or want to discuss options
                     </p>
                   </div>
@@ -379,7 +379,7 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                     </div>
                   )}
                   {isMobile && (
-                    <ArrowRight className="w-4 h-4 text-white/40 flex-shrink-0" />
+                    <ArrowRight className="w-5 h-5 text-white/40 flex-shrink-0" />
                   )}
                 </div>
               </button>

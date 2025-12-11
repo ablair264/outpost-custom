@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
-import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn, X } from 'lucide-react';
 import { ProductGroup } from './ClothingBrowser';
 import { ColorVariant, getRgbValues } from '../../lib/supabase';
 import { useWishlist } from '../../contexts/WishlistContext';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../ui/carousel';
-import { ImageZoom, Image as ZoomImage } from '../animate-ui/primitives/effects/image-zoom';
+// ImageZoom removed - using fullscreen modal instead for better mobile UX
 import ClothingOrderWizard, { LogoPreviewData } from './ClothingOrderWizard';
 import ClothingLogoUploader from './ClothingLogoUploader';
 import ClothingHelpRequestForm from './ClothingHelpRequestForm';
@@ -51,6 +51,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
   const [enquiryRef, setEnquiryRef] = useState<string>('');
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [hexLookup, setHexLookup] = useState<Map<string, string>>(new Map());
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -410,7 +411,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
           <motion.div
             ref={sheetRef}
             initial={{ y: '100%' }}
-            animate={{ y: '15%' }}
+            animate={{ y: '0%' }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             drag="y"
@@ -419,7 +420,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             onDragEnd={handleDragEnd}
             className="fixed inset-x-0 bottom-0 z-50 rounded-t-[10px] overflow-hidden"
             style={{
-              height: '85%',
+              height: '95%',
               backgroundColor: colors.dark,
             }}
           >
@@ -451,18 +452,16 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                       <CarouselContent>
                         {galleryImages.map((img, idx) => (
                           <CarouselItem key={idx}>
-                            <div className="aspect-[4/3] bg-white rounded-lg overflow-hidden relative">
-                              <ImageZoom
-                                zoomScale={2.5}
-                                zoomOnHover={false}
-                                zoomOnClick={true}
-                              >
-                                <ZoomImage
-                                  src={img.src}
-                                  alt={`${productGroup.style_name} - ${img.label}`}
-                                  objectFit="contain"
-                                />
-                              </ImageZoom>
+                            <div
+                              className="aspect-[4/3] bg-white rounded-lg overflow-hidden relative cursor-pointer"
+                              onClick={() => setFullscreenImage(img.src)}
+                            >
+                              <img
+                                src={img.src}
+                                alt={`${productGroup.style_name} - ${img.label}`}
+                                className="w-full h-full object-contain"
+                                draggable={false}
+                              />
                               {/* Zoom hint */}
                               <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 text-white text-xs opacity-70 pointer-events-none">
                                 <ZoomIn className="w-3 h-3" />
@@ -709,6 +708,38 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
           </motion.div>
 
         </>
+      )}
+
+      {/* Fullscreen Image Modal */}
+      {fullscreenImage && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] bg-black flex items-center justify-center"
+          onClick={() => setFullscreenImage(null)}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setFullscreenImage(null)}
+            className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          {/* Image with pinch-zoom capability */}
+          <div
+            className="w-full h-full overflow-auto"
+            style={{ touchAction: 'pinch-zoom' }}
+          >
+            <img
+              src={fullscreenImage}
+              alt={productGroup.style_name}
+              className="w-full h-full object-contain"
+              draggable={false}
+            />
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

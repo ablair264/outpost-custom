@@ -151,7 +151,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: 'PRINTING',
-    href: '/printing/all',
+    href: '/printing',
     customMegaMenu: 'printing'
   }
 ];

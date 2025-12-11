@@ -134,6 +134,7 @@ const ClothingBrowser: React.FC = () => {
   const [productGroups, setProductGroups] = useState<ProductGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -205,12 +206,22 @@ const ClothingBrowser: React.FC = () => {
     setSelectedBrands(brandParam ? brandParam.split(',').map(decodeURIComponent) : []);
     setSelectedColors(colorParam ? colorParam.split(',').map(decodeURIComponent) : []);
     setSearchQuery(searchParam ? decodeURIComponent(searchParam) : '');
+    setDebouncedSearchQuery(searchParam ? decodeURIComponent(searchParam) : '');
   }, [searchParams]);
+
+  // Debounce search query to avoid multiple API calls while typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300); // 300ms debounce delay
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedTypes, selectedBrands, selectedColors, selectedGenders, priceMin, priceMax, searchQuery]);
+  }, [selectedTypes, selectedBrands, selectedColors, selectedGenders, priceMin, priceMax, debouncedSearchQuery]);
 
   // Load products
   useEffect(() => {
@@ -224,7 +235,7 @@ const ClothingBrowser: React.FC = () => {
         if (selectedGenders.length > 0) filters.genders = selectedGenders;
         if (priceMin !== undefined) filters.priceMin = priceMin;
         if (priceMax !== undefined) filters.priceMax = priceMax;
-        if (searchQuery.trim()) filters.searchQuery = searchQuery;
+        if (debouncedSearchQuery.trim()) filters.searchQuery = debouncedSearchQuery;
 
         const response = await getAllProducts(filters, currentPage, PRODUCTS_PER_PAGE);
         const groups = groupProductsByStyle(response.products);
@@ -238,7 +249,7 @@ const ClothingBrowser: React.FC = () => {
       }
     };
     loadProducts();
-  }, [selectedTypes, selectedBrands, selectedColors, selectedGenders, priceMin, priceMax, searchQuery, currentPage]);
+  }, [selectedTypes, selectedBrands, selectedColors, selectedGenders, priceMin, priceMax, debouncedSearchQuery, currentPage]);
 
   // Convert RGB string "R G B" to CSS rgb() value
   const convertRgbToCSS = (rgbString: string): string => {
@@ -343,19 +354,19 @@ const ClothingBrowser: React.FC = () => {
     });
   }, []);
 
-  // Update URL when filters change
+  // Update URL when filters change (use debounced search to avoid URL spam while typing)
   const updateUrlParams = useCallback(() => {
     const params = new URLSearchParams();
     if (selectedTypes.length > 0) params.set('productTypes', selectedTypes.join(','));
     if (selectedBrands.length > 0) params.set('brands', selectedBrands.join(','));
     if (selectedColors.length > 0) params.set('colors', selectedColors.join(','));
-    if (searchQuery.trim()) params.set('search', searchQuery);
+    if (debouncedSearchQuery.trim()) params.set('search', debouncedSearchQuery);
     setSearchParams(params, { replace: true });
-  }, [selectedTypes, selectedBrands, selectedColors, searchQuery, setSearchParams]);
+  }, [selectedTypes, selectedBrands, selectedColors, debouncedSearchQuery, setSearchParams]);
 
   useEffect(() => {
     updateUrlParams();
-  }, [selectedTypes, selectedBrands, selectedColors, searchQuery]);
+  }, [selectedTypes, selectedBrands, selectedColors, debouncedSearchQuery]);
 
   // Callback ref to scroll expanded card into view - optimized for mobile
   const scrollToExpandedCard = useCallback((node: HTMLDivElement | null) => {
@@ -444,6 +455,7 @@ const ClothingBrowser: React.FC = () => {
     setPriceMin(undefined);
     setPriceMax(undefined);
     setSearchQuery('');
+    setDebouncedSearchQuery('');
     setSearchParams(new URLSearchParams(), { replace: true });
   }, [setSearchParams]);
 

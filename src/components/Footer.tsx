@@ -91,20 +91,20 @@ const Footer = () => {
               </h3>
               <ul className="space-y-3">
                 {[
-                  'About Us',
-                  'Our Services',
-                  'Printing Methods',
-                  'Custom Orders',
-                  'Sustainability',
-                  'Contact Us',
+                  { label: 'About Us', path: '#' },
+                  { label: 'Our Services', path: '#' },
+                  { label: 'Blog', path: '/blog' },
+                  { label: 'Printing', path: '/printing' },
+                  { label: 'Sustainability', path: '#' },
+                  { label: 'Contact Us', path: '#' },
                 ].map((item) => (
-                  <li key={item}>
-                    <a
-                      href="#"
-                      className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
+                  <li key={item.label}>
+                    <button
+                      onClick={() => navigate(item.path)}
+                      className="text-gray-400 hover:text-white transition-colors duration-300 text-sm text-left"
                     >
-                      {item}
-                    </a>
+                      {item.label}
+                    </button>
                   </li>
                 ))}
               </ul>

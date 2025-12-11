@@ -21,6 +21,7 @@ import ShopPageEditor from './pages/admin/ShopPageEditor';
 import ClothingEnquiries from './pages/admin/ClothingEnquiries';
 import ClothingEnquiryDetail from './pages/admin/ClothingEnquiryDetail';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminBlogEditor from './pages/admin/AdminBlogEditor';
 import Collection from './pages/Collection';
 import AllSignage from './pages/AllSignage';
 import PavementSigns from './pages/PavementSigns';
@@ -37,6 +38,9 @@ import PrintingLandingPage from './pages/PrintingLandingPage';
 import PrintingCategoryPage from './pages/PrintingCategoryPage';
 import PrintingProductPage from './pages/PrintingProductPage';
 import PrintingBrowserPage from './pages/PrintingBrowserPage';
+import BlogList from './pages/BlogList';
+import BlogPost from './pages/BlogPost';
+import CaseStudyPage from './pages/CaseStudyPage';
 import { ClothingBrowser } from './components/clothing';
 import { CartProvider } from './contexts/CartContext';
 import { WishlistProvider } from './contexts/WishlistContext';
@@ -122,6 +126,7 @@ function App() {
                 <Route path="enquiries" element={<div className="p-8"><h1 className="text-3xl font-black">General Enquiries</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
                 <Route path="enquiry-settings" element={<div className="p-8"><h1 className="text-3xl font-black">Enquiry Settings</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
                 <Route path="users" element={<AdminUsers />} />
+                <Route path="blog" element={<AdminBlogEditor />} />
                 <Route path="*" element={<div className="p-8"><h1 className="text-3xl font-black">Page Not Found</h1></div>} />
               </Route>
 
@@ -158,6 +163,10 @@ function App() {
                   {/* Clothing Routes */}
                   <Route path="/clothing" element={<ClothingBrowser />} />
                   <Route path="/clothing/all" element={<ClothingBrowser />} />
+                  {/* Blog Routes */}
+                  <Route path="/blog" element={<BlogList />} />
+                  <Route path="/blog/:slug" element={<BlogPost />} />
+                  <Route path="/case-study/:slug" element={<CaseStudyPage />} />
                 </Routes>
                 <Footer />
                   <UnifiedChatWidget />
