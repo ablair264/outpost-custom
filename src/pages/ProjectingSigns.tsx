@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
-import { CheckCircle2, CircleDot, Square, Lightbulb, Palette, Mail, Wrench, MoveHorizontal, XCircle } from 'lucide-react';
+import { CheckCircle2, CircleDot, Square, Lightbulb, Palette, Mail, Wrench, MoveHorizontal, XCircle, ImageIcon } from 'lucide-react';
 import { usePageTheme } from '../contexts/ThemeContext';
 import HowItWorksSection from '../components/HowItWorksSection';
 
@@ -89,8 +89,14 @@ const ProjectingSigns: React.FC = () => {
             <div className="light-ray absolute top-0 right-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/4 to-transparent" style={{ animationDelay: '4s' }} />
           </div>
 
-          <div className="absolute top-20 right-10 md:right-20 w-64 h-96 rounded-3xl bg-white/[0.03] frosted-glass border border-white/10 transform rotate-6 hidden lg:block" />
-          <div className="absolute top-40 right-40 md:right-60 w-48 h-72 rounded-2xl bg-white/[0.05] frosted-glass border border-white/5 transform -rotate-3 hidden lg:block" />
+          {/* Hero Image */}
+          <div className="absolute top-20 right-8 md:right-16 lg:right-24 w-[300px] md:w-[400px] lg:w-[500px] h-[400px] md:h-[500px] lg:h-[600px] hidden md:block">
+            {/* IMAGE: Projecting sign mounted on brick wall, viewed from street angle */}
+            <div className="w-full h-full rounded-3xl bg-white/[0.03] frosted-glass border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+              <ImageIcon className="w-16 h-16 text-white/30 mb-4" />
+              <span className="text-white/40 text-sm text-center px-4">Hero Image: Projecting sign on building</span>
+            </div>
+          </div>
 
           <div className="relative z-10 h-full flex items-center px-6 md:px-12 lg:px-24 pt-32 pb-20">
             <div className="max-w-5xl">
@@ -189,6 +195,12 @@ const ProjectingSigns: React.FC = () => {
                     All-in-one projecting sign solution – just add decals! Our most affordable way to get noticed from the street.
                   </p>
 
+                  {/* IMAGE: Blade/Flange sign product shot */}
+                  <div className="h-48 mb-8 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                    <ImageIcon className="w-10 h-10 text-white/30 mb-2" />
+                    <span className="text-white/40 text-sm">Blade sign product</span>
+                  </div>
+
                   <div className="space-y-6">
                     <div>
                       <h4 className="font-semibold text-white mb-3">Sizes Available</h4>
@@ -243,6 +255,12 @@ const ProjectingSigns: React.FC = () => {
           >
             <div className="grid lg:grid-cols-2 gap-12 items-start">
               <motion.div variants={fadeInUp} className="bg-[#f8f8f8] rounded-3xl p-8 md:p-10 border border-[#c1c6c8]/30">
+                {/* IMAGE: Modern Swing Bracket product shot */}
+                <div className="h-48 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                  <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                  <span className="text-[#383349]/40 text-sm">Swing bracket product</span>
+                </div>
+
                 <h4 className="smilecake-font text-2xl text-[#221c35] mb-6">Specifications</h4>
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3">
@@ -548,11 +566,53 @@ const ProjectingSigns: React.FC = () => {
           </motion.div>
         </section>
 
+        {/* Gallery Section */}
+        <section className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8]">
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-16">
+              <h2 className="smilecake-font text-5xl md:text-6xl text-[#221c35] mb-4">Installed Examples</h2>
+              <p className="text-xl text-[#383349]/70 max-w-2xl mx-auto">
+                See our projecting signs in action on high streets across the Midlands.
+              </p>
+            </motion.div>
+
+            {/* Gallery Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Cafe projecting sign */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Cafe sign</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Shop blade sign */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Retail blade</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Traditional pub sign */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Pub swing sign</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Illuminated projecting sign at night */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Illuminated sign</span>
+              </motion.div>
+            </div>
+          </motion.div>
+        </section>
+
         {/* Installation & CTA */}
         <section className="bg-white">
           <div className="grid md:grid-cols-2">
             <motion.div
-              className="py-24 px-6 md:px-12 lg:px-16 bg-[#f8f8f8]"
+              className="py-24 px-6 md:px-12 lg:px-16 bg-white"
               initial={{ opacity: 0, x: -40 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}

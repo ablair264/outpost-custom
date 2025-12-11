@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
-import { CheckCircle2, XCircle, Mail, Eye, Wind, Layers, Palette, Target, Printer, Scissors } from 'lucide-react';
+import { CheckCircle2, XCircle, Mail, Eye, Wind, Layers, Palette, Target, Printer, Scissors, ImageIcon } from 'lucide-react';
 import { usePageTheme } from '../contexts/ThemeContext';
 import HowItWorksSection from '../components/HowItWorksSection';
 
@@ -96,9 +96,14 @@ const PavementSigns: React.FC = () => {
             <div className="light-ray absolute top-0 right-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/4 to-transparent" style={{ animationDelay: '4s' }} />
           </div>
 
-          {/* Frosted glass panels decoration */}
-          <div className="absolute top-20 right-10 md:right-20 w-64 h-96 rounded-3xl bg-white/[0.03] frosted-glass border border-white/10 transform rotate-6 hidden lg:block" />
-          <div className="absolute top-40 right-40 md:right-60 w-48 h-72 rounded-2xl bg-white/[0.05] frosted-glass border border-white/5 transform -rotate-3 hidden lg:block" />
+          {/* Hero Image */}
+          <div className="absolute top-20 right-8 md:right-16 lg:right-24 w-[300px] md:w-[400px] lg:w-[500px] h-[400px] md:h-[500px] lg:h-[600px] hidden md:block">
+            {/* IMAGE: Branded pavement sign outside shop/cafe */}
+            <div className="w-full h-full rounded-3xl bg-white/[0.03] frosted-glass border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+              <ImageIcon className="w-16 h-16 text-white/30 mb-4" />
+              <span className="text-white/40 text-sm text-center px-4">Hero Image: Pavement sign outside venue</span>
+            </div>
+          </div>
 
           {/* Main content */}
           <div className="relative z-10 h-full flex items-center px-6 md:px-12 lg:px-24 pt-32 pb-20">
@@ -248,11 +253,20 @@ const PavementSigns: React.FC = () => {
                 className="md:col-span-2 md:row-span-2 bg-gradient-to-br from-[#221c35] to-[#383349] rounded-3xl p-10 md:p-14 text-white relative overflow-hidden group"
               >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700" />
-                <Layers className="w-12 h-12 text-[#908d9a] mb-6" />
-                <h3 className="hearns-font text-4xl md:text-5xl mb-4">Best for Windy Locations</h3>
-                <p className="text-white/80 text-lg leading-relaxed mb-8 max-w-md">
-                  The swinging panel design allows the sign to move with the wind, reducing the chance of toppling. Built with a steel tubing frame and recycled PVC base.
-                </p>
+                <div className="grid md:grid-cols-2 gap-8 items-start">
+                  <div>
+                    <Layers className="w-12 h-12 text-[#908d9a] mb-6" />
+                    <h3 className="hearns-font text-4xl md:text-5xl mb-4">Best for Windy Locations</h3>
+                    <p className="text-white/80 text-lg leading-relaxed mb-8">
+                      The swinging panel design allows the sign to move with the wind, reducing the chance of toppling. Built with a steel tubing frame and recycled PVC base.
+                    </p>
+                  </div>
+                  {/* IMAGE: Eco Swing pavement sign product shot */}
+                  <div className="h-48 md:h-64 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                    <ImageIcon className="w-10 h-10 text-white/30 mb-2" />
+                    <span className="text-white/40 text-sm">Eco Swing product</span>
+                  </div>
+                </div>
                 <div className="flex flex-wrap gap-3">
                   <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Water-fillable base</span>
                   <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Wheels for easy transport</span>
@@ -494,12 +508,54 @@ const PavementSigns: React.FC = () => {
           </motion.div>
         </section>
 
+        {/* Gallery Section */}
+        <section className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8]">
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-16">
+              <h2 className="smilecake-font text-5xl md:text-6xl text-[#221c35] mb-4">On The Street</h2>
+              <p className="text-xl text-[#383349]/70 max-w-2xl mx-auto">
+                See how our pavement signs help businesses grab attention.
+              </p>
+            </motion.div>
+
+            {/* Gallery Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Cafe pavement sign */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Cafe sign</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Retail A-board */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Retail A-board</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Restaurant specials board */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Specials board</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: High street swing sign */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Swing sign</span>
+              </motion.div>
+            </div>
+          </motion.div>
+        </section>
+
         {/* CTA Section - Split screen */}
         <section className="bg-white">
           <div className="grid md:grid-cols-2">
             {/* Left - Info */}
             <motion.div
-              className="py-24 px-6 md:px-12 lg:px-16 bg-[#f8f8f8]"
+              className="py-24 px-6 md:px-12 lg:px-16 bg-white"
               initial={{ opacity: 0, x: -40 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}

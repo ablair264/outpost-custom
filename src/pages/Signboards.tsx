@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Hammer, Shield, Mail, Palette, Package, Layers, Sparkles, XCircle, Building, Store, MapPin } from 'lucide-react';
+import { CheckCircle2, Hammer, Shield, Mail, Palette, Package, Layers, Sparkles, XCircle, Building, Store, MapPin, ImageIcon } from 'lucide-react';
 import { usePageTheme } from '../contexts/ThemeContext';
 import HowItWorksSection from '../components/HowItWorksSection';
 
@@ -96,9 +96,14 @@ const Signboards: React.FC = () => {
             <div className="light-ray absolute top-0 right-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/4 to-transparent" style={{ animationDelay: '4s' }} />
           </div>
 
-          {/* Frosted glass panels decoration */}
-          <div className="absolute top-20 right-10 md:right-20 w-64 h-96 rounded-3xl bg-white/[0.03] frosted-glass border border-white/10 transform rotate-6 hidden lg:block" />
-          <div className="absolute top-40 right-40 md:right-60 w-48 h-72 rounded-2xl bg-white/[0.05] frosted-glass border border-white/5 transform -rotate-3 hidden lg:block" />
+          {/* Hero Image */}
+          <div className="absolute top-20 right-8 md:right-16 lg:right-24 w-[300px] md:w-[400px] lg:w-[500px] h-[400px] md:h-[500px] lg:h-[600px] hidden md:block">
+            {/* IMAGE: Premium signboard on shopfront or office building */}
+            <div className="w-full h-full rounded-3xl bg-white/[0.03] frosted-glass border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+              <ImageIcon className="w-16 h-16 text-white/30 mb-4" />
+              <span className="text-white/40 text-sm text-center px-4">Hero Image: Signboard on building</span>
+            </div>
+          </div>
 
           {/* Main content */}
           <div className="relative z-10 h-full flex items-center px-6 md:px-12 lg:px-24 pt-32 pb-20">
@@ -243,6 +248,11 @@ const Signboards: React.FC = () => {
 
               <div className="grid md:grid-cols-2 gap-12">
                 <div>
+                  {/* IMAGE: Aluminium composite signboard sample */}
+                  <div className="h-48 mb-6 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                    <ImageIcon className="w-10 h-10 text-white/30 mb-2" />
+                    <span className="text-white/40 text-sm">Aluminium composite board</span>
+                  </div>
                   <Shield className="w-12 h-12 text-[#908d9a] mb-6" />
                   <h3 className="hearns-font text-4xl md:text-5xl mb-2">Aluminium Composite</h3>
                   <p className="text-[#908d9a] text-lg mb-6">Durable Exterior Board</p>
@@ -287,6 +297,11 @@ const Signboards: React.FC = () => {
             >
               <div className="grid md:grid-cols-2 gap-12">
                 <div>
+                  {/* IMAGE: Perspex acrylic sign sample */}
+                  <div className="h-48 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                    <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                    <span className="text-[#383349]/40 text-sm">Perspex acrylic sign</span>
+                  </div>
                   <Sparkles className="w-12 h-12 text-[#908d9a] mb-6" />
                   <h3 className="hearns-font text-4xl md:text-5xl text-[#221c35] mb-2">Perspex Acrylic</h3>
                   <p className="text-[#908d9a] text-lg mb-6">Luxury Interior & Exterior</p>
@@ -500,11 +515,53 @@ const Signboards: React.FC = () => {
           </motion.div>
         </section>
 
+        {/* Gallery Section */}
+        <section className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8]">
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-16">
+              <h2 className="smilecake-font text-5xl md:text-6xl text-[#221c35] mb-4">Installed Signage</h2>
+              <p className="text-xl text-[#383349]/70 max-w-2xl mx-auto">
+                See how our custom signboards transform shopfronts and interiors.
+              </p>
+            </motion.div>
+
+            {/* Gallery Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Shopfront fascia sign */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Shopfront fascia</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Reception sign */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Reception sign</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Wayfinding signage */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Wayfinding</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-square rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                {/* IMAGE: Event signage */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Event signage</span>
+              </motion.div>
+            </div>
+          </motion.div>
+        </section>
+
         {/* Installation & CTA Section */}
         <section className="bg-white">
           <div className="grid md:grid-cols-2">
             <motion.div
-              className="py-24 px-6 md:px-12 lg:px-16 bg-[#f8f8f8]"
+              className="py-24 px-6 md:px-12 lg:px-16 bg-white"
               initial={{ opacity: 0, x: -40 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}

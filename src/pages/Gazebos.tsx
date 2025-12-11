@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Tent, Palette, Package, Sparkles, Ruler, Mail, Wind, Shield, XCircle, Layers, Settings } from 'lucide-react';
+import { CheckCircle2, Tent, Palette, Package, Sparkles, Ruler, Mail, Wind, Shield, XCircle, Layers, Settings, ImageIcon } from 'lucide-react';
 import { usePageTheme } from '../contexts/ThemeContext';
 import HowItWorksSection from '../components/HowItWorksSection';
 
@@ -96,9 +96,14 @@ const Gazebos: React.FC = () => {
             <div className="light-ray absolute top-0 right-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/4 to-transparent" style={{ animationDelay: '4s' }} />
           </div>
 
-          {/* Frosted glass panels decoration */}
-          <div className="absolute top-20 right-10 md:right-20 w-64 h-96 rounded-3xl bg-white/[0.03] frosted-glass border border-white/10 transform rotate-6 hidden lg:block" />
-          <div className="absolute top-40 right-40 md:right-60 w-48 h-72 rounded-2xl bg-white/[0.05] frosted-glass border border-white/5 transform -rotate-3 hidden lg:block" />
+          {/* Hero Image */}
+          <div className="absolute top-20 right-8 md:right-16 lg:right-24 w-[300px] md:w-[400px] lg:w-[500px] h-[400px] md:h-[500px] lg:h-[600px] hidden md:block">
+            {/* IMAGE: Branded gazebo at outdoor event/market with customised canopy */}
+            <div className="w-full h-full rounded-3xl bg-white/[0.03] frosted-glass border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+              <ImageIcon className="w-16 h-16 text-white/30 mb-4" />
+              <span className="text-white/40 text-sm text-center px-4">Hero Image: Branded gazebo at event</span>
+            </div>
+          </div>
 
           {/* Main content */}
           <div className="relative z-10 h-full flex items-center px-6 md:px-12 lg:px-24 pt-32 pb-20">
@@ -244,6 +249,11 @@ const Gazebos: React.FC = () => {
 
               <div className="grid md:grid-cols-2 gap-12">
                 <div>
+                  {/* IMAGE: Mid-range gazebo product shot */}
+                  <div className="h-48 mb-6 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                    <ImageIcon className="w-10 h-10 text-white/30 mb-2" />
+                    <span className="text-white/40 text-sm">Mid-range gazebo</span>
+                  </div>
                   <Tent className="w-12 h-12 text-[#908d9a] mb-6" />
                   <h3 className="hearns-font text-4xl md:text-5xl mb-2">Mid-Range</h3>
                   <p className="text-[#908d9a] text-lg mb-6">An excellent choice for light commercial, exhibitions and outdoor markets</p>
@@ -316,6 +326,11 @@ const Gazebos: React.FC = () => {
             >
               <div className="grid md:grid-cols-2 gap-12">
                 <div>
+                  {/* IMAGE: Heavy-duty gazebo product shot */}
+                  <div className="h-48 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                    <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                    <span className="text-[#383349]/40 text-sm">Heavy-duty gazebo</span>
+                  </div>
                   <Shield className="w-12 h-12 text-[#908d9a] mb-6" />
                   <h3 className="hearns-font text-4xl md:text-5xl text-[#221c35] mb-2">Heavy-Duty</h3>
                   <p className="text-[#383349]/70 text-lg mb-6">Ideal for commercial customers who require a stronger frame for regular outdoor events</p>
@@ -610,6 +625,58 @@ const Gazebos: React.FC = () => {
             <p className="text-center text-white/60 mt-8">
               Chat to our team who can advise on the best type of customisation for your business.
             </p>
+          </motion.div>
+        </section>
+
+        {/* Gallery Section */}
+        <section className="py-24 px-6 md:px-12 lg:px-24 bg-white">
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-16">
+              <h2 className="smilecake-font text-5xl md:text-6xl text-[#221c35] mb-4">Gazebos In Action</h2>
+              <p className="text-xl text-[#383349]/70 max-w-2xl mx-auto">
+                See how our branded gazebos help businesses stand out at events.
+              </p>
+            </motion.div>
+
+            {/* Gallery Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Market stall gazebo with branding */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Market stall</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Festival/event gazebo */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Festival booth</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Corporate event gazebo */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Corporate event</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Food stall gazebo */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Food stall</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Pop-up retail gazebo */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Pop-up retail</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Building site gazebo */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Building site</span>
+              </motion.div>
+            </div>
           </motion.div>
         </section>
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Mail, Palette, Ruler, Sparkles, Table2, XCircle, RectangleHorizontal, Presentation, Building2 } from 'lucide-react';
+import { CheckCircle2, Mail, Palette, Ruler, Sparkles, Table2, XCircle, RectangleHorizontal, Presentation, Building2, ImageIcon } from 'lucide-react';
 import { usePageTheme } from '../contexts/ThemeContext';
 import HowItWorksSection from '../components/HowItWorksSection';
 
@@ -96,9 +96,14 @@ const Tablecloths: React.FC = () => {
             <div className="light-ray absolute top-0 right-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/4 to-transparent" style={{ animationDelay: '4s' }} />
           </div>
 
-          {/* Frosted glass panels decoration */}
-          <div className="absolute top-20 right-10 md:right-20 w-64 h-96 rounded-3xl bg-white/[0.03] frosted-glass border border-white/10 transform rotate-6 hidden lg:block" />
-          <div className="absolute top-40 right-40 md:right-60 w-48 h-72 rounded-2xl bg-white/[0.05] frosted-glass border border-white/5 transform -rotate-3 hidden lg:block" />
+          {/* Hero Image */}
+          <div className="absolute top-20 right-8 md:right-16 lg:right-24 w-[300px] md:w-[400px] lg:w-[500px] h-[400px] md:h-[500px] lg:h-[600px] hidden md:block">
+            {/* IMAGE: Branded tablecloth on exhibition stand table */}
+            <div className="w-full h-full rounded-3xl bg-white/[0.03] frosted-glass border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+              <ImageIcon className="w-16 h-16 text-white/30 mb-4" />
+              <span className="text-white/40 text-sm text-center px-4">Hero Image: Branded table at event</span>
+            </div>
+          </div>
 
           {/* Main content */}
           <div className="relative z-10 h-full flex items-center px-6 md:px-12 lg:px-24 pt-32 pb-20">
@@ -243,6 +248,11 @@ const Tablecloths: React.FC = () => {
 
               <div className="grid md:grid-cols-2 gap-12">
                 <div>
+                  {/* IMAGE: Conference cloth draped over table */}
+                  <div className="h-48 mb-6 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                    <ImageIcon className="w-10 h-10 text-white/30 mb-2" />
+                    <span className="text-white/40 text-sm">Conference cloth</span>
+                  </div>
                   <Table2 className="w-12 h-12 text-[#908d9a] mb-6" />
                   <h3 className="hearns-font text-4xl md:text-5xl mb-2">Conference Cloth (Throw)</h3>
                   <p className="text-3xl font-bold text-[#908d9a] mb-6">From £17 + VAT</p>
@@ -286,6 +296,11 @@ const Tablecloths: React.FC = () => {
             >
               <div className="grid md:grid-cols-2 gap-12">
                 <div>
+                  {/* IMAGE: Box fitted tablecloth on exhibition table */}
+                  <div className="h-48 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                    <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                    <span className="text-[#383349]/40 text-sm">Box fitted tablecloth</span>
+                  </div>
                   <Sparkles className="w-12 h-12 text-[#908d9a] mb-6" />
                   <h3 className="hearns-font text-4xl md:text-5xl text-[#221c35] mb-2">Box Fitted Tablecloth</h3>
                   <p className="text-3xl font-bold text-[#908d9a] mb-6">From £29.50 + VAT</p>
@@ -524,6 +539,58 @@ const Tablecloths: React.FC = () => {
             <p className="text-center text-white/60 mt-8">
               Chat to our team who can advise on the best type of customisation for your business.
             </p>
+          </motion.div>
+        </section>
+
+        {/* Gallery Section */}
+        <section className="py-24 px-6 md:px-12 lg:px-24 bg-white">
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-16">
+              <h2 className="smilecake-font text-5xl md:text-6xl text-[#221c35] mb-4">Event Ready</h2>
+              <p className="text-xl text-[#383349]/70 max-w-2xl mx-auto">
+                See how branded tablecloths elevate event presentations.
+              </p>
+            </motion.div>
+
+            {/* Gallery Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Exhibition stand table */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Exhibition stand</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Trade show booth */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Trade show</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Market stall table */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Market stall</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Registration desk */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Registration desk</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Corporate event */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Corporate event</span>
+              </motion.div>
+              <motion.div variants={fadeInUp} className="aspect-[4/3] rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                {/* IMAGE: Pop-up shop */}
+                <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                <span className="text-[#383349]/40 text-xs text-center px-2">Pop-up shop</span>
+              </motion.div>
+            </div>
           </motion.div>
         </section>
 
