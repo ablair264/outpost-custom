@@ -80,17 +80,37 @@ function App() {
               {/* Admin Routes - No Header/Footer */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayoutNew />}>
-                <Route path="dashboard" element={<div className="p-8"><h1 className="text-3xl font-black">Dashboard</h1><p className="text-gray-600 mt-2">Welcome to the admin panel</p></div>} />
-                <Route path="shop-page" element={<ShopPageEditor />} />
-                <Route path="products" element={<div className="p-8"><h1 className="text-3xl font-black">Product Manager</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
-                <Route path="home-page" element={<div className="p-8"><h1 className="text-3xl font-black">Home Page Editor</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
+                {/* Dashboard */}
+                <Route path="dashboard" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Dashboard</h1><p className="text-gray-400 mt-2">Welcome to the admin panel</p></div>} />
+
+                {/* Enquiries */}
+                <Route path="enquiries" element={<ClothingEnquiries />} />
+                <Route path="enquiries/:id" element={<ClothingEnquiryDetail />} />
+
+                {/* Content Management */}
+                <Route path="shop-editor" element={<ShopPageEditor />} />
+                <Route path="blog" element={<AdminBlogEditor />} />
+
+                {/* Product Management */}
+                <Route path="products" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Product Manager</h1><p className="text-gray-400 mt-2">Manage your product catalog</p></div>} />
+                <Route path="images" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Image Manager</h1><p className="text-gray-400 mt-2">Coming soon - Manage product images</p></div>} />
+                <Route path="updater" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Updater</h1><p className="text-gray-400 mt-2">Coming soon - Sync product data</p></div>} />
+
+                {/* Customers */}
+                <Route path="customers" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Customers</h1><p className="text-gray-400 mt-2">Coming soon - Customer management</p></div>} />
+
+                {/* LiveChat */}
+                <Route path="livechat" element={<div className="p-8"><h1 className="text-3xl font-black text-white">LiveChat</h1><p className="text-gray-400 mt-2">Coming soon - Live chat management</p></div>} />
+
+                {/* Settings */}
+                <Route path="users" element={<AdminUsers />} />
+
+                {/* Legacy routes for backward compatibility */}
                 <Route path="clothing-enquiries" element={<ClothingEnquiries />} />
                 <Route path="clothing-enquiries/:id" element={<ClothingEnquiryDetail />} />
-                <Route path="enquiries" element={<div className="p-8"><h1 className="text-3xl font-black">General Enquiries</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
-                <Route path="enquiry-settings" element={<div className="p-8"><h1 className="text-3xl font-black">Enquiry Settings</h1><p className="text-gray-600 mt-2">Coming soon</p></div>} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="blog" element={<AdminBlogEditor />} />
-                <Route path="*" element={<div className="p-8"><h1 className="text-3xl font-black">Page Not Found</h1></div>} />
+                <Route path="shop-page" element={<ShopPageEditor />} />
+
+                <Route path="*" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Page Not Found</h1></div>} />
               </Route>
 
             {/* Public Routes - With Header/Footer */}

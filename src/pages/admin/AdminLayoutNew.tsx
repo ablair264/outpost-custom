@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Outlet, useLocation, Link } from 'react-router-dom';
 import {
   Package,
-  Globe,
   FileText,
   Clipboard,
   LogOut,
@@ -14,11 +13,14 @@ import {
   Users,
   Loader2,
   Settings,
-  LayoutDashboard,
   Bell,
   Mail,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  MessageCircle,
+  Image,
+  RefreshCw,
+  LayoutGrid
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -108,41 +110,46 @@ const AdminLayoutNew: React.FC = () => {
       section: 'main',
     },
     {
+      id: 'enquiries',
+      label: 'Enquiries',
+      icon: <Clipboard className="w-5 h-5" />,
+      path: '/admin/enquiries',
+      section: 'main',
+    },
+    {
+      id: 'content',
+      label: 'Content Management',
+      icon: <FileText className="w-5 h-5" />,
+      section: 'main',
+      links: [
+        { label: 'Shop Page Editor', path: '/admin/shop-editor' },
+        { label: 'Blog Editor', path: '/admin/blog' },
+      ],
+    },
+    {
       id: 'products',
-      label: 'Products',
+      label: 'Product Management',
       icon: <Package className="w-5 h-5" />,
       section: 'main',
       links: [
         { label: 'Product Manager', path: '/admin/products' },
-        { label: 'Pricing', path: '/admin/pricing' },
-        { label: 'Updates', path: '/admin/updates' },
+        { label: 'Image Manager', path: '/admin/images' },
+        { label: 'Updater', path: '/admin/updater' },
       ],
     },
     {
-      id: 'blog',
-      label: 'Blog / Case Studies',
-      icon: <FileText className="w-5 h-5" />,
-      path: '/admin/blog',
+      id: 'customers',
+      label: 'Customers',
+      icon: <Users className="w-5 h-5" />,
+      path: '/admin/customers',
       section: 'main',
     },
     {
-      id: 'enquiries',
-      label: 'Enquiries',
-      icon: <Clipboard className="w-5 h-5" />,
+      id: 'livechat',
+      label: 'LiveChat',
+      icon: <MessageCircle className="w-5 h-5" />,
+      path: '/admin/livechat',
       section: 'main',
-      links: [
-        { label: 'Enquiries List', path: '/admin/enquiries' },
-        { label: 'Refunds', path: '/admin/refunds' },
-        { label: 'Declines', path: '/admin/declines' },
-        { label: 'Payouts', path: '/admin/payouts' },
-      ],
-    },
-    {
-      id: 'notification',
-      label: 'Notification',
-      icon: <Bell className="w-5 h-5" />,
-      path: '/admin/notifications',
-      section: 'settings',
     },
     {
       id: 'settings',
@@ -150,8 +157,7 @@ const AdminLayoutNew: React.FC = () => {
       icon: <Settings className="w-5 h-5" />,
       section: 'settings',
       links: [
-        { label: 'General', path: '/admin/settings/general' },
-        { label: 'Users', path: '/admin/users' },
+        { label: 'User Management', path: '/admin/users' },
       ],
       adminOnly: true,
     },
