@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -96,6 +96,12 @@ function HomePage() {
   );
 }
 
+// Wrapper to force remount when styleCode changes
+function ProductDetailsNewWrapper() {
+  const { styleCode } = useParams<{ styleCode: string }>();
+  return <ProductDetailsNew key={styleCode} />;
+}
+
 function App() {
   return (
     <Router>
@@ -132,7 +138,7 @@ function App() {
                   <Route path="/categories/:categoryId" element={<ProductListing />} />
                   <Route path="/collections" element={<Collections />} />
                   <Route path="/collections/:type" element={<Collection />} />
-                  <Route path="/products/:styleCode" element={<ProductDetailsNew />} />
+                  <Route path="/products/:styleCode" element={<ProductDetailsNewWrapper />} />
                   <Route path="/admin/categories" element={<AdminCategories />} />
                   <Route path="/services/all-signage" element={<AllSignage />} />
                   <Route path="/services/pavement-signs" element={<PavementSigns />} />
