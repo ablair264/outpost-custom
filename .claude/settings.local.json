@@ -54,7 +54,9 @@
       "mcp__cloudflare-workers__r2_bucket_create",
       "mcp__cloudflare-workers__r2_bucket_get",
       "mcp__cloudflare-workers__search_cloudflare_documentation",
-      "Bash(npx typescript:*)"
+      "Bash(npx typescript:*)",
+      "mcp__cloudflare-workers__r2_buckets_list",
+      "Bash(node scripts/upload-r2-images.cjs:*)"
     ],
     "deny": [],
     "ask": []

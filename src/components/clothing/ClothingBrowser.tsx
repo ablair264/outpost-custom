@@ -110,6 +110,9 @@ export interface ProductGroup {
   brand: string;
   product_type: string;
   fabric?: string;
+  product_feature_1?: string;
+  product_feature_2?: string;
+  product_feature_3?: string;
   variants: Product[];
   colors: Array<{
     code: string;
@@ -322,6 +325,9 @@ const ClothingBrowser: React.FC = () => {
         brand: firstVariant.brand,
         product_type: firstVariant.product_type || '',
         fabric: firstVariant.fabric,
+        product_feature_1: firstVariant.product_feature_1,
+        product_feature_2: firstVariant.product_feature_2,
+        product_feature_3: firstVariant.product_feature_3,
         variants,
         colors: uniqueColors,
         size_range: firstVariant.size_range || '',

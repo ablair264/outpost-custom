@@ -410,16 +410,16 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                 <div className="w-px h-16 bg-white/10 flex-shrink-0 mx-4" />
 
                 {/* Key Features */}
-                {(productGroup.fabric || productGroup.product_type) && (
+                {(productGroup.product_feature_1 || productGroup.product_feature_2 || productGroup.product_feature_3) && (
                   <div className="flex-shrink-0 min-w-[140px]">
                     <p className="text-[10px] font-semibold text-white/50 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                       <Shirt className="w-3.5 h-3.5" />
                       Key Features
                     </p>
                     <ul className="text-[12px] text-white/70 space-y-1">
-                      {productGroup.fabric && <li>• {productGroup.fabric.split(' ').slice(0, 3).join(' ')}</li>}
-                      {productGroup.product_type && <li>• {productGroup.product_type}</li>}
-                      {productGroup.colors.length > 5 && <li>• Wide choice of colours</li>}
+                      {productGroup.product_feature_1 && <li>• {productGroup.product_feature_1}</li>}
+                      {productGroup.product_feature_2 && <li>• {productGroup.product_feature_2}</li>}
+                      {productGroup.product_feature_3 && <li>• {productGroup.product_feature_3}</li>}
                     </ul>
                   </div>
                 )}
