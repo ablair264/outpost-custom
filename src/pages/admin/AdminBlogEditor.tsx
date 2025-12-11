@@ -59,8 +59,20 @@ const AdminBlogEditor: React.FC = () => {
   const [showBlockPicker, setShowBlockPicker] = useState(false);
   const [editingPost, setEditingPost] = useState<string | null>(null);
 
+  // Item type for display
+  type DisplayItem = {
+    id: string;
+    title: string;
+    type: 'post' | 'case-study';
+    category: string;
+    publishedAt: string;
+    featured: boolean;
+    author: string;
+    slug: string;
+  };
+
   // Combined items for display
-  const allItems = useMemo(() => {
+  const allItems: DisplayItem[] = useMemo(() => {
     if (activeTab === 'posts') {
       return blogPosts.map(post => ({
         id: post.id,
@@ -77,7 +89,7 @@ const AdminBlogEditor: React.FC = () => {
         id: study.id,
         title: study.title,
         type: 'case-study' as const,
-        category: 'case-studies' as const,
+        category: 'case-studies',
         publishedAt: study.publishedAt,
         featured: false,
         author: 'Team',
