@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
@@ -49,45 +49,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import UnifiedChatWidget from './components/UnifiedChatWidget';
 import PageLoader from './components/PageLoader';
 import ScrollToTop from './components/ScrollToTop';
-import Lenis from 'lenis';
 
 function HomePage() {
-  useEffect(() => {
-    // Initialize Lenis smooth scroll
-    const lenis = new Lenis({
-      duration: 0.6,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    // Smooth scroll for anchor links
-    const handleAnchorClick = (e: Event) => {
-      const target = e.target as HTMLAnchorElement;
-      if (target.href && target.href.includes('#')) {
-        e.preventDefault();
-        const elementId = target.href.split('#')[1];
-        const element = document.getElementById(elementId);
-        if (element) {
-          lenis.scrollTo(element, { offset: 0 });
-        }
-      }
-    };
-
-    // Add event listeners for anchor links
-    document.addEventListener('click', handleAnchorClick);
-
-    return () => {
-      document.removeEventListener('click', handleAnchorClick);
-      lenis.destroy();
-    };
-  }, []);
-
   return (
     <>
       <HeroSection />

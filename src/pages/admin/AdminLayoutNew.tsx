@@ -19,7 +19,11 @@ import {
   MessageSquare,
   LayoutDashboard,
   Image as ImageIcon,
-  Printer
+  Printer,
+  Bell,
+  Mail,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -39,6 +43,9 @@ const AdminLayoutNew: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarPinned, setSidebarPinned] = useState(true);
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [isLiveChatOnline, setIsLiveChatOnline] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(3);
+  const [unreadMessages, setUnreadMessages] = useState(2);
   const { isAuthenticated, isLoading, user, signOut, isAdmin } = useAuth();
 
   useEffect(() => {
@@ -48,15 +55,27 @@ const AdminLayoutNew: React.FC = () => {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
-  // Load sidebar preferences
+  // Load sidebar preferences and livechat status
   useEffect(() => {
     try {
       const pinned = localStorage.getItem('adminSidebarPinned');
       if (pinned !== null) {
         setSidebarPinned(pinned === 'true');
       }
+      const liveChatStatus = localStorage.getItem('liveChatOnline');
+      if (liveChatStatus !== null) {
+        setIsLiveChatOnline(liveChatStatus === 'true');
+      }
     } catch {}
   }, []);
+
+  const toggleLiveChat = () => {
+    const newStatus = !isLiveChatOnline;
+    setIsLiveChatOnline(newStatus);
+    try {
+      localStorage.setItem('liveChatOnline', String(newStatus));
+    } catch {}
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -89,9 +108,9 @@ const AdminLayoutNew: React.FC = () => {
   // Show loading state while checking auth
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0f1419] flex items-center justify-center">
+      <div className="min-h-screen bg-[#1a1625] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 text-[#64a70b] animate-spin" />
+          <Loader2 className="w-10 h-10 text-[#8b5cf6] animate-spin" />
           <p className="text-gray-400 neuzeit-font">Loading...</p>
         </div>
       </div>
@@ -184,10 +203,10 @@ const AdminLayoutNew: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f1419] flex">
+    <div className="min-h-screen bg-[#1a1625] flex">
       {/* Sidebar */}
       <nav
-        className={`fixed top-0 left-0 h-full bg-gradient-to-b from-[#1a2634] to-[#0f1419] border-r border-white/5 flex flex-col z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 h-full bg-gradient-to-b from-[#2d2640] to-[#1a1625] border-r border-purple-500/10 flex flex-col z-50 transition-all duration-300 ${
           sidebarCollapsed ? 'w-[72px]' : 'w-[280px]'
         }`}
         onMouseEnter={() => {
@@ -201,8 +220,8 @@ const AdminLayoutNew: React.FC = () => {
           }
         }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/5 min-h-[64px]">
+        {/* Header with Logo */}
+        <div className="flex items-center justify-between p-4 border-b border-purple-500/10 min-h-[64px]">
           <div className={`transition-opacity duration-300 ${sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
             <img
               src="/images/outpost-logo.png"
@@ -218,7 +237,7 @@ const AdminLayoutNew: React.FC = () => {
               onClick={togglePin}
               className={`p-2 rounded-lg transition-colors ${
                 sidebarPinned
-                  ? 'bg-[#64a70b]/20 text-[#64a70b]'
+                  ? 'bg-purple-500/20 text-purple-400'
                   : 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
               }`}
               title={sidebarPinned ? 'Unpin sidebar' : 'Pin sidebar'}
@@ -232,19 +251,6 @@ const AdminLayoutNew: React.FC = () => {
             >
               <ChevronLeft className={`w-4 h-4 transition-transform ${sidebarCollapsed ? 'rotate-180' : ''}`} />
             </button>
-          </div>
-        </div>
-
-        {/* User Section */}
-        <div className="p-4 border-b border-white/5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#64a70b] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-              {username.substring(0, 2).toUpperCase()}
-            </div>
-            <div className={`transition-opacity duration-300 min-w-0 ${sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
-              <p className="text-white font-semibold text-sm truncate">{username}</p>
-              <p className="text-gray-500 text-xs capitalize">{user?.role || 'Staff'}</p>
-            </div>
           </div>
         </div>
 
@@ -300,11 +306,11 @@ const AdminLayoutNew: React.FC = () => {
               {/* Hover Popup for collapsed state */}
               {item.links && sidebarCollapsed && hoveredSection === item.id && (
                 <div
-                  className="absolute left-full top-0 ml-2 bg-[#1a2634] border border-white/10 rounded-xl shadow-xl min-w-[200px] z-50 overflow-hidden"
+                  className="absolute left-full top-0 ml-2 bg-[#2d2640] border border-purple-500/20 rounded-xl shadow-xl min-w-[200px] z-50 overflow-hidden"
                   onMouseEnter={() => setHoveredSection(item.id)}
                   onMouseLeave={() => setHoveredSection(null)}
                 >
-                  <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">
+                  <div className="px-4 py-3 border-b border-purple-500/10 flex items-center gap-2">
                     <div style={{ color: item.color }}>{item.icon}</div>
                     <span className="text-white font-semibold text-sm">{item.label}</span>
                   </div>
@@ -315,13 +321,13 @@ const AdminLayoutNew: React.FC = () => {
                         to={link.path}
                         className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${
                           isActivePath(link.path)
-                            ? 'bg-[#64a70b]/20 text-[#64a70b]'
+                            ? 'bg-purple-500/20 text-purple-400'
                             : 'text-gray-400 hover:bg-white/5 hover:text-white'
                         }`}
                       >
                         <span className="text-sm">{link.label}</span>
                         {link.badge && link.badge > 0 && (
-                          <span className="ml-auto px-2 py-0.5 bg-[#64a70b] text-white text-xs rounded-full">
+                          <span className="ml-auto px-2 py-0.5 bg-purple-500 text-white text-xs rounded-full">
                             {link.badge}
                           </span>
                         )}
@@ -340,13 +346,13 @@ const AdminLayoutNew: React.FC = () => {
                       to={link.path}
                       className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
                         isActivePath(link.path)
-                          ? 'bg-[#64a70b]/20 text-[#64a70b] font-medium'
+                          ? 'bg-purple-500/20 text-purple-400 font-medium'
                           : 'text-gray-400 hover:bg-white/5 hover:text-white'
                       }`}
                     >
                       {link.label}
                       {link.badge && link.badge > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-[#64a70b] text-white text-xs rounded-full">
+                        <span className="ml-2 px-2 py-0.5 bg-purple-500 text-white text-xs rounded-full">
                           {link.badge}
                         </span>
                       )}
@@ -358,19 +364,36 @@ const AdminLayoutNew: React.FC = () => {
           ))}
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-3 border-t border-white/5 space-y-2">
+        {/* Footer with Avatar and Logout */}
+        <div className="p-3 border-t border-purple-500/10 space-y-3">
+          {/* User Avatar Section */}
+          <div className={`flex items-center gap-3 px-2 py-2 rounded-xl bg-purple-500/10 ${sidebarCollapsed ? 'justify-center' : ''}`}>
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-lg">
+              {username.substring(0, 2).toUpperCase()}
+            </div>
+            {!sidebarCollapsed && (
+              <div className="min-w-0 flex-1">
+                <p className="text-white font-semibold text-sm truncate">{username}</p>
+                <p className="text-purple-300/60 text-xs capitalize">{user?.role || 'Staff'}</p>
+              </div>
+            )}
+          </div>
+
+          {/* View Site Button */}
           <button
             onClick={handleViewSite}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
+            className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-gray-400 hover:bg-purple-500/10 hover:text-purple-300 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}
+            title="View Site"
           >
             <Eye className="w-4 h-4" />
             {!sidebarCollapsed && <span className="text-sm">View Site</span>}
           </button>
 
+          {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors"
+            className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}
+            title="Log Out"
           >
             <LogOut className="w-4 h-4" />
             {!sidebarCollapsed && <span className="text-sm">Log Out</span>}
@@ -385,26 +408,81 @@ const AdminLayoutNew: React.FC = () => {
         }`}
       >
         {/* Glass Header */}
-        <header className="sticky top-0 z-30 bg-[#0f1419]/80 backdrop-blur-xl border-b border-white/5">
+        <header className="sticky top-0 z-30 bg-[#1a1625]/90 backdrop-blur-xl border-b border-purple-500/10">
           <div className="px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <h1 className="text-xl text-white font-semibold neuzeit-font">
                 Admin Dashboard
               </h1>
             </div>
-            <div className="text-sm text-gray-500">
-              {new Date().toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+
+            {/* Right Side Controls */}
+            <div className="flex items-center gap-4">
+              {/* Date Display */}
+              <div className="text-sm text-gray-400 hidden md:block">
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </div>
+
+              {/* Divider */}
+              <div className="h-6 w-px bg-purple-500/20 hidden md:block" />
+
+              {/* LiveChat Toggle */}
+              <button
+                onClick={toggleLiveChat}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
+                  isLiveChatOnline
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                    : 'bg-gray-500/20 text-gray-400 border border-gray-500/30 hover:bg-gray-500/30'
+                }`}
+                title={isLiveChatOnline ? 'LiveChat Online - Click to go offline' : 'LiveChat Offline - Click to go online'}
+              >
+                {isLiveChatOnline ? (
+                  <ToggleRight className="w-5 h-5" />
+                ) : (
+                  <ToggleLeft className="w-5 h-5" />
+                )}
+                <span className="text-sm font-medium hidden sm:inline">
+                  {isLiveChatOnline ? 'Online' : 'Offline'}
+                </span>
+                <span className={`w-2 h-2 rounded-full ${isLiveChatOnline ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`} />
+              </button>
+
+              {/* Messages Bell */}
+              <button
+                className="relative p-2 rounded-lg text-gray-400 hover:bg-purple-500/10 hover:text-purple-300 transition-colors"
+                title="Messages"
+              >
+                <Mail className="w-5 h-5" />
+                {unreadMessages > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    {unreadMessages}
+                  </span>
+                )}
+              </button>
+
+              {/* Notifications Bell */}
+              <button
+                className="relative p-2 rounded-lg text-gray-400 hover:bg-purple-500/10 hover:text-purple-300 transition-colors"
+                title="Notifications"
+              >
+                <Bell className="w-5 h-5" />
+                {unreadNotifications > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    {unreadNotifications}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <div className="p-6 bg-[#c1c6c8] min-h-[calc(100vh-73px)]">
+        <div className="p-6 bg-[#f5f5f7] min-h-[calc(100vh-73px)]">
           <Outlet />
         </div>
       </main>
