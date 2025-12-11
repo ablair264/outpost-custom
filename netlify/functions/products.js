@@ -398,7 +398,10 @@ export async function handler(event) {
               colour_name: v.colour_name,
               colour_image: v.colour_image,
               rgb: v.rgb,
-              colour_shade: v.colour_shade
+              colour_shade: v.colour_shade,
+              back_image_url: v.back_image_url,
+              side_image_url: v.side_image_url,
+              additional_image_url: v.additional_image_url
             });
           }
         });

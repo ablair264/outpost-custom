@@ -56,6 +56,7 @@ const ProductDetailsNew: React.FC = () => {
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageModalIndex] = useState(0);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [currentViewIndex, setCurrentViewIndex] = useState(0); // Track which view (front/back/side) is shown
   const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
   const [quoteStep, setQuoteStep] = useState<'logo-options' | 'upload' | 'help' | 'consult' | 'success' | 'submitting'>('logo-options');
@@ -150,6 +151,9 @@ const ProductDetailsNew: React.FC = () => {
             colour_image: variant.colour_image || variant.primary_product_image_url,
             rgb: displayColor,
             colour_shade: variant.colour_shade,
+            back_image_url: variant.back_image_url,
+            side_image_url: variant.side_image_url,
+            additional_image_url: variant.additional_image_url,
           };
         });
 
@@ -201,20 +205,22 @@ const ProductDetailsNew: React.FC = () => {
     };
   }, [productGroup]);
 
-  // Sync carousel with selected color
+  // Sync carousel with selected color - reset to first slide when color changes
   useEffect(() => {
     if (carouselApi) {
-      carouselApi.scrollTo(selectedColor);
+      // When color changes, reset to first slide (front view)
+      carouselApi.scrollTo(0);
+      setCurrentViewIndex(0);
     }
   }, [carouselApi, selectedColor]);
 
-  // Listen to carousel slide changes
+  // Listen to carousel slide changes to update currentViewIndex
   useEffect(() => {
     if (!carouselApi) return;
 
     const onSelect = () => {
       const index = carouselApi.selectedScrollSnap();
-      setSelectedColor(index);
+      setCurrentViewIndex(index);
     };
 
     carouselApi.on('select', onSelect);
@@ -303,12 +309,42 @@ const ProductDetailsNew: React.FC = () => {
 
   const mainImage = getColorImage(selectedColor) || currentVariant?.primary_product_image_url;
 
-  const galleryImages = productGroup.colors
-    .map((_, idx) => {
-      const src = getColorImage(idx) || currentVariant?.primary_product_image_url;
-      return src ? { src, colorIndex: idx } : null;
-    })
-    .filter((img): img is { src: string; colorIndex: number } => Boolean(img));
+  // Build gallery images for the selected color - showing front, back, side, additional
+  const currentColor = productGroup.colors[selectedColor];
+  const galleryImagesForColor: { src: string; label: string }[] = [];
+
+  // Front image (primary)
+  const frontImage = currentColor?.colour_image || currentVariant?.primary_product_image_url;
+  if (frontImage) {
+    galleryImagesForColor.push({ src: frontImage, label: 'Front' });
+  }
+
+  // Back image
+  if (currentColor?.back_image_url) {
+    galleryImagesForColor.push({ src: currentColor.back_image_url, label: 'Back' });
+  }
+
+  // Side image
+  if (currentColor?.side_image_url) {
+    galleryImagesForColor.push({ src: currentColor.side_image_url, label: 'Side' });
+  }
+
+  // Additional image
+  if (currentColor?.additional_image_url) {
+    galleryImagesForColor.push({ src: currentColor.additional_image_url, label: 'Detail' });
+  }
+
+  // If no additional images exist for this color, fall back to showing all colors (old behavior)
+  const hasMultipleViews = galleryImagesForColor.length > 1;
+
+  const galleryImages = hasMultipleViews
+    ? galleryImagesForColor.map((img, idx) => ({ src: img.src, colorIndex: selectedColor, viewIndex: idx, label: img.label }))
+    : productGroup.colors
+        .map((_, idx) => {
+          const src = getColorImage(idx) || currentVariant?.primary_product_image_url;
+          return src ? { src, colorIndex: idx, viewIndex: 0, label: 'Front' } : null;
+        })
+        .filter((img): img is { src: string; colorIndex: number; viewIndex: number; label: string } => Boolean(img));
 
   const modalImages = galleryImages.map(img => img.src);
 
@@ -560,23 +596,37 @@ const ProductDetailsNew: React.FC = () => {
                     )}
                   </Carousel>
 
-                  {/* Dot indicators */}
+                  {/* Dot indicators - with view labels when showing multiple views */}
                   {galleryImages.length > 1 && (
                     <div className="flex justify-center gap-2 mt-4">
-                      {galleryImages.map((_, i) => (
-                        <button
-                          key={`dot-${i}`}
-                          onClick={() => handleThumbnailClick(galleryImages[i].colorIndex)}
-                          className={`h-2 rounded-full transition-all duration-300 ${
-                            selectedColor === galleryImages[i].colorIndex
-                              ? 'w-8'
-                              : 'w-2 hover:bg-gray-400'
-                          }`}
-                          style={{
-                            backgroundColor: selectedColor === galleryImages[i].colorIndex ? colors.accent : colors.neutral,
-                          }}
-                        />
-                      ))}
+                      {galleryImages.map((img, i) => {
+                        const isActive = hasMultipleViews ? currentViewIndex === i : selectedColor === img.colorIndex;
+                        return (
+                          <button
+                            key={`dot-${i}`}
+                            onClick={() => {
+                              if (hasMultipleViews) {
+                                carouselApi?.scrollTo(i);
+                              } else {
+                                handleThumbnailClick(img.colorIndex);
+                              }
+                            }}
+                            className="flex flex-col items-center gap-1"
+                          >
+                            <div
+                              className={`h-2 rounded-full transition-all duration-300 ${
+                                isActive ? 'w-8' : 'w-2 hover:bg-gray-400'
+                              }`}
+                              style={{
+                                backgroundColor: isActive ? colors.accent : colors.neutral,
+                              }}
+                            />
+                            {hasMultipleViews && (
+                              <span className="text-[9px] text-white/50 neuzeit-font">{img.label}</span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </motion.div>
@@ -584,19 +634,31 @@ const ProductDetailsNew: React.FC = () => {
                 {/* Thumbnail Grid - hidden on mobile */}
                 {galleryImages.length > 1 && (
                   <div className="hidden md:grid grid-cols-5 gap-3">
-                    {galleryImages.slice(0, 5).map((img, i) => (
-                      <button
-                        key={`thumb-${img.src}-${i}`}
-                        onClick={() => handleThumbnailClick(img.colorIndex)}
-                        className={`aspect-square rounded-[12px] overflow-hidden border-2 transition-all duration-200 bg-white ${
-                          selectedColor === img.colorIndex
-                            ? 'border-[#64a70b] shadow-lg'
-                            : 'border-transparent hover:border-gray-300'
-                        }`}
-                      >
-                        <img src={img.src} alt="" className="object-contain w-full h-full p-2" />
-                      </button>
-                    ))}
+                    {galleryImages.slice(0, 5).map((img, i) => {
+                      const isActive = hasMultipleViews ? currentViewIndex === i : selectedColor === img.colorIndex;
+                      return (
+                        <button
+                          key={`thumb-${img.src}-${i}`}
+                          onClick={() => {
+                            if (hasMultipleViews) {
+                              carouselApi?.scrollTo(i);
+                            } else {
+                              handleThumbnailClick(img.colorIndex);
+                            }
+                          }}
+                          className={`aspect-square rounded-[12px] overflow-hidden border-2 transition-all duration-200 bg-white relative ${
+                            isActive ? 'border-[#64a70b] shadow-lg' : 'border-transparent hover:border-gray-300'
+                          }`}
+                        >
+                          <img src={img.src} alt={img.label} className="object-contain w-full h-full p-2" />
+                          {hasMultipleViews && (
+                            <span className="absolute bottom-1 left-1 right-1 text-[8px] text-center bg-black/50 text-white py-0.5 rounded neuzeit-font">
+                              {img.label}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </section>

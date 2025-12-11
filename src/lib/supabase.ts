@@ -30,6 +30,9 @@ export interface Product {
   product_type: string;
   primary_colour: string;
   primary_product_image_url: string;
+  back_image_url?: string;
+  side_image_url?: string;
+  additional_image_url?: string;
   single_price: string;
   gender: string;
   categorisation: string;
@@ -82,6 +85,9 @@ export interface ColorVariant {
   colour_image: string;
   rgb: string;
   colour_shade?: string;
+  back_image_url?: string;
+  side_image_url?: string;
+  additional_image_url?: string;
 }
 
 // Grouped product type - represents a product with all its variants
@@ -248,6 +254,9 @@ export const groupProductVariants = (products: Product[]): GroupedProduct[] => {
           colour_image: product.colour_image,
           rgb: product.rgb,
           colour_shade: product.colour_shade,
+          back_image_url: product.back_image_url,
+          side_image_url: product.side_image_url,
+          additional_image_url: product.additional_image_url,
         }],
         sizes: [product.size_name],
         size_range: product.size_range,
@@ -268,6 +277,9 @@ export const groupProductVariants = (products: Product[]): GroupedProduct[] => {
           colour_image: product.colour_image,
           rgb: product.rgb,
           colour_shade: product.colour_shade,
+          back_image_url: product.back_image_url,
+          side_image_url: product.side_image_url,
+          additional_image_url: product.additional_image_url,
         });
       }
 
