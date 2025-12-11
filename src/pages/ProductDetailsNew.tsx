@@ -205,14 +205,29 @@ const ProductDetailsNew: React.FC = () => {
     };
   }, [productGroup]);
 
-  // Sync carousel with selected color - reset to first slide when color changes
+  // Sync carousel with selected color
   useEffect(() => {
-    if (carouselApi) {
-      // When color changes, reset to first slide (front view)
-      carouselApi.scrollTo(0);
-      setCurrentViewIndex(0);
+    if (carouselApi && productGroup) {
+      // Check if current color has multiple views (back, side, additional images)
+      const currentColorData = productGroup.colors[selectedColor];
+      const colorHasMultipleViews = !!(
+        currentColorData?.back_image_url ||
+        currentColorData?.side_image_url ||
+        currentColorData?.additional_image_url
+      );
+
+      if (colorHasMultipleViews) {
+        // When showing multiple views of same color, reset to first view (Front)
+        carouselApi.scrollTo(0);
+        setCurrentViewIndex(0);
+      } else {
+        // When showing all colors in carousel (single view per color),
+        // scroll to the selected color's position
+        carouselApi.scrollTo(selectedColor);
+        setCurrentViewIndex(selectedColor);
+      }
     }
-  }, [carouselApi, selectedColor]);
+  }, [carouselApi, selectedColor, productGroup]);
 
   // Listen to carousel slide changes to update currentViewIndex
   useEffect(() => {
@@ -233,7 +248,15 @@ const ProductDetailsNew: React.FC = () => {
   const handleThumbnailClick = useCallback((colorIndex: number) => {
     setSelectedColor(colorIndex);
     if (imageSectionRef.current) {
-      imageSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Calculate scroll position with offset for fixed header (approx 80px)
+      const headerOffset = 100;
+      const elementPosition = imageSectionRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   }, []);
 

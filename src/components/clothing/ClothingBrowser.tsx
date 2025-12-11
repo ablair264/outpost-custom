@@ -13,6 +13,9 @@ import {
 import { getAllProducts, getFilterOptions, getSizesForProductTypes, ProductFilters, FilterOptions, BrandOption } from '../../lib/productBrowserApi';
 import { Product } from '../../lib/supabase';
 import ClothingCard from './ClothingCard';
+import MobileFilterBar from './MobileFilterBar';
+import MobileRowCard from './MobileRowCard';
+import MobileProductSheet from './MobileProductSheet';
 
 // Product Type Groups - comprehensive mapping
 const PRODUCT_TYPE_GROUPS = [
@@ -140,6 +143,10 @@ const ClothingBrowser: React.FC = () => {
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [headerFilterOpen, setHeaderFilterOpen] = useState(false);
+
+  // Mobile-specific state
+  const [mobileViewMode, setMobileViewMode] = useState<'grid' | 'row'>('grid');
+  const [selectedMobileProduct, setSelectedMobileProduct] = useState<ProductGroup | null>(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -464,6 +471,11 @@ const ClothingBrowser: React.FC = () => {
     }
   };
 
+  // Handler for mobile product selection - opens bottom sheet
+  const handleMobileProductSelect = (productGroup: ProductGroup) => {
+    setSelectedMobileProduct(productGroup);
+  };
+
   return (
     <div className="min-h-screen relative" style={{ backgroundColor: clothingColors.pageBg }}>
       {/* Background textures - matching ProductDetails */}
@@ -538,8 +550,251 @@ const ClothingBrowser: React.FC = () => {
         </div>
       </header>
 
-      {/* Mobile Filter Bar - shown below header on mobile */}
-      <div className="lg:hidden relative z-10 px-4 py-2 border-b border-white/10" style={{ backgroundColor: clothingColors.dark }}>
+      {/* New Mobile Sticky Filter Bar - shown on small screens only */}
+      <MobileFilterBar
+        viewMode={mobileViewMode}
+        onViewModeChange={setMobileViewMode}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onFilterClick={() => setHeaderFilterOpen(!headerFilterOpen)}
+        activeFilterCount={filterCount}
+      />
+
+      {/* Mobile Filter Dropdown Panel - appears when filter button clicked on small screens */}
+      <AnimatePresence>
+        {headerFilterOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="block sm:hidden relative z-30 overflow-hidden"
+            style={{ backgroundColor: clothingColors.dark }}
+          >
+            <div className="px-4 pb-4">
+              <div className="rounded-xl border border-white/10 overflow-hidden" style={{ backgroundColor: clothingColors.secondary }}>
+                {/* Active Filters */}
+                {hasActiveFilters && (
+                  <div className="px-4 py-3 border-b border-white/10 bg-white/5">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-white/50 uppercase tracking-wide">Active Filters</p>
+                      <button
+                        onClick={clearAllFilters}
+                        className="text-xs font-medium px-2 py-1 rounded-md transition-all hover:opacity-80"
+                        style={{ color: clothingColors.accent, backgroundColor: `${clothingColors.accent}20` }}
+                      >
+                        Clear all
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedTypes.map(type => (
+                        <button
+                          key={`small-mobile-filter-type-${type}`}
+                          onClick={() => toggleType(type)}
+                          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
+                          style={{ backgroundColor: clothingColors.accent, color: 'black' }}
+                        >
+                          {type}
+                          <X className="w-3 h-3" />
+                        </button>
+                      ))}
+                      {selectedBrands.map(brand => (
+                        <button
+                          key={`small-mobile-filter-brand-${brand}`}
+                          onClick={() => toggleBrand(brand)}
+                          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
+                          style={{ backgroundColor: clothingColors.accent, color: 'black' }}
+                        >
+                          {brand}
+                          <X className="w-3 h-3" />
+                        </button>
+                      ))}
+                      {selectedColors.map(color => (
+                        <button
+                          key={`small-mobile-filter-color-${color}`}
+                          onClick={() => toggleColor(color)}
+                          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
+                          style={{ backgroundColor: clothingColors.accent, color: 'black' }}
+                        >
+                          {color}
+                          <X className="w-3 h-3" />
+                        </button>
+                      ))}
+                      {selectedGenders.map(gender => (
+                        <button
+                          key={`small-mobile-filter-gender-${gender}`}
+                          onClick={() => toggleGender(gender)}
+                          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
+                          style={{ backgroundColor: clothingColors.accent, color: 'black' }}
+                        >
+                          {gender}
+                          <X className="w-3 h-3" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Type */}
+                <div className="border-b border-white/10">
+                  <button
+                    onClick={() => toggleSection('type')}
+                    className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
+                  >
+                    <span className="text-sm font-medium uppercase tracking-wide">Type</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.type ? 'rotate-180' : ''}`} />
+                  </button>
+                  {sectionsOpen.type && (
+                    <div className="px-4 pb-4 space-y-2">
+                      {availableTypeGroups.map(group => (
+                        <div key={`small-mobile-type-group-${group.name}`}>
+                          <p className="text-xs text-white/40 uppercase tracking-wide mb-1.5">{group.name}</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {group.availableItems.map(type => (
+                              <button
+                                key={`small-mobile-type-${type}`}
+                                onClick={() => toggleType(type)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                  selectedTypes.includes(type)
+                                    ? 'text-black'
+                                    : 'text-white/80 bg-white/10 hover:bg-white/15'
+                                }`}
+                                style={selectedTypes.includes(type) ? { backgroundColor: clothingColors.accent } : {}}
+                              >
+                                {type}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Brand */}
+                <div className="border-b border-white/10">
+                  <button
+                    onClick={() => toggleSection('brand')}
+                    className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
+                  >
+                    <span className="text-sm font-medium uppercase tracking-wide">Brand</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.brand ? 'rotate-180' : ''}`} />
+                  </button>
+                  {sectionsOpen.brand && (
+                    <div className="px-4 pb-4 max-h-48 overflow-y-auto space-y-1">
+                      {brandsList.map(brand => (
+                        <button
+                          key={`small-mobile-brand-${brand}`}
+                          onClick={() => toggleBrand(brand)}
+                          className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-lg text-sm transition-all ${
+                            selectedBrands.includes(brand)
+                              ? 'text-black'
+                              : 'text-white/70 hover:text-white hover:bg-white/5'
+                          }`}
+                          style={selectedBrands.includes(brand) ? { backgroundColor: clothingColors.accent } : {}}
+                        >
+                          <div
+                            className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                              selectedBrands.includes(brand)
+                                ? 'border-transparent bg-white/20'
+                                : 'border-white/30'
+                            }`}
+                          >
+                            {selectedBrands.includes(brand) && <Check className="w-3 h-3" />}
+                          </div>
+                          {brand}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Colour */}
+                <div className="border-b border-white/10">
+                  <button
+                    onClick={() => toggleSection('colour')}
+                    className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
+                  >
+                    <span className="text-sm font-medium uppercase tracking-wide">Colour</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.colour ? 'rotate-180' : ''}`} />
+                  </button>
+                  {sectionsOpen.colour && (
+                    <div className="px-4 pb-4">
+                      <div className="flex flex-wrap gap-2">
+                        {filterOptions.colors.map(color => {
+                          const isSelected = selectedColors.includes(color);
+                          const colorHex = getColorHexValue(color);
+                          const isLight = colorHex === '#FFFFFF' || colorHex === '#FFFDD0';
+                          return (
+                            <button
+                              key={`small-mobile-color-${color}`}
+                              onClick={() => toggleColor(color)}
+                              className={`relative w-8 h-8 rounded-full border-2 transition-all ${
+                                isSelected
+                                  ? 'border-[#78BE20] scale-110'
+                                  : isLight
+                                  ? 'border-gray-400 hover:scale-110'
+                                  : 'border-transparent hover:scale-110'
+                              }`}
+                              style={{ backgroundColor: colorHex }}
+                              title={color}
+                            >
+                              {isSelected && (
+                                <Check className={`absolute inset-0 m-auto w-4 h-4 ${isLight ? 'text-black' : 'text-white'}`} />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Gender */}
+                <div>
+                  <button
+                    onClick={() => toggleSection('gender')}
+                    className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
+                  >
+                    <span className="text-sm font-medium uppercase tracking-wide">Gender</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.gender ? 'rotate-180' : ''}`} />
+                  </button>
+                  {sectionsOpen.gender && (
+                    <div className="px-4 pb-4 space-y-1">
+                      {filterOptions.genders.filter(gender => gender !== 'None').map(gender => (
+                        <button
+                          key={`small-mobile-gender-${gender}`}
+                          onClick={() => toggleGender(gender)}
+                          className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-lg text-sm transition-all ${
+                            selectedGenders.includes(gender)
+                              ? 'text-black'
+                              : 'text-white/70 hover:text-white hover:bg-white/5'
+                          }`}
+                          style={selectedGenders.includes(gender) ? { backgroundColor: clothingColors.accent } : {}}
+                        >
+                          <div
+                            className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                              selectedGenders.includes(gender)
+                                ? 'border-transparent bg-white/20'
+                                : 'border-white/30'
+                            }`}
+                          >
+                            {selectedGenders.includes(gender) && <Check className="w-3 h-3" />}
+                          </div>
+                          {gender}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Filter Panel - shown below header on tablet/mobile (hidden on small mobile where MobileFilterBar is used) */}
+      <div className="hidden sm:block lg:hidden relative z-10 px-4 py-2 border-b border-white/10" style={{ backgroundColor: clothingColors.dark }}>
         <div className="max-w-[1600px] mx-auto">
           {/* Collapsible trigger */}
           <button
@@ -1234,8 +1489,41 @@ const ClothingBrowser: React.FC = () => {
                 </motion.div>
               ) : (
                 <>
+                  {/* Mobile Row View - only on small screens when row mode selected */}
+                  <div className={`sm:hidden ${mobileViewMode === 'row' ? 'block' : 'hidden'}`}>
+                    <div className="flex flex-col gap-3">
+                      {productGroups.map((group, index) => (
+                        <MobileRowCard
+                          key={group.style_code}
+                          productGroup={group}
+                          index={index}
+                          onClick={() => handleMobileProductSelect(group)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mobile Grid View - on small screens when grid mode selected */}
+                  <div className={`sm:hidden ${mobileViewMode === 'grid' ? 'block' : 'hidden'}`}>
+                    <div className="grid grid-cols-2 gap-3">
+                      {productGroups.map((group, index) => (
+                        <ClothingCard
+                          key={group.style_code}
+                          productGroup={group}
+                          index={index}
+                          isExpanded={false}
+                          hasExpandedCard={false}
+                          onExpand={() => handleMobileProductSelect(group)}
+                          onClose={() => {}}
+                          expandedRef={undefined}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Desktop/Tablet Grid - hidden on small mobile screens */}
                   <LayoutGroup>
-                    <motion.div layout className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <motion.div layout className="hidden sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                       {/* Reorder: move expanded card to start of its row */}
                       {(() => {
                         const expandedIndex = productGroups.findIndex(g => g.style_code === expandedProduct);
@@ -1395,6 +1683,15 @@ const ClothingBrowser: React.FC = () => {
           </main>
         </div>
       </div>
+
+      {/* Mobile Product Bottom Sheet */}
+      {selectedMobileProduct && (
+        <MobileProductSheet
+          productGroup={selectedMobileProduct}
+          isOpen={true}
+          onClose={() => setSelectedMobileProduct(null)}
+        />
+      )}
     </div>
   );
 };
