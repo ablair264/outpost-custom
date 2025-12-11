@@ -42,7 +42,6 @@ import { CartProvider } from './contexts/CartContext';
 import { WishlistProvider } from './contexts/WishlistContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
-import { HeaderFilterProvider } from './contexts/HeaderFilterContext';
 import UnifiedChatWidget from './components/UnifiedChatWidget';
 import PageLoader from './components/PageLoader';
 import ScrollToTop from './components/ScrollToTop';
@@ -110,7 +109,6 @@ function App() {
         <ThemeProvider>
           <CartProvider>
             <WishlistProvider>
-              <HeaderFilterProvider>
             <Routes>
               {/* Admin Routes - No Header/Footer */}
               <Route path="/admin/login" element={<AdminLogin />} />
@@ -166,7 +164,6 @@ function App() {
                 </div>
               } />
             </Routes>
-              </HeaderFilterProvider>
             </WishlistProvider>
           </CartProvider>
         </ThemeProvider>

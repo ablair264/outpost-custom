@@ -3,10 +3,8 @@ import { ShoppingCart, Heart, Send, ChevronDown, Sparkles, ArrowRight } from 'lu
 import { useCart } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useHeaderFilter } from '../contexts/HeaderFilterContext';
 import CartDrawer from './CartDrawer';
 import WishlistDrawer from './WishlistDrawer';
-import HeaderFilterBar from './clothing/HeaderFilterBar';
 
 interface MegaMenuLink {
   label: string;
@@ -181,7 +179,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   const { cart } = useCart();
   const { wishlist } = useWishlist();
   const { colorScheme, colors } = useTheme();
-  const { filterData } = useHeaderFilter();
+  // Removed filterData - filter bar now rendered directly in ClothingBrowser
 
   useEffect(() => {
     const handleScroll = () => {
@@ -893,12 +891,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
         </div>
       </header>
 
-        {/* Dynamic Filter Bar Slot - rendered when on clothing pages */}
-        {filterData?.isActive && (
-          <div className="border-b border-white/10">
-            <HeaderFilterBar />
-          </div>
-        )}
+        {/* Filter bar slot removed - now rendered directly in ClothingBrowser */}
     </div>
 
       {/* Mobile Navigation */}
