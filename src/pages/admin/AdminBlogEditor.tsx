@@ -80,7 +80,7 @@ const AdminBlogEditor: React.FC = () => {
         type: 'post' as const,
         category: post.category,
         publishedAt: post.publishedAt,
-        featured: post.featured,
+        featured: post.featured ?? false,
         author: post.author.name,
         slug: post.slug,
       }));
