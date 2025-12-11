@@ -66,25 +66,42 @@ const BlockRenderer: React.FC<{ block: ContentBlock }> = ({ block }) => {
         />
       );
 
-    case 'heading':
+    case 'heading': {
       const level = (block as any).level || 2;
-      const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
-      return (
-        <HeadingTag
-          className={`font-bold uppercase relative pl-4 ${
-            level === 2 ? 'text-2xl md:text-3xl mt-12 mb-6' :
-            level === 3 ? 'text-xl md:text-2xl mt-8 mb-4' :
-            'text-lg md:text-xl mt-6 mb-3'
-          }`}
-          style={{ color: blogColors.dark }}
-        >
-          <span
-            className="absolute left-0 top-0 bottom-0 w-1 rounded-full"
-            style={{ backgroundColor: blogColors.accent }}
-          />
-          {block.content}
-        </HeadingTag>
+      const baseClassName = `font-bold uppercase relative pl-4 ${
+        level === 2 ? 'text-2xl md:text-3xl mt-12 mb-6' :
+        level === 3 ? 'text-xl md:text-2xl mt-8 mb-4' :
+        'text-lg md:text-xl mt-6 mb-3'
+      }`;
+      const accentBar = (
+        <span
+          className="absolute left-0 top-0 bottom-0 w-1 rounded-full"
+          style={{ backgroundColor: blogColors.accent }}
+        />
       );
+      if (level === 3) {
+        return (
+          <h3 className={baseClassName} style={{ color: blogColors.dark }}>
+            {accentBar}
+            {block.content}
+          </h3>
+        );
+      }
+      if (level === 4) {
+        return (
+          <h4 className={baseClassName} style={{ color: blogColors.dark }}>
+            {accentBar}
+            {block.content}
+          </h4>
+        );
+      }
+      return (
+        <h2 className={baseClassName} style={{ color: blogColors.dark }}>
+          {accentBar}
+          {block.content}
+        </h2>
+      );
+    }
 
     case 'quote': {
       const quoteData = JSON.parse(block.content);
