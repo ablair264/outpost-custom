@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
@@ -29,10 +29,16 @@ import {
   Layers,
   Star,
   CheckCircle,
+  Loader2,
 } from 'lucide-react';
 import PrintingFontStyles from '../components/printing/PrintingFontStyles';
 import { getBlogPostBySlug, getRelatedPosts } from '../lib/blog-data';
-import { blogCategories, blogColors, ContentBlock } from '../lib/blog-types';
+import { blogCategories, blogColors, ContentBlock, BlogPost as BlogPostType } from '../lib/blog-types';
+
+// API configuration
+const API_BASE = process.env.NODE_ENV === 'production'
+  ? '/api/blog'
+  : '/.netlify/functions/blog';
 
 // Icon mapping
 const iconMap: Record<string, React.FC<{ className?: string; style?: React.CSSProperties }>> = {
@@ -67,7 +73,19 @@ const BlockRenderer: React.FC<{ block: ContentBlock }> = ({ block }) => {
       );
 
     case 'heading': {
-      const level = (block as any).level || 2;
+      let parsedContent = block.content;
+      let level = 2;
+
+      // Try to parse JSON content for heading
+      try {
+        const parsed = JSON.parse(block.content);
+        parsedContent = parsed.text || block.content;
+        level = parsed.level || 2;
+      } catch {
+        // Not JSON, use as-is
+        level = (block as any).level || 2;
+      }
+
       const baseClassName = `font-bold uppercase relative pl-4 ${
         level === 2 ? 'text-2xl md:text-3xl mt-12 mb-6' :
         level === 3 ? 'text-xl md:text-2xl mt-8 mb-4' :
@@ -83,7 +101,7 @@ const BlockRenderer: React.FC<{ block: ContentBlock }> = ({ block }) => {
         return (
           <h3 className={baseClassName} style={{ color: blogColors.dark }}>
             {accentBar}
-            {block.content}
+            {parsedContent}
           </h3>
         );
       }
@@ -91,20 +109,25 @@ const BlockRenderer: React.FC<{ block: ContentBlock }> = ({ block }) => {
         return (
           <h4 className={baseClassName} style={{ color: blogColors.dark }}>
             {accentBar}
-            {block.content}
+            {parsedContent}
           </h4>
         );
       }
       return (
         <h2 className={baseClassName} style={{ color: blogColors.dark }}>
           {accentBar}
-          {block.content}
+          {parsedContent}
         </h2>
       );
     }
 
     case 'quote': {
-      const quoteData = JSON.parse(block.content);
+      let quoteData;
+      try {
+        quoteData = JSON.parse(block.content);
+      } catch {
+        quoteData = { text: block.content };
+      }
       return (
         <blockquote
           className="bg-gray-50 border-l-4 py-6 px-8 my-8 italic text-gray-600"
@@ -122,7 +145,12 @@ const BlockRenderer: React.FC<{ block: ContentBlock }> = ({ block }) => {
     }
 
     case 'info-box': {
-      const infoData = JSON.parse(block.content);
+      let infoData;
+      try {
+        infoData = JSON.parse(block.content);
+      } catch {
+        infoData = { title: 'Note', text: block.content };
+      }
       return (
         <div
           className="relative rounded-xl p-6 my-8 overflow-hidden"
@@ -145,8 +173,37 @@ const BlockRenderer: React.FC<{ block: ContentBlock }> = ({ block }) => {
       );
     }
 
+    case 'image': {
+      let imageData;
+      try {
+        imageData = JSON.parse(block.content);
+      } catch {
+        imageData = { src: block.content, alt: '' };
+      }
+      if (!imageData.src) return null;
+      return (
+        <figure className="my-8">
+          <img
+            src={imageData.src}
+            alt={imageData.alt || ''}
+            className="w-full rounded-lg"
+          />
+          {imageData.caption && (
+            <figcaption className="text-center text-sm text-gray-500 mt-2">
+              {imageData.caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+    }
+
     case 'table': {
-      const tableData = JSON.parse(block.content);
+      let tableData: { headers: string[]; rows: string[][] };
+      try {
+        tableData = JSON.parse(block.content);
+      } catch {
+        return null;
+      }
       return (
         <div className="overflow-x-auto my-8">
           <table className="w-full border-collapse text-sm">
@@ -190,7 +247,12 @@ const BlockRenderer: React.FC<{ block: ContentBlock }> = ({ block }) => {
     }
 
     case 'list': {
-      const listData = JSON.parse(block.content);
+      let listData;
+      try {
+        listData = JSON.parse(block.content);
+      } catch {
+        return null;
+      }
       const ListTag = listData.ordered ? 'ol' : 'ul';
       return (
         <ListTag className={`my-6 pl-6 space-y-3 ${listData.ordered ? 'list-decimal' : 'list-disc'}`}>
@@ -205,6 +267,49 @@ const BlockRenderer: React.FC<{ block: ContentBlock }> = ({ block }) => {
       );
     }
 
+    case 'two-column': {
+      let twoColData;
+      try {
+        twoColData = JSON.parse(block.content);
+      } catch {
+        return null;
+      }
+      return (
+        <div className="grid md:grid-cols-2 gap-8 my-8">
+          <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: twoColData.left }} />
+          <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: twoColData.right }} />
+        </div>
+      );
+    }
+
+    case 'cta': {
+      let ctaData;
+      try {
+        ctaData = JSON.parse(block.content);
+      } catch {
+        return null;
+      }
+      return (
+        <div className="bg-gray-50 rounded-xl p-8 my-8 text-center">
+          {ctaData.title && (
+            <h3 className="text-xl font-bold text-[#183028] mb-2">{ctaData.title}</h3>
+          )}
+          {ctaData.text && (
+            <p className="text-gray-600 mb-4">{ctaData.text}</p>
+          )}
+          {ctaData.buttonText && ctaData.buttonLink && (
+            <Link
+              to={ctaData.buttonLink}
+              className="inline-block px-6 py-3 rounded-full text-white font-semibold"
+              style={{ backgroundColor: blogColors.accent }}
+            >
+              {ctaData.buttonText}
+            </Link>
+          )}
+        </div>
+      );
+    }
+
     default:
       return null;
   }
@@ -213,8 +318,74 @@ const BlockRenderer: React.FC<{ block: ContentBlock }> = ({ block }) => {
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [post, setPost] = useState<BlogPostType | null>(null);
 
-  const post = slug ? getBlogPostBySlug(slug) : undefined;
+  // Fetch post from API, fall back to hardcoded data
+  useEffect(() => {
+    const fetchPost = async () => {
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await fetch(`${API_BASE}/posts/${slug}`);
+        const data = await response.json();
+
+        if (data.success && data.post) {
+          // Transform API post to match our type
+          const apiPost = data.post;
+          const transformedPost: BlogPostType = {
+            id: apiPost.id,
+            slug: apiPost.slug,
+            title: apiPost.title,
+            excerpt: apiPost.excerpt || '',
+            category: apiPost.category,
+            tags: apiPost.tags || [],
+            featuredImage: apiPost.featuredImage,
+            iconName: apiPost.iconName,
+            author: apiPost.author ? {
+              name: apiPost.author.name,
+              role: apiPost.author.role || '',
+              bio: apiPost.author.bio,
+              avatarUrl: apiPost.author.avatarUrl,
+            } : { name: 'Team', role: '' },
+            publishedAt: apiPost.publishedAt || new Date().toISOString(),
+            readTime: apiPost.readTime || 5,
+            featured: apiPost.featured,
+            blocks: apiPost.blocks?.map((b: any) => ({
+              id: b.id,
+              type: b.blockType,
+              content: b.content,
+            })) || [],
+          };
+          setPost(transformedPost);
+        } else {
+          // Fall back to hardcoded data
+          const hardcodedPost = getBlogPostBySlug(slug);
+          setPost(hardcodedPost || null);
+        }
+      } catch (err) {
+        console.error('Failed to fetch post from API, using hardcoded data:', err);
+        const hardcodedPost = getBlogPostBySlug(slug);
+        setPost(hardcodedPost || null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#64a70b]" />
+      </div>
+    );
+  }
 
   if (!post) {
     return (

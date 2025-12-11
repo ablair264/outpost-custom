@@ -1,10 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Calendar, Clock, ChevronLeft, ChevronRight, Star, Car, FileText, Image, Palette, CreditCard, Coffee, TrendingUp, Users, Camera, BookOpen, Square, Gift, Layers } from 'lucide-react';
+import { ArrowRight, Calendar, Clock, ChevronLeft, ChevronRight, Star, Car, FileText, Image, Palette, CreditCard, Coffee, TrendingUp, Users, Camera, BookOpen, Square, Gift, Layers, Loader2 } from 'lucide-react';
 import PrintingFontStyles from '../components/printing/PrintingFontStyles';
-import { blogPosts, caseStudies } from '../lib/blog-data';
-import { blogCategories, blogColors, BlogCategory } from '../lib/blog-types';
+import { blogPosts as hardcodedPosts, caseStudies as hardcodedCaseStudies } from '../lib/blog-data';
+import { blogCategories, blogColors, BlogCategory, BlogPost, CaseStudy } from '../lib/blog-types';
+
+// API configuration
+const API_BASE = process.env.NODE_ENV === 'production'
+  ? '/api/blog'
+  : '/.netlify/functions/blog';
 
 // Icon mapping
 const iconMap: Record<string, React.FC<{ className?: string }>> = {
@@ -24,10 +29,143 @@ const iconMap: Record<string, React.FC<{ className?: string }>> = {
   Star,
 };
 
+// Transform API response to match our types
+interface ApiAuthor {
+  id: string;
+  name: string;
+  role?: string;
+  bio?: string;
+  avatarUrl?: string;
+}
+
+interface ApiPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt?: string;
+  category: string;
+  tags: string[];
+  featuredImage?: string;
+  iconName?: string;
+  author?: ApiAuthor;
+  publishedAt?: string;
+  readTime: number;
+  featured: boolean;
+  status: string;
+  blocks?: Array<{
+    id: string;
+    blockType: string;
+    content: string;
+    sortOrder: number;
+  }>;
+}
+
+interface ApiCaseStudy {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  clientName: string;
+  clientLocation?: string;
+  industry?: string;
+  tags: string[];
+  status: string;
+  publishedAt?: string;
+  stats?: Array<{ value: string; label: string }>;
+  processSteps?: Array<{ title: string; description: string }>;
+  results?: Array<{ title: string; description: string; iconName?: string }>;
+  gallery?: Array<{ iconName: string; label: string; imageUrl?: string; isLarge?: boolean }>;
+}
+
 const BlogList: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<BlogCategory | 'all'>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [apiPosts, setApiPosts] = useState<BlogPost[]>([]);
+  const [apiCaseStudies, setApiCaseStudies] = useState<CaseStudy[]>([]);
   const postsPerPage = 6;
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [postsRes, caseStudiesRes] = await Promise.all([
+          fetch(`${API_BASE}/posts`),
+          fetch(`${API_BASE}/case-studies`),
+        ]);
+
+        const postsData = await postsRes.json();
+        const caseStudiesData = await caseStudiesRes.json();
+
+        if (postsData.success && postsData.posts.length > 0) {
+          // Transform API posts to match our type
+          const transformedPosts: BlogPost[] = postsData.posts.map((post: ApiPost) => ({
+            id: post.id,
+            slug: post.slug,
+            title: post.title,
+            excerpt: post.excerpt || '',
+            category: post.category as BlogCategory,
+            tags: post.tags || [],
+            featuredImage: post.featuredImage,
+            iconName: post.iconName,
+            author: post.author ? {
+              name: post.author.name,
+              role: post.author.role || '',
+              bio: post.author.bio,
+              avatarUrl: post.author.avatarUrl,
+            } : { name: 'Team', role: '' },
+            publishedAt: post.publishedAt || new Date().toISOString(),
+            readTime: post.readTime || 5,
+            featured: post.featured,
+            blocks: post.blocks?.map(b => ({
+              id: b.id,
+              type: b.blockType as any,
+              content: b.content,
+            })) || [],
+          }));
+          setApiPosts(transformedPosts);
+        }
+
+        if (caseStudiesData.success && caseStudiesData.caseStudies.length > 0) {
+          // Transform API case studies to match our type
+          const transformedCaseStudies: CaseStudy[] = caseStudiesData.caseStudies.map((cs: ApiCaseStudy) => ({
+            id: cs.id,
+            slug: cs.slug,
+            title: cs.title,
+            subtitle: cs.subtitle || '',
+            clientName: cs.clientName,
+            clientLocation: cs.clientLocation,
+            industry: cs.industry || '',
+            tags: cs.tags || [],
+            publishedAt: cs.publishedAt || new Date().toISOString(),
+            stats: cs.stats || [],
+            challenge: '',
+            solution: '',
+            deliverables: [],
+            processSteps: cs.processSteps || [],
+            results: cs.results || [],
+            gallery: cs.gallery?.map(g => ({
+              iconName: g.iconName || '',
+              label: g.label || '',
+              large: g.isLarge,
+            })) || [],
+          }));
+          setApiCaseStudies(transformedCaseStudies);
+        }
+      } catch (err) {
+        console.error('Failed to fetch blog data, using hardcoded data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Use API data if available, otherwise fall back to hardcoded data
+  const blogPosts = apiPosts.length > 0 ? apiPosts : hardcodedPosts;
+  const caseStudies = apiCaseStudies.length > 0 ? apiCaseStudies : hardcodedCaseStudies;
 
   // Combine and filter posts
   const allItems = useMemo(() => {
@@ -47,7 +185,7 @@ const BlogList: React.FC = () => {
     return [...posts, ...studies].sort((a, b) =>
       new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
-  }, []);
+  }, [blogPosts, caseStudies]);
 
   const filteredItems = useMemo(() => {
     if (activeFilter === 'all') return allItems;
@@ -170,156 +308,174 @@ const BlogList: React.FC = () => {
             ))}
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-8 h-8 animate-spin text-[#64a70b]" />
+            </div>
+          )}
+
           {/* Blog Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Featured Post - spans full width on first page */}
-            {currentPage === 1 && activeFilter === 'all' && featuredItem && (
-              <motion.article
-                className="col-span-full bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="grid md:grid-cols-2 gap-0">
-                  {/* Image */}
-                  <div
-                    className="aspect-[4/3] md:aspect-auto md:min-h-[320px] flex items-center justify-center relative overflow-hidden"
-                    style={{
-                      background: `linear-gradient(135deg, ${blogColors.dark} 0%, #2d5a47 100%)`
-                    }}
-                  >
-                    {/* Noise texture */}
-                    <div
-                      className="absolute inset-0 opacity-15 pointer-events-none"
-                      style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-                      }}
-                    />
-                    <div
-                      className="w-20 h-20 rounded-full flex items-center justify-center relative z-10"
-                      style={{ backgroundColor: blogColors.accent }}
-                    >
-                      {featuredItem.iconName && iconMap[featuredItem.iconName] &&
-                        React.createElement(iconMap[featuredItem.iconName], { className: 'w-10 h-10 text-white' })
-                      }
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-8 md:p-10 flex flex-col justify-center">
-                    <span
-                      className="inline-block px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-white mb-4 w-fit"
-                      style={{ backgroundColor: blogColors.accent }}
-                    >
-                      Featured
-                    </span>
-
-                    <div className="flex items-center gap-4 mb-3 text-sm text-gray-500">
-                      <span className="font-semibold uppercase tracking-wider" style={{ color: blogColors.accent }}>
-                        {getCategoryLabel(featuredItem.category)}
-                      </span>
-                      <span>{formatDate(featuredItem.publishedAt)}</span>
-                    </div>
-
-                    <h2 className="text-2xl md:text-3xl font-bold mb-4 leading-tight" style={{ color: blogColors.dark }}>
-                      <Link
-                        to={featuredItem.linkPath}
-                        className="hover:text-[#64a70b] transition-colors"
-                      >
-                        {featuredItem.title}
-                      </Link>
-                    </h2>
-
-                    <p className="text-gray-500 mb-6 line-clamp-3">
-                      {featuredItem.excerpt}
-                    </p>
-
-                    <Link
-                      to={featuredItem.linkPath}
-                      className="inline-flex items-center gap-2 font-semibold text-sm hover:gap-3 transition-all duration-200"
-                      style={{ color: blogColors.dark }}
-                    >
-                      Read Article
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                </div>
-              </motion.article>
-            )}
-
-            {/* Regular Posts */}
-            {paginatedItems
-              .filter(item => !(currentPage === 1 && activeFilter === 'all' && item === featuredItem))
-              .map((item, index) => (
+          {!loading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Featured Post - spans full width on first page */}
+              {currentPage === 1 && activeFilter === 'all' && featuredItem && (
                 <motion.article
-                  key={item.id}
-                  className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  className="col-span-full bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  transition={{ duration: 0.5 }}
                 >
-                  {/* Image placeholder */}
-                  <div
-                    className="aspect-[16/10] flex items-center justify-center relative overflow-hidden"
-                    style={{
-                      background: `linear-gradient(135deg, ${blogColors.dark} 0%, #2d5a47 100%)`
-                    }}
-                  >
+                  <div className="grid md:grid-cols-2 gap-0">
+                    {/* Image */}
                     <div
-                      className="absolute inset-0 opacity-15 pointer-events-none"
+                      className="aspect-[4/3] md:aspect-auto md:min-h-[320px] flex items-center justify-center relative overflow-hidden"
                       style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+                        background: `linear-gradient(135deg, ${blogColors.dark} 0%, #2d5a47 100%)`
                       }}
-                    />
-                    <div
-                      className="w-16 h-16 rounded-full flex items-center justify-center relative z-10"
-                      style={{ backgroundColor: blogColors.accent }}
                     >
-                      {item.iconName && iconMap[item.iconName] &&
-                        React.createElement(iconMap[item.iconName], { className: 'w-7 h-7 text-white' })
-                      }
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-6">
-                    <div className="flex items-center gap-4 mb-3 text-xs">
-                      <span className="font-semibold uppercase tracking-wider" style={{ color: blogColors.accent }}>
-                        {item.type === 'case-study' ? 'Case Study' : getCategoryLabel(item.category)}
-                      </span>
-                      <span className="text-gray-400">{formatDate(item.publishedAt)}</span>
-                    </div>
-
-                    <h3 className="text-lg font-bold mb-3 leading-snug line-clamp-2" style={{ color: blogColors.dark }}>
-                      <Link
-                        to={item.linkPath}
-                        className="hover:text-[#64a70b] transition-colors"
+                      {/* Noise texture */}
+                      <div
+                        className="absolute inset-0 opacity-15 pointer-events-none"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+                        }}
+                      />
+                      <div
+                        className="w-20 h-20 rounded-full flex items-center justify-center relative z-10"
+                        style={{ backgroundColor: blogColors.accent }}
                       >
-                        {item.title}
+                        {featuredItem.iconName && iconMap[featuredItem.iconName] &&
+                          React.createElement(iconMap[featuredItem.iconName], { className: 'w-10 h-10 text-white' })
+                        }
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-8 md:p-10 flex flex-col justify-center">
+                      <span
+                        className="inline-block px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-white mb-4 w-fit"
+                        style={{ backgroundColor: blogColors.accent }}
+                      >
+                        Featured
+                      </span>
+
+                      <div className="flex items-center gap-4 mb-3 text-sm text-gray-500">
+                        <span className="font-semibold uppercase tracking-wider" style={{ color: blogColors.accent }}>
+                          {getCategoryLabel(featuredItem.category)}
+                        </span>
+                        <span>{formatDate(featuredItem.publishedAt)}</span>
+                      </div>
+
+                      <h2 className="text-2xl md:text-3xl font-bold mb-4 leading-tight" style={{ color: blogColors.dark }}>
+                        <Link
+                          to={featuredItem.linkPath}
+                          className="hover:text-[#64a70b] transition-colors"
+                        >
+                          {featuredItem.title}
+                        </Link>
+                      </h2>
+
+                      <p className="text-gray-500 mb-6 line-clamp-3">
+                        {featuredItem.excerpt}
+                      </p>
+
+                      <Link
+                        to={featuredItem.linkPath}
+                        className="inline-flex items-center gap-2 font-semibold text-sm hover:gap-3 transition-all duration-200"
+                        style={{ color: blogColors.dark }}
+                      >
+                        Read Article
+                        <ArrowRight className="w-4 h-4" />
                       </Link>
-                    </h3>
-
-                    <p className="text-gray-500 text-sm mb-4 line-clamp-3">
-                      {item.excerpt}
-                    </p>
-
-                    <Link
-                      to={item.linkPath}
-                      className="inline-flex items-center gap-2 font-semibold text-sm hover:gap-3 transition-all duration-200"
-                      style={{ color: blogColors.dark }}
-                    >
-                      {item.type === 'case-study' ? 'Read Case Study' : 'Read Article'}
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    </div>
                   </div>
                 </motion.article>
-              ))}
-          </div>
+              )}
+
+              {/* Regular Posts */}
+              {paginatedItems
+                .filter(item => !(currentPage === 1 && activeFilter === 'all' && item === featuredItem))
+                .map((item, index) => (
+                  <motion.article
+                    key={item.id}
+                    className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                  >
+                    {/* Image placeholder */}
+                    <div
+                      className="aspect-[16/10] flex items-center justify-center relative overflow-hidden"
+                      style={{
+                        background: `linear-gradient(135deg, ${blogColors.dark} 0%, #2d5a47 100%)`
+                      }}
+                    >
+                      <div
+                        className="absolute inset-0 opacity-15 pointer-events-none"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+                        }}
+                      />
+                      <div
+                        className="w-16 h-16 rounded-full flex items-center justify-center relative z-10"
+                        style={{ backgroundColor: blogColors.accent }}
+                      >
+                        {item.iconName && iconMap[item.iconName] &&
+                          React.createElement(iconMap[item.iconName], { className: 'w-7 h-7 text-white' })
+                        }
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-6">
+                      <div className="flex items-center gap-4 mb-3 text-xs">
+                        <span className="font-semibold uppercase tracking-wider" style={{ color: blogColors.accent }}>
+                          {item.type === 'case-study' ? 'Case Study' : getCategoryLabel(item.category)}
+                        </span>
+                        <span className="text-gray-400">{formatDate(item.publishedAt)}</span>
+                      </div>
+
+                      <h3 className="text-lg font-bold mb-3 leading-snug line-clamp-2" style={{ color: blogColors.dark }}>
+                        <Link
+                          to={item.linkPath}
+                          className="hover:text-[#64a70b] transition-colors"
+                        >
+                          {item.title}
+                        </Link>
+                      </h3>
+
+                      <p className="text-gray-500 text-sm mb-4 line-clamp-3">
+                        {item.excerpt}
+                      </p>
+
+                      <Link
+                        to={item.linkPath}
+                        className="inline-flex items-center gap-2 font-semibold text-sm hover:gap-3 transition-all duration-200"
+                        style={{ color: blogColors.dark }}
+                      >
+                        {item.type === 'case-study' ? 'Read Case Study' : 'Read Article'}
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </motion.article>
+                ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && filteredItems.length === 0 && (
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg font-medium">No posts found</p>
+              <p className="text-gray-400 mt-1">Try selecting a different category</p>
+            </div>
+          )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!loading && totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-16">
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}

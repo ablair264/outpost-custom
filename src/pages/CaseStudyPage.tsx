@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import {
@@ -22,10 +22,16 @@ import {
   DollarSign,
   Home,
   Globe,
+  Loader2,
 } from 'lucide-react';
 import PrintingFontStyles from '../components/printing/PrintingFontStyles';
 import { getCaseStudyBySlug, getRelatedCaseStudies } from '../lib/blog-data';
-import { blogColors } from '../lib/blog-types';
+import { blogColors, CaseStudy } from '../lib/blog-types';
+
+// API base URL
+const API_BASE = (import.meta as any).env?.PROD
+  ? '/api/blog'
+  : '/.netlify/functions/blog';
 
 // Icon mapping
 const iconMap: Record<string, React.FC<{ className?: string; style?: React.CSSProperties }>> = {
@@ -49,10 +55,95 @@ const iconMap: Record<string, React.FC<{ className?: string; style?: React.CSSPr
   CheckCircle,
 };
 
+// Helper to transform API response to CaseStudy type
+const transformApiCaseStudy = (apiData: any): CaseStudy => {
+  return {
+    id: apiData.id,
+    slug: apiData.slug,
+    title: apiData.title,
+    subtitle: apiData.subtitle || '',
+    clientName: apiData.client_name,
+    clientLocation: apiData.client_location || undefined,
+    industry: apiData.industry || '',
+    iconName: apiData.icon_name || 'FileText',
+    tags: apiData.tags || [],
+    challenge: apiData.challenge || '',
+    solution: apiData.solution || '',
+    deliverables: apiData.deliverables || [],
+    stats: apiData.stats || [],
+    processSteps: apiData.process_steps || [],
+    results: apiData.results || [],
+    gallery: apiData.gallery || [],
+    testimonial: apiData.testimonial || undefined,
+    relatedCaseStudies: apiData.related_case_studies || [],
+    publishedAt: apiData.published_at || new Date().toISOString(),
+  };
+};
+
 const CaseStudyPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const [caseStudy, setCaseStudy] = useState<CaseStudy | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedStudies, setRelatedStudies] = useState<CaseStudy[]>([]);
 
-  const caseStudy = slug ? getCaseStudyBySlug(slug) : undefined;
+  useEffect(() => {
+    const fetchCaseStudy = async () => {
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Try to fetch from API first
+        const response = await fetch(`${API_BASE}/case-studies/${slug}`);
+        if (response.ok) {
+          const data = await response.json();
+          const transformedStudy = transformApiCaseStudy(data);
+          setCaseStudy(transformedStudy);
+
+          // Fetch related case studies if any
+          if (transformedStudy.relatedCaseStudies && transformedStudy.relatedCaseStudies.length > 0) {
+            // For now, use hardcoded related studies as fallback
+            const hardcodedRelated = getRelatedCaseStudies(transformedStudy.relatedCaseStudies);
+            setRelatedStudies(hardcodedRelated);
+          }
+        } else {
+          // Fall back to hardcoded data
+          const hardcodedStudy = getCaseStudyBySlug(slug);
+          if (hardcodedStudy) {
+            setCaseStudy(hardcodedStudy);
+            const hardcodedRelated = hardcodedStudy.relatedCaseStudies
+              ? getRelatedCaseStudies(hardcodedStudy.relatedCaseStudies)
+              : [];
+            setRelatedStudies(hardcodedRelated);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching case study:', error);
+        // Fall back to hardcoded data on error
+        const hardcodedStudy = getCaseStudyBySlug(slug);
+        if (hardcodedStudy) {
+          setCaseStudy(hardcodedStudy);
+          const hardcodedRelated = hardcodedStudy.relatedCaseStudies
+            ? getRelatedCaseStudies(hardcodedStudy.relatedCaseStudies)
+            : [];
+          setRelatedStudies(hardcodedRelated);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCaseStudy();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#64a70b]" />
+      </div>
+    );
+  }
 
   if (!caseStudy) {
     return (
@@ -66,10 +157,6 @@ const CaseStudyPage: React.FC = () => {
       </div>
     );
   }
-
-  const relatedStudies = caseStudy.relatedCaseStudies
-    ? getRelatedCaseStudies(caseStudy.relatedCaseStudies)
-    : [];
 
   return (
     <>
