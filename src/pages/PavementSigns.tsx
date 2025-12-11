@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
-import { CheckCircle2, XCircle, Mail, Eye, Wind, Layers, Palette, Target } from 'lucide-react';
+import { CheckCircle2, XCircle, Mail, Eye, Wind, Layers, Palette, Target, Printer, Scissors } from 'lucide-react';
 import { usePageTheme } from '../contexts/ThemeContext';
 import HowItWorksSection from '../components/HowItWorksSection';
 
@@ -251,13 +251,15 @@ const PavementSigns: React.FC = () => {
                 <Layers className="w-12 h-12 text-[#908d9a] mb-6" />
                 <h3 className="hearns-font text-4xl md:text-5xl mb-4">Best for Windy Locations</h3>
                 <p className="text-white/80 text-lg leading-relaxed mb-8 max-w-md">
-                  The swinging panel design allows the sign to move with the wind, reducing the chance of toppling.
+                  The swinging panel design allows the sign to move with the wind, reducing the chance of toppling. Built with a steel tubing frame and recycled PVC base.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Water-fillable base</span>
                   <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Wheels for easy transport</span>
-                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Double-sided panel</span>
+                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Aluminium double-sided panel</span>
+                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Steel tubing frame</span>
                   <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Black or white frame</span>
+                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Easily swap out panels</span>
                 </div>
               </motion.div>
 
@@ -283,7 +285,8 @@ const PavementSigns: React.FC = () => {
                 <ul className="space-y-2 text-[#383349]/70">
                   <li className="flex justify-between"><span>Small:</span> <span className="font-medium text-[#221c35]">11kg</span></li>
                   <li className="flex justify-between"><span>Medium:</span> <span className="font-medium text-[#221c35]">16kg</span></li>
-                  <li className="flex justify-between"><span>Large (filled):</span> <span className="font-medium text-[#221c35]">31kg</span></li>
+                  <li className="flex justify-between"><span>Large (empty):</span> <span className="font-medium text-[#221c35]">13kg</span></li>
+                  <li className="flex justify-between"><span>Large (with water):</span> <span className="font-medium text-[#221c35]">31kg</span></li>
                 </ul>
               </motion.div>
 
@@ -361,6 +364,132 @@ const PavementSigns: React.FC = () => {
                   </li>
                 </ul>
               </div>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Customisation Types Section */}
+        <section className="py-24 px-6 md:px-12 lg:px-24 bg-white relative overflow-hidden">
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-16">
+              <h2 className="smilecake-font text-5xl md:text-6xl text-[#221c35] mb-4">
+                Types of Customisation
+              </h2>
+              <p className="text-xl text-[#383349]/70 max-w-2xl mx-auto">
+                We believe in always using high performance materials. Chat to our team who can advise on the best type of customisation for your business.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+              {/* Printed Vinyl */}
+              <motion.div
+                variants={fadeInUp}
+                className="bg-gradient-to-br from-[#221c35] to-[#383349] rounded-3xl p-8 md:p-10 text-white"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center">
+                    <Printer className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="hearns-font text-3xl">Printed Vinyl</h3>
+                </div>
+                <p className="text-white/70 mb-6 leading-relaxed">
+                  Inks are used to print a design onto clear or white vinyl. Ideal for multiple colours, gradients, shading, photographs and complex illustrations.
+                </p>
+                <p className="text-[#908d9a] text-sm mb-6">
+                  Great for multiple colours & small details
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    <span className="text-white/80">Very small text and fine lines</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    <span className="text-white/80">Gradients and shading</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    <span className="text-white/80">Photos and illustrations</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    <span className="text-white/80">Grunge / stamp effects</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    <span className="text-white/80">Fluorescent / neon colours</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    <span className="text-white/80">Metallic finishes</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-400" />
+                    <span className="text-white/80">Glitter + holographic</span>
+                  </div>
+                </div>
+                <p className="text-white/60 text-sm mt-6 pt-6 border-t border-white/10">
+                  Note: Due to ink being on the surface, colour can fade quicker than cut vinyl which has colour throughout the material.
+                </p>
+              </motion.div>
+
+              {/* Cut Vinyl */}
+              <motion.div
+                variants={fadeInUp}
+                className="bg-[#f8f8f8] rounded-3xl p-8 md:p-10 border border-[#c1c6c8]/30"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 rounded-2xl bg-[#221c35] flex items-center justify-center">
+                    <Scissors className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="hearns-font text-3xl text-[#221c35]">Cut Vinyl</h3>
+                </div>
+                <p className="text-[#383349]/80 mb-6 leading-relaxed">
+                  A specialist machine cuts out shapes and letters from pre-coloured rolls of vinyl. This gives a sharper edge to the artwork than printed graphics.
+                </p>
+                <p className="text-[#908d9a] text-sm mb-6">
+                  Best suited to simple designs, logos and lettering
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    <span className="text-[#383349]/80">Fluorescent / neon colours</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    <span className="text-[#383349]/80">Metallic finishes</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    <span className="text-[#383349]/80">Glitter + holographic</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-5 h-5 text-red-400" />
+                    <span className="text-[#383349]/50">Very small text and fine lines</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-5 h-5 text-red-400" />
+                    <span className="text-[#383349]/50">Gradients</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-5 h-5 text-red-400" />
+                    <span className="text-[#383349]/50">Photos</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-5 h-5 text-red-400" />
+                    <span className="text-[#383349]/50">Grunge / stamp effects</span>
+                  </div>
+                </div>
+                <p className="text-[#383349]/60 text-sm mt-6 pt-6 border-t border-[#c1c6c8]/30">
+                  Cut vinyl decals have no background – the background you see is what you install onto, be that a bare surface or pre-applied coloured vinyl.
+                </p>
+              </motion.div>
             </div>
           </motion.div>
         </section>

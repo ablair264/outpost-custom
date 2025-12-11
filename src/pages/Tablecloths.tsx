@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Mail, Palette, Ruler, Sparkles, Table2 } from 'lucide-react';
+import { CheckCircle2, Mail, Palette, Ruler, Sparkles, Table2, XCircle, RectangleHorizontal, Presentation, Building2 } from 'lucide-react';
 import { usePageTheme } from '../contexts/ThemeContext';
 import HowItWorksSection from '../components/HowItWorksSection';
 
@@ -105,7 +105,7 @@ const Tablecloths: React.FC = () => {
             <div className="max-w-5xl">
               <div ref={headingRef}>
                 <p className="neuzeit-font text-[#908d9a] uppercase tracking-[0.3em] text-sm mb-6">
-                  Branded Tablecloths
+                  Branded Tablecloths & Runners
                 </p>
                 <h1 className="hearns-font text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white leading-[0.95] mb-8">
                   Professional<br />
@@ -115,16 +115,16 @@ const Tablecloths: React.FC = () => {
 
               <div ref={subtitleRef} className="max-w-xl mb-12">
                 <p className="text-xl md:text-2xl text-[#c1c6c8] font-light leading-relaxed">
-                  Custom table covers for exhibitions, events, and trade shows.
+                  Dress any table in event-ready style – branded tablecloths give your stand that professional finish.
                 </p>
               </div>
 
               <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4">
                 <a
-                  href="#how-it-works"
+                  href="#options"
                   className="group inline-flex items-center justify-center px-8 py-4 rounded-full bg-white text-[#221c35] font-semibold text-base hover:bg-[#c1c6c8] transition-all duration-300"
                 >
-                  See How It Works
+                  View Options
                   <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
@@ -143,9 +143,8 @@ const Tablecloths: React.FC = () => {
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
         </section>
 
-        {/* Perfect For Section - Editorial staggered layout */}
+        {/* Perfect For Section */}
         <section className="py-24 px-6 md:px-12 lg:px-24 bg-white relative overflow-hidden">
-          {/* Decorative element */}
           <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-[#908d9a]/5" />
 
           <motion.div
@@ -157,53 +156,49 @@ const Tablecloths: React.FC = () => {
           >
             <motion.div variants={fadeInUp} className="mb-20">
               <h2 className="smilecake-font text-5xl md:text-7xl text-[#221c35] mb-4">
-                Event Ready
+                Perfect For
               </h2>
               <div className="w-24 h-1 bg-[#908d9a]" />
             </motion.div>
 
-            {/* Staggered layout */}
             <div className="grid md:grid-cols-12 gap-8 md:gap-12">
-              {/* Tables */}
               <motion.div variants={fadeInUp} className="md:col-span-5">
                 <div className="flex items-start gap-6">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#383349] to-[#221c35] flex items-center justify-center flex-shrink-0">
-                    <Table2 className="w-10 h-10 text-white" />
+                    <Presentation className="w-10 h-10 text-white" />
                   </div>
                   <div>
-                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Any Table</h3>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Exhibitions & Trade Shows</h3>
                     <p className="text-lg text-[#383349]/80 leading-relaxed">
-                      Dress trestle tables, registration desks, or merch counters with branded covers that elevate your presentation.
+                      Transform ordinary trestle tables into professional branded displays that attract visitors to your stand.
                     </p>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Branding - offset */}
               <motion.div variants={fadeInUp} className="md:col-span-5 md:col-start-7 md:mt-24">
                 <div className="flex items-start gap-6">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#908d9a] to-[#383349] flex items-center justify-center flex-shrink-0">
-                    <Palette className="w-10 h-10 text-white" />
+                    <Building2 className="w-10 h-10 text-white" />
                   </div>
                   <div>
-                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Your Branding</h3>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Corporate Events</h3>
                     <p className="text-lg text-[#383349]/80 leading-relaxed">
-                      Highlight logos, slogans, or campaign artwork with full-colour dye sublimation printing.
+                      Registration desks, product launches, and conferences. Add instant professionalism to any event space.
                     </p>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Sizing - centered */}
               <motion.div variants={fadeInUp} className="md:col-span-6 md:col-start-4 md:mt-12">
                 <div className="flex items-start gap-6">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#c1c6c8] to-[#908d9a] flex items-center justify-center flex-shrink-0">
-                    <Ruler className="w-10 h-10 text-[#221c35]" />
+                    <Sparkles className="w-10 h-10 text-[#221c35]" />
                   </div>
                   <div>
-                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Perfect Fit</h3>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Markets & Pop-Ups</h3>
                     <p className="text-lg text-[#383349]/80 leading-relaxed">
-                      Standard 4ft, 6ft, and 8ft trestle table sizes, plus custom measurements for reception desks or counters.
+                      Craft markets, pop-up shops, and outdoor events. Stand out from neighbouring stalls with branded table covers.
                     </p>
                   </div>
                 </div>
@@ -216,12 +211,11 @@ const Tablecloths: React.FC = () => {
         <HowItWorksSection
           serviceType="tablecloths"
           sectionId="how-it-works"
-          subtitle="Our custom tablecloths transform ordinary tables into branded display spaces. Choose from polyester throw, fitted, or stretch styles."
+          subtitle="Choose from conference cloths, box fitted covers, or table runners. Add your branding and we'll deliver event-ready table covers."
         />
 
-        {/* Fabric & Style Options - Asymmetric grid */}
-        <section className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8] relative overflow-hidden">
-          {/* Background texture */}
+        {/* Select Your Tablecloth Section */}
+        <section id="options" className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8] relative overflow-hidden">
           <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url(/ConcreteTexture.webp)', backgroundSize: 'cover' }} />
 
           <motion.div
@@ -233,83 +227,191 @@ const Tablecloths: React.FC = () => {
           >
             <motion.div variants={fadeInUp} className="text-center mb-20">
               <h2 className="hearns-font text-5xl md:text-7xl text-[#221c35] mb-4">
-                Fabric & Style
+                Select Your Tablecloth
               </h2>
-              <p className="text-xl text-[#383349]/70 max-w-2xl mx-auto">
-                Choose the right style for your application.
+              <p className="text-xl text-[#383349]/70 max-w-3xl mx-auto">
+                Choose from three styles to suit your setup and budget. All options available for 4ft, 6ft, and 8ft trestle tables.
               </p>
             </motion.div>
 
-            {/* Asymmetric masonry-style layout */}
-            <div className="grid md:grid-cols-3 gap-6">
-              {/* Polyester Throw - Large */}
-              <motion.div
-                variants={fadeInUp}
-                className="md:col-span-2 md:row-span-2 bg-gradient-to-br from-[#221c35] to-[#383349] rounded-3xl p-10 md:p-14 text-white relative overflow-hidden group"
-              >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700" />
-                <Table2 className="w-12 h-12 text-[#908d9a] mb-6" />
-                <h3 className="hearns-font text-4xl md:text-5xl mb-4">Polyester Throw</h3>
-                <p className="text-xl font-medium text-[#908d9a] mb-4">Most Versatile</p>
-                <p className="text-white/80 text-lg leading-relaxed mb-8 max-w-md">
-                  Drapes over the table with box pleats or rounded corners. Cover 3 or 4 sides depending on access needs.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Wrinkle-resistant</span>
-                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Dye-sublimation ready</span>
-                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Fire-retardant option</span>
-                </div>
-              </motion.div>
+            {/* Conference Cloth */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-gradient-to-br from-[#221c35] to-[#383349] rounded-3xl p-10 md:p-14 text-white relative overflow-hidden mb-8"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2" />
 
-              {/* Fitted Cover */}
-              <motion.div
-                variants={fadeInUp}
-                className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30 hover:border-[#908d9a]/50 transition-colors"
-              >
-                <Sparkles className="w-10 h-10 text-[#908d9a] mb-4" />
-                <h3 className="hearns-font text-2xl text-[#221c35] mb-2">Fitted Cover</h3>
-                <p className="text-lg font-semibold text-[#908d9a] mb-3">Crisp Silhouette</p>
-                <p className="text-[#383349]/70 leading-relaxed">
-                  Sewn corners for a crisp silhouette. Ideal for retail or exhibition pods where audiences see multiple sides.
-                </p>
-              </motion.div>
-
-              {/* Stretch Fabric */}
-              <motion.div
-                variants={fadeInUp}
-                className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30 hover:border-[#908d9a]/50 transition-colors"
-              >
-                <Ruler className="w-10 h-10 text-[#908d9a] mb-4" />
-                <h3 className="hearns-font text-2xl text-[#221c35] mb-2">Stretch Fabric</h3>
-                <p className="text-lg font-semibold text-[#908d9a] mb-3">Outdoor Ready</p>
-                <p className="text-[#383349]/70 leading-relaxed">
-                  Elasticated edges hug cocktail tables or tall displays. Works well outdoors in breezy conditions.
-                </p>
-              </motion.div>
-
-              {/* Sizing - Wide */}
-              <motion.div
-                variants={fadeInUp}
-                className="md:col-span-3 bg-gradient-to-r from-[#908d9a]/10 via-[#908d9a]/5 to-transparent rounded-3xl p-10 flex flex-col md:flex-row items-center gap-8"
-              >
-                <Ruler className="w-16 h-16 text-[#383349] flex-shrink-0" />
-                <div className="flex-1">
-                  <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Standard & Custom Sizing</h3>
-                  <p className="text-[#383349]/70 text-lg leading-relaxed">
-                    4ft, 6ft, and 8ft trestle table sizes available. Custom measurements for reception desks or unique counter dimensions.
+              <div className="grid md:grid-cols-2 gap-12">
+                <div>
+                  <Table2 className="w-12 h-12 text-[#908d9a] mb-6" />
+                  <h3 className="hearns-font text-4xl md:text-5xl mb-2">Conference Cloth (Throw)</h3>
+                  <p className="text-3xl font-bold text-[#908d9a] mb-6">From £17 + VAT</p>
+                  <p className="text-white/80 text-lg leading-relaxed mb-6">
+                    The conference cloth is a flat piece of fabric designed to drape over your table. Our simplest option for covering a table – offers less of a tailored look, but will still give your table a professional finish.
                   </p>
                 </div>
-                <a href="/contact" className="flex-shrink-0 px-6 py-3 rounded-full bg-[#383349] text-white font-medium hover:bg-[#221c35] transition-colors">
-                  Get Quote
-                </a>
-              </motion.div>
-            </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-semibold text-[#908d9a] mb-2">Available Sizes</h4>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-3 py-1 rounded-full bg-white/10 text-sm">4ft trestle table</span>
+                      <span className="px-3 py-1 rounded-full bg-white/10 text-sm">6ft trestle table</span>
+                      <span className="px-3 py-1 rounded-full bg-white/10 text-sm">8ft trestle table</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-[#908d9a] mb-2">Features</h4>
+                    <ul className="space-y-1 text-white/80 text-sm">
+                      <li>• Drapes over the table for quick setup</li>
+                      <li>• Can cover 3 or 4 sides depending on access needs</li>
+                      <li>• Box pleats or rounded corners available</li>
+                      <li>• Wrinkle-resistant fabric</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 pt-4">
+                    <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Most affordable</span>
+                    <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Quick setup</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Box Fitted Tablecloth */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-white rounded-3xl p-10 md:p-14 border border-[#c1c6c8]/30 relative overflow-hidden mb-8"
+            >
+              <div className="grid md:grid-cols-2 gap-12">
+                <div>
+                  <Sparkles className="w-12 h-12 text-[#908d9a] mb-6" />
+                  <h3 className="hearns-font text-4xl md:text-5xl text-[#221c35] mb-2">Box Fitted Tablecloth</h3>
+                  <p className="text-3xl font-bold text-[#908d9a] mb-6">From £29.50 + VAT</p>
+                  <p className="text-[#383349]/80 text-lg leading-relaxed mb-6">
+                    A fitted table cover that sits snugly over your table. For a more tailored look when multiple sides of the table will be visible – ideal for retail or exhibition pods where audiences see all angles.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-semibold text-[#908d9a] mb-2">Available Sizes</h4>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-3 py-1 rounded-full bg-[#221c35]/10 text-sm text-[#221c35]">4ft trestle table</span>
+                      <span className="px-3 py-1 rounded-full bg-[#221c35]/10 text-sm text-[#221c35]">6ft trestle table</span>
+                      <span className="px-3 py-1 rounded-full bg-[#221c35]/10 text-sm text-[#221c35]">8ft trestle table</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-[#908d9a] mb-2">Features</h4>
+                    <ul className="space-y-1 text-[#383349]/80 text-sm">
+                      <li>• Sewn corners for a crisp silhouette</li>
+                      <li>• Sits snugly over your table</li>
+                      <li>• Professional tailored appearance</li>
+                      <li>• Perfect when all sides are visible</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 pt-4">
+                    <span className="px-4 py-2 rounded-full bg-[#221c35] text-white text-sm">Tailored look</span>
+                    <span className="px-4 py-2 rounded-full bg-[#221c35]/10 text-[#221c35] text-sm">Most professional</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Table Runner */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-gradient-to-r from-[#908d9a]/10 via-[#908d9a]/5 to-transparent rounded-3xl p-10 mb-8"
+            >
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="flex items-start gap-6">
+                  <RectangleHorizontal className="w-12 h-12 text-[#383349] flex-shrink-0" />
+                  <div>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Table Runner</h3>
+                    <p className="text-2xl font-bold text-[#908d9a] mb-4">From £27 + VAT</p>
+                    <p className="text-[#383349]/70 text-lg leading-relaxed">
+                      Our most affordable way to add instant impact to an everyday table. Standard 30cm drop (alternative options available). Perfect for adding branding to tables you already have.
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1 rounded-full bg-[#221c35]/10 text-sm text-[#221c35]">4ft trestle table</span>
+                    <span className="px-3 py-1 rounded-full bg-[#221c35]/10 text-sm text-[#221c35]">6ft trestle table</span>
+                    <span className="px-3 py-1 rounded-full bg-[#221c35]/10 text-sm text-[#221c35]">8ft trestle table</span>
+                  </div>
+                  <p className="text-sm text-[#383349]/60">Standard 30cm drop • Custom drops available</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Custom Sizing */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-white rounded-3xl p-10 border border-[#c1c6c8]/30 flex flex-col md:flex-row items-center gap-8"
+            >
+              <Ruler className="w-16 h-16 text-[#383349] flex-shrink-0" />
+              <div>
+                <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Custom Sizing Available</h3>
+                <p className="text-[#383349]/70 text-lg leading-relaxed">
+                  Need something for a reception desk, counter, or non-standard table? We can create custom measurements to fit your exact requirements.
+                </p>
+              </div>
+              <a href="/contact" className="flex-shrink-0 px-6 py-3 rounded-full bg-[#383349] text-white font-medium hover:bg-[#221c35] transition-colors">
+                Get Quote
+              </a>
+            </motion.div>
           </motion.div>
         </section>
 
-        {/* Branding Methods */}
+        {/* Customisation Pricing Section */}
+        <section className="py-24 px-6 md:px-12 lg:px-24 bg-white relative overflow-hidden">
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-20">
+              <h2 className="hearns-font text-5xl md:text-7xl text-[#221c35] mb-4">
+                Choose Your Customisation
+              </h2>
+              <p className="text-xl text-[#383349]/70 max-w-3xl mx-auto">
+                Add your branding to any tablecloth or runner. Pricing is per customisation area.
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={fadeInUp}
+              className="bg-[#f8f8f8] rounded-3xl p-10 md:p-14 max-w-2xl mx-auto"
+            >
+              <h3 className="hearns-font text-2xl text-[#221c35] mb-8 text-center">Customisation Pricing</h3>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-[#c1c6c8]/30">
+                  <span className="text-[#221c35]">Up to 500 × 500mm</span>
+                  <span className="font-bold text-[#908d9a]">£50 + VAT</span>
+                </div>
+                <div className="flex justify-between items-center py-3">
+                  <span className="text-[#221c35]">Up to 1000 × 500mm</span>
+                  <span className="font-bold text-[#908d9a]">£75 + VAT</span>
+                </div>
+              </div>
+
+              <p className="text-center text-[#383349]/60 mt-8 text-sm">
+                Larger customisation areas available – contact us for a quote
+              </p>
+            </motion.div>
+          </motion.div>
+        </section>
+
+        {/* Types of Customisation - DTF vs HTV */}
         <section className="relative py-32 overflow-hidden">
-          {/* Diagonal background */}
           <div className="absolute inset-0 bg-[#221c35]" />
           <div className="absolute top-0 right-0 w-1/2 h-full bg-[#383349] transform skew-x-12 origin-top-right hidden md:block" />
 
@@ -320,67 +422,114 @@ const Tablecloths: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#908d9a]/20 text-[#908d9a] text-sm font-medium mb-6">
-                  <Palette className="w-4 h-4" />
-                  Branding Methods
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#908d9a]/20 text-[#908d9a] text-sm font-medium mb-6">
+                <Palette className="w-4 h-4" />
+                High Performance Materials
+              </div>
+              <h2 className="hearns-font text-4xl md:text-6xl text-white mb-6">
+                Types of Customisation
+              </h2>
+              <p className="text-xl text-white/80 max-w-2xl mx-auto">
+                Both of our customisation methods are cost-effective ways to transfer high quality designs onto fabric. When looked after, the customisation will last a long time.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* DTF */}
+              <div className="bg-white/5 frosted-glass rounded-3xl p-8 md:p-10 border border-white/10">
+                <h3 className="hearns-font text-3xl text-white mb-4">Direct to Film (DTF)</h3>
+                <p className="text-white/70 mb-6">DTF is great for multiple colours & small details. Gives a similar finish to screen printing but without the set up fees!</p>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Very small text and fine lines</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Gradients</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Photos</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Grunge / stamp effects</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Fluorescent / neon colours</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Metallic finishes</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Glitter + holographic</span>
+                  </div>
                 </div>
-                <h2 className="hearns-font text-4xl md:text-6xl text-white mb-6">
-                  Make It<br />Yours
-                </h2>
-                <p className="text-xl text-white/80 leading-relaxed mb-8">
-                  Multiple printing methods to suit your design and budget.
-                </p>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
-                    <span className="text-white/90"><strong className="text-white">Dye Sublimation:</strong> All-over coverage, gradients, photography</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
-                    <span className="text-white/90"><strong className="text-white">Heat-Applied Vinyl:</strong> Spot logos on stock-colour cloths</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
-                    <span className="text-white/90"><strong className="text-white">Mixed Approach:</strong> Base colour with vinyl overlays</span>
-                  </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-white/80">No set-up fee</span>
+                  <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-white/80">No minimum order</span>
                 </div>
               </div>
 
+              {/* HTV */}
               <div className="bg-white/5 frosted-glass rounded-3xl p-8 md:p-10 border border-white/10">
-                <h3 className="smilecake-font text-3xl text-white mb-6">Care Tips</h3>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
-                    <span className="text-white/80">Machine wash on cool with mild detergent</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
-                    <span className="text-white/80">Avoid bleach or fabric softener</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
-                    <span className="text-white/80">Air-dry or tumble-dry low</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
-                    <span className="text-white/80">Store folded in supplied bags</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
-                    <span className="text-white/80">Steam or lightly iron before events</span>
-                  </li>
-                </ul>
+                <h3 className="hearns-font text-3xl text-white mb-4">Heat Transfer Vinyl (HTV)</h3>
+                <p className="text-white/70 mb-6">HTV is best suited to simple designs, logos and lettering. Artwork is cut, rather than printed, so the edges are super sharp and crisp.</p>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Fluorescent / neon colours</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Metallic finishes</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Glitter + holographic</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-5 h-5 text-white/40" />
+                    <span className="text-white/50">Very small text and fine lines</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-5 h-5 text-white/40" />
+                    <span className="text-white/50">Gradients</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-5 h-5 text-white/40" />
+                    <span className="text-white/50">Photos</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-5 h-5 text-white/40" />
+                    <span className="text-white/50">Grunge / stamp effects</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-white/80">No set-up fee</span>
+                  <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-white/80">No minimum order</span>
+                </div>
               </div>
             </div>
+
+            <p className="text-center text-white/60 mt-8">
+              Chat to our team who can advise on the best type of customisation for your business.
+            </p>
           </motion.div>
         </section>
 
-        {/* CTA Section - Split screen */}
+        {/* Care Tips & CTA Section */}
         <section className="bg-white">
           <div className="grid md:grid-cols-2">
-            {/* Left - Info */}
             <motion.div
               className="py-24 px-6 md:px-12 lg:px-16 bg-[#f8f8f8]"
               initial={{ opacity: 0, x: -40 }}
@@ -389,41 +538,33 @@ const Tablecloths: React.FC = () => {
               transition={{ duration: 0.8 }}
             >
               <h2 className="hearns-font text-4xl md:text-5xl text-[#221c35] mb-8">
-                Event<br />
-                <span className="text-[#908d9a]">Essentials</span>
+                Care &<br />
+                <span className="text-[#908d9a]">Maintenance</span>
               </h2>
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#221c35] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold">1</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">Choose Style</h3>
-                    <p className="text-[#383349]/70">Throw, fitted, or stretch to suit your setup.</p>
-                  </div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
+                  <span className="text-[#383349]/80">Machine wash on cool with mild detergent</span>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#908d9a] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold">2</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">Add Branding</h3>
-                    <p className="text-[#383349]/70">Full dye-sublimation or spot vinyl logos.</p>
-                  </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
+                  <span className="text-[#383349]/80">Avoid bleach or fabric softener</span>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#383349] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold">3</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">Event Ready</h3>
-                    <p className="text-[#383349]/70">Reusable across multiple events and campaigns.</p>
-                  </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
+                  <span className="text-[#383349]/80">Air-dry or tumble-dry low</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
+                  <span className="text-[#383349]/80">Store folded in supplied bags</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
+                  <span className="text-[#383349]/80">Steam or lightly iron before events</span>
                 </div>
               </div>
             </motion.div>
 
-            {/* Right - CTA */}
             <motion.div
               className="py-24 px-6 md:px-12 lg:px-16 bg-[#221c35]"
               initial={{ opacity: 0, x: 40 }}

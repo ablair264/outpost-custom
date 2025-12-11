@@ -428,6 +428,10 @@ const GlassManifestation: React.FC = () => {
                   <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-0.5" />
                   <span className="text-white/80">Avoid abrasive pads on cut edges</span>
                 </li>
+                <li className="flex items-start gap-4">
+                  <CheckCircle2 className="w-6 h-6 text-[#908d9a] flex-shrink-0 mt-0.5" />
+                  <span className="text-white/80">Never use ammonia-based cleaning products</span>
+                </li>
               </ul>
 
               <a

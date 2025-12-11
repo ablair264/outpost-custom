@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Hammer, Shield, Mail, Palette, Package, Layers, Sparkles } from 'lucide-react';
+import { CheckCircle2, Hammer, Shield, Mail, Palette, Package, Layers, Sparkles, XCircle, Building, Store, MapPin } from 'lucide-react';
 import { usePageTheme } from '../contexts/ThemeContext';
 import HowItWorksSection from '../components/HowItWorksSection';
 
@@ -121,10 +121,10 @@ const Signboards: React.FC = () => {
 
               <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4">
                 <a
-                  href="#how-it-works"
+                  href="#options"
                   className="group inline-flex items-center justify-center px-8 py-4 rounded-full bg-white text-[#221c35] font-semibold text-base hover:bg-[#c1c6c8] transition-all duration-300"
                 >
-                  See How It Works
+                  View Materials
                   <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
@@ -143,9 +143,8 @@ const Signboards: React.FC = () => {
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
         </section>
 
-        {/* Perfect For Section - Editorial staggered layout */}
+        {/* Perfect For Section */}
         <section className="py-24 px-6 md:px-12 lg:px-24 bg-white relative overflow-hidden">
-          {/* Decorative element */}
           <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-[#908d9a]/5" />
 
           <motion.div
@@ -157,53 +156,49 @@ const Signboards: React.FC = () => {
           >
             <motion.div variants={fadeInUp} className="mb-20">
               <h2 className="smilecake-font text-5xl md:text-7xl text-[#221c35] mb-4">
-                Tailored to You
+                Perfect For
               </h2>
               <div className="w-24 h-1 bg-[#908d9a]" />
             </motion.div>
 
-            {/* Staggered layout */}
             <div className="grid md:grid-cols-12 gap-8 md:gap-12">
-              {/* Design */}
               <motion.div variants={fadeInUp} className="md:col-span-5">
                 <div className="flex items-start gap-6">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#383349] to-[#221c35] flex items-center justify-center flex-shrink-0">
-                    <Palette className="w-10 h-10 text-white" />
+                    <Store className="w-10 h-10 text-white" />
                   </div>
                   <div>
-                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Design Support</h3>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Shopfronts & Offices</h3>
                     <p className="text-lg text-[#383349]/80 leading-relaxed">
-                      Our design team tailors artwork, sizing, and finishes to match your branding perfectly.
+                      Exterior fascia signs, entrance displays, and office branding. Make a lasting first impression with durable, professional signage.
                     </p>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Materials - offset */}
               <motion.div variants={fadeInUp} className="md:col-span-5 md:col-start-7 md:mt-24">
                 <div className="flex items-start gap-6">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#908d9a] to-[#383349] flex items-center justify-center flex-shrink-0">
-                    <Package className="w-10 h-10 text-white" />
+                    <Building className="w-10 h-10 text-white" />
                   </div>
                   <div>
-                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Multiple Materials</h3>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Interior Wayfinding</h3>
                     <p className="text-lg text-[#383349]/80 leading-relaxed">
-                      Choose from aluminium composite, perspex acrylic, foamex, or correx depending on your needs.
+                      Reception signs, directional signage, and room identification. Premium acrylic and aluminium options for professional interiors.
                     </p>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Production - centered */}
               <motion.div variants={fadeInUp} className="md:col-span-6 md:col-start-4 md:mt-12">
                 <div className="flex items-start gap-6">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#c1c6c8] to-[#908d9a] flex items-center justify-center flex-shrink-0">
-                    <Hammer className="w-10 h-10 text-[#221c35]" />
+                    <MapPin className="w-10 h-10 text-[#221c35]" />
                   </div>
                   <div>
-                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Fast Production</h3>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Events & Temporary</h3>
                     <p className="text-lg text-[#383349]/80 leading-relaxed">
-                      Production typically 5–10 working days. Professional installation available across the Midlands.
+                      Exhibition stands, event signage, and temporary outdoor displays. Lightweight correx and foamex options for easy transport and setup.
                     </p>
                   </div>
                 </div>
@@ -216,12 +211,11 @@ const Signboards: React.FC = () => {
         <HowItWorksSection
           serviceType="signboards"
           sectionId="how-it-works"
-          subtitle="Our custom signboards are available in a range of materials and finishes to suit any application. From durable outdoor aluminium to premium acrylic for interior spaces."
+          subtitle="Choose from five material options to suit your application. From durable outdoor aluminium composite to lightweight correx for temporary signage."
         />
 
-        {/* Material Options - Asymmetric grid */}
-        <section className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8] relative overflow-hidden">
-          {/* Background texture */}
+        {/* Material Options Section */}
+        <section id="options" className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8] relative overflow-hidden">
           <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url(/ConcreteTexture.webp)', backgroundSize: 'cover' }} />
 
           <motion.div
@@ -233,83 +227,183 @@ const Signboards: React.FC = () => {
           >
             <motion.div variants={fadeInUp} className="text-center mb-20">
               <h2 className="hearns-font text-5xl md:text-7xl text-[#221c35] mb-4">
-                Material Options
+                Select Your Material
               </h2>
-              <p className="text-xl text-[#383349]/70 max-w-2xl mx-auto">
-                Choose the right substrate for your application.
+              <p className="text-xl text-[#383349]/70 max-w-3xl mx-auto">
+                Each material has unique properties suited to different applications. Our team can advise on the best choice for your project.
               </p>
             </motion.div>
 
-            {/* Asymmetric masonry-style layout */}
-            <div className="grid md:grid-cols-3 gap-6">
-              {/* Aluminium Composite - Large */}
-              <motion.div
-                variants={fadeInUp}
-                className="md:col-span-2 md:row-span-2 bg-gradient-to-br from-[#221c35] to-[#383349] rounded-3xl p-10 md:p-14 text-white relative overflow-hidden group"
-              >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700" />
-                <Shield className="w-12 h-12 text-[#908d9a] mb-6" />
-                <h3 className="hearns-font text-4xl md:text-5xl mb-4">Aluminium Composite</h3>
-                <p className="text-xl font-medium text-[#908d9a] mb-4">Durable Exterior Board</p>
-                <p className="text-white/80 text-lg leading-relaxed mb-8 max-w-md">
-                  Twin coated aluminium skins with solid polyethylene core. The go-to choice for outdoor signage. Up to 8 × 4 ft with 3mm thickness.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">White matt finish</span>
-                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Drillable</span>
-                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Colour-matched screwcaps</span>
-                </div>
-              </motion.div>
+            {/* Aluminium Composite - Featured */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-gradient-to-br from-[#221c35] to-[#383349] rounded-3xl p-10 md:p-14 text-white relative overflow-hidden mb-8"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2" />
 
-              {/* Perspex Acrylic */}
-              <motion.div
-                variants={fadeInUp}
-                className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30 hover:border-[#908d9a]/50 transition-colors"
-              >
-                <Palette className="w-10 h-10 text-[#908d9a] mb-4" />
-                <h3 className="hearns-font text-2xl text-[#221c35] mb-2">Perspex Acrylic</h3>
-                <p className="text-lg font-semibold text-[#908d9a] mb-3">Luxury Interior/Exterior</p>
-                <p className="text-[#383349]/70 leading-relaxed">
-                  Clear or 35 opaque colours. 3-10mm thickness with chrome or satin stand-offs.
-                </p>
-              </motion.div>
-
-              {/* Sign Tray */}
-              <motion.div
-                variants={fadeInUp}
-                className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30 hover:border-[#908d9a]/50 transition-colors"
-              >
-                <Layers className="w-10 h-10 text-[#908d9a] mb-4" />
-                <h3 className="hearns-font text-2xl text-[#221c35] mb-2">Aluminium Sign Tray</h3>
-                <p className="text-lg font-semibold text-[#908d9a] mb-3">Robust Exterior</p>
-                <p className="text-[#383349]/70 leading-relaxed">
-                  Folded pan tray up to 3000 × 1460mm. Matt or gloss finishes with wall hardware included.
-                </p>
-              </motion.div>
-
-              {/* Lightweight Options - Wide */}
-              <motion.div
-                variants={fadeInUp}
-                className="md:col-span-3 bg-gradient-to-r from-[#908d9a]/10 via-[#908d9a]/5 to-transparent rounded-3xl p-10 flex flex-col md:flex-row items-center gap-8"
-              >
-                <Package className="w-16 h-16 text-[#383349] flex-shrink-0" />
+              <div className="grid md:grid-cols-2 gap-12">
                 <div>
-                  <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Lightweight Options</h3>
-                  <p className="text-[#383349]/70 text-lg leading-relaxed">
-                    <strong>Foamex:</strong> Perfect for exhibitions and indoor signage, up to 8 × 4 ft. <strong>Correx:</strong> Waterproof corrugated plastic ideal for temporary outdoor signage.
+                  <Shield className="w-12 h-12 text-[#908d9a] mb-6" />
+                  <h3 className="hearns-font text-4xl md:text-5xl mb-2">Aluminium Composite</h3>
+                  <p className="text-[#908d9a] text-lg mb-6">Durable Exterior Board</p>
+                  <p className="text-white/80 text-lg leading-relaxed mb-6">
+                    Twin coated aluminium skins with solid polyethylene core. The go-to choice for outdoor signage that needs to withstand the elements.
                   </p>
                 </div>
-                <a href="/contact" className="flex-shrink-0 px-6 py-3 rounded-full bg-[#383349] text-white font-medium hover:bg-[#221c35] transition-colors">
-                  Discuss Materials
-                </a>
+
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-semibold text-[#908d9a] mb-2">Specifications</h4>
+                    <ul className="space-y-1 text-white/80 text-sm">
+                      <li>• Up to 8 × 4 ft panels</li>
+                      <li>• 3mm thickness</li>
+                      <li>• White matt finish</li>
+                      <li>• Multi-panel system for larger signage</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-[#908d9a] mb-2">Installation</h4>
+                    <ul className="space-y-1 text-white/80 text-sm">
+                      <li>• Drillable (pre-drilled or self-drill)</li>
+                      <li>• Colour-matched screw caps available</li>
+                      <li>• Wall hardware included</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 pt-4">
+                    <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Exterior use</span>
+                    <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Weather resistant</span>
+                    <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Long-lasting</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Perspex Acrylic */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-white rounded-3xl p-10 md:p-14 border border-[#c1c6c8]/30 relative overflow-hidden mb-8"
+            >
+              <div className="grid md:grid-cols-2 gap-12">
+                <div>
+                  <Sparkles className="w-12 h-12 text-[#908d9a] mb-6" />
+                  <h3 className="hearns-font text-4xl md:text-5xl text-[#221c35] mb-2">Perspex Acrylic</h3>
+                  <p className="text-[#908d9a] text-lg mb-6">Luxury Interior & Exterior</p>
+                  <p className="text-[#383349]/80 text-lg leading-relaxed mb-6">
+                    Premium acrylic panels in clear or 35 opaque colours. Perfect for reception areas, corporate offices, and high-end retail environments.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-semibold text-[#908d9a] mb-2">Specifications</h4>
+                    <ul className="space-y-1 text-[#383349]/80 text-sm">
+                      <li>• 3mm – 10mm thickness</li>
+                      <li>• Up to 8 × 4 ft panels</li>
+                      <li>• Clear or 35 opaque colours</li>
+                      <li>• Mirror, coloured mirror & textured options</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold text-[#908d9a] mb-2">Mounting Options</h4>
+                    <ul className="space-y-1 text-[#383349]/80 text-sm">
+                      <li>• Chrome or satin stand-offs</li>
+                      <li>• Drillable</li>
+                      <li>• Floating effect available</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 pt-4">
+                    <span className="px-4 py-2 rounded-full bg-[#221c35] text-white text-sm">Premium finish</span>
+                    <span className="px-4 py-2 rounded-full bg-[#221c35]/10 text-[#221c35] text-sm">Interior & Exterior</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Aluminium Sign Tray */}
+            <motion.div
+              variants={fadeInUp}
+              className="bg-[#221c35]/5 rounded-3xl p-10 md:p-14 mb-8"
+            >
+              <div className="grid md:grid-cols-2 gap-12">
+                <div>
+                  <Layers className="w-12 h-12 text-[#908d9a] mb-6" />
+                  <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Aluminium Sign Tray</h3>
+                  <p className="text-[#908d9a] text-lg mb-6">Robust Exterior Option</p>
+                  <p className="text-[#383349]/80 text-lg leading-relaxed">
+                    Folded pan tray construction for a seamless, professional appearance. Ideal for larger exterior signage that needs to make an impact.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-semibold text-[#908d9a] mb-2">Specifications</h4>
+                    <ul className="space-y-1 text-[#383349]/80 text-sm">
+                      <li>• Up to 3000 × 1460mm single panel</li>
+                      <li>• Multi-panel system for larger signage</li>
+                      <li>• Matt or gloss finish</li>
+                      <li>• Wall hardware included</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <span className="px-4 py-2 rounded-full bg-[#221c35]/10 text-[#221c35] text-sm">Exterior use</span>
+                    <span className="px-4 py-2 rounded-full bg-[#221c35]/10 text-[#221c35] text-sm">Seamless finish</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Lightweight Options Grid */}
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Foamex */}
+              <motion.div
+                variants={fadeInUp}
+                className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30"
+              >
+                <Package className="w-10 h-10 text-[#908d9a] mb-4" />
+                <h3 className="hearns-font text-2xl text-[#221c35] mb-2">Foamex</h3>
+                <p className="text-[#908d9a] mb-4">Indoor & Covered Exterior</p>
+                <p className="text-[#383349]/80 mb-6">
+                  Lightweight foam PVC board. Perfect for exhibitions, events, and indoor signage. Direct printed or vinyl applied.
+                </p>
+                <ul className="space-y-1 text-[#383349]/70 text-sm mb-6">
+                  <li>• 3 – 10mm thickness</li>
+                  <li>• Up to 8 × 4 ft</li>
+                  <li>• Direct print or vinyl</li>
+                  <li>• Ideal for exhibitions</li>
+                </ul>
+                <span className="px-3 py-1 rounded-full bg-[#221c35]/10 text-sm text-[#221c35]">Lightweight</span>
+              </motion.div>
+
+              {/* Correx */}
+              <motion.div
+                variants={fadeInUp}
+                className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30"
+              >
+                <Hammer className="w-10 h-10 text-[#908d9a] mb-4" />
+                <h3 className="hearns-font text-2xl text-[#221c35] mb-2">Correx</h3>
+                <p className="text-[#908d9a] mb-4">Temporary Outdoor</p>
+                <p className="text-[#383349]/80 mb-6">
+                  Waterproof corrugated plastic. Ideal for temporary outdoor signage, real estate boards, political signs, and events.
+                </p>
+                <ul className="space-y-1 text-[#383349]/70 text-sm mb-6">
+                  <li>• 3mm – 6mm thickness</li>
+                  <li>• Up to 8 × 4 ft</li>
+                  <li>• Waterproof</li>
+                  <li>• Lightweight & portable</li>
+                </ul>
+                <span className="px-3 py-1 rounded-full bg-[#221c35]/10 text-sm text-[#221c35]">Budget-friendly</span>
               </motion.div>
             </div>
           </motion.div>
         </section>
 
-        {/* Customisation Section */}
+        {/* Types of Customisation Section */}
         <section className="relative py-32 overflow-hidden">
-          {/* Diagonal background */}
           <div className="absolute inset-0 bg-[#221c35]" />
           <div className="absolute top-0 right-0 w-1/2 h-full bg-[#383349] transform skew-x-12 origin-top-right hidden md:block" />
 
@@ -320,63 +414,95 @@ const Signboards: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#908d9a]/20 text-[#908d9a] text-sm font-medium mb-6">
-                  <Sparkles className="w-4 h-4" />
-                  Finishing Options
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#908d9a]/20 text-[#908d9a] text-sm font-medium mb-6">
+                <Palette className="w-4 h-4" />
+                Finishing Options
+              </div>
+              <h2 className="hearns-font text-4xl md:text-6xl text-white mb-6">
+                Types of Customisation
+              </h2>
+              <p className="text-xl text-white/80 max-w-2xl mx-auto">
+                Choose from printed or cut vinyl depending on your design requirements. Additional finishing options available for specific applications.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Printed Vinyl */}
+              <div className="bg-white/5 frosted-glass rounded-3xl p-8 md:p-10 border border-white/10">
+                <h3 className="hearns-font text-3xl text-white mb-4">Printed Vinyl</h3>
+                <p className="text-white/70 mb-6">Full-colour graphics for complex artwork, gradients, photographs, and detailed designs.</p>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Gradients & photographs</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Fluorescent colours</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Metallic finishes</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Full-colour coverage</span>
+                  </div>
                 </div>
-                <h2 className="hearns-font text-4xl md:text-6xl text-white mb-6">
-                  Customisation<br />& Finishing
-                </h2>
-                <p className="text-xl text-white/80 leading-relaxed mb-8">
-                  From printed vinyl for complex art, gradients, and photographs to cut vinyl for crisp lettering and solid colours.
-                </p>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
-                    <span className="text-white/90">Metallic, fluorescent, glitter finishes</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
-                    <span className="text-white/90">Anti-graffiti lamination</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
-                    <span className="text-white/90">Dry-wipe for menu boards</span>
-                  </div>
-                </div>
+
+                <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-white/80">Best for complex designs</span>
               </div>
 
+              {/* Cut Vinyl */}
               <div className="bg-white/5 frosted-glass rounded-3xl p-8 md:p-10 border border-white/10">
-                <h3 className="smilecake-font text-3xl text-white mb-6">Care Tips</h3>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
-                    <span className="text-white/80">Wipe surfaces with mild soapy water</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
-                    <span className="text-white/80">Use non-abrasive cloths only</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
-                    <span className="text-white/80">Inspect exterior hardware periodically</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
-                    <span className="text-white/80">Check multi-panel joins in high-wind sites</span>
-                  </li>
-                </ul>
+                <h3 className="hearns-font text-3xl text-white mb-4">Cut Vinyl</h3>
+                <p className="text-white/70 mb-6">Sharp lettering and logos without background. Perfect for simple, bold designs.</p>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Sharp, crisp edges</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Metallic & fluorescent</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a]" />
+                    <span className="text-white/80">Glitter finishes</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-5 h-5 text-white/40" />
+                    <span className="text-white/50">Gradients & photographs</span>
+                  </div>
+                </div>
+
+                <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-white/80">Best for text & logos</span>
+              </div>
+            </div>
+
+            <div className="mt-12 grid md:grid-cols-3 gap-6">
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <h4 className="font-semibold text-white mb-2">Anti-Graffiti Lamination</h4>
+                <p className="text-white/60 text-sm">Protective coating that allows graffiti to be wiped clean</p>
+              </div>
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <h4 className="font-semibold text-white mb-2">Dry-Wipe Finish</h4>
+                <p className="text-white/60 text-sm">Perfect for menu boards and changeable displays</p>
+              </div>
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <h4 className="font-semibold text-white mb-2">Matt or Gloss</h4>
+                <p className="text-white/60 text-sm">Choose your preferred finish for the final look</p>
               </div>
             </div>
           </motion.div>
         </section>
 
-        {/* CTA Section - Split screen */}
+        {/* Installation & CTA Section */}
         <section className="bg-white">
           <div className="grid md:grid-cols-2">
-            {/* Left - Info */}
             <motion.div
               className="py-24 px-6 md:px-12 lg:px-16 bg-[#f8f8f8]"
               initial={{ opacity: 0, x: -40 }}
@@ -385,41 +511,36 @@ const Signboards: React.FC = () => {
               transition={{ duration: 0.8 }}
             >
               <h2 className="hearns-font text-4xl md:text-5xl text-[#221c35] mb-8">
-                Built to<br />
-                <span className="text-[#908d9a]">Specification</span>
+                Installation<br />
+                <span className="text-[#908d9a]">Options</span>
               </h2>
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-full bg-[#221c35] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold">1</span>
+                    <Hammer className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">Choose Material</h3>
-                    <p className="text-[#383349]/70">Select the right substrate for your application.</p>
+                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">Professional Installation</h3>
+                    <p className="text-[#383349]/70">Our installation team operates throughout the Midlands. We'll handle everything from site survey to final fitting.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-full bg-[#908d9a] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold">2</span>
+                    <Package className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">Design & Finish</h3>
-                    <p className="text-[#383349]/70">Work with our team on artwork, sizing, and finishes.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#383349] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold">3</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">Install</h3>
-                    <p className="text-[#383349]/70">Professional installation or self-install kits with pre-drilled holes.</p>
+                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">Supply Only</h3>
+                    <p className="text-[#383349]/70">Self-install kits with pre-drilled holes and all necessary hardware included. Full fitting instructions provided.</p>
                   </div>
                 </div>
               </div>
+
+              <div className="mt-10 p-6 bg-white rounded-2xl border border-[#c1c6c8]/30">
+                <h4 className="font-semibold text-[#221c35] mb-3">Production Timeline</h4>
+                <p className="text-[#383349]/70 text-sm">Typically 5–10 working days depending on complexity. Rush orders available on request.</p>
+              </div>
             </motion.div>
 
-            {/* Right - CTA */}
             <motion.div
               className="py-24 px-6 md:px-12 lg:px-16 bg-[#221c35]"
               initial={{ opacity: 0, x: 40 }}
@@ -433,6 +554,21 @@ const Signboards: React.FC = () => {
               <p className="text-white/80 text-lg leading-relaxed mb-8">
                 Tell us about your project and we'll recommend the perfect signboard solution. Panels built using premium materials and high manufacturing standards.
               </p>
+
+              <ul className="space-y-4 mb-10">
+                <li className="flex items-center gap-4">
+                  <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
+                  <span className="text-white/80">Free design consultation</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
+                  <span className="text-white/80">Material recommendations</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
+                  <span className="text-white/80">Installation available</span>
+                </li>
+              </ul>
 
               <a
                 href="/contact"
