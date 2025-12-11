@@ -28,7 +28,7 @@ import { getCaseStudyBySlug, getRelatedCaseStudies } from '../lib/blog-data';
 import { blogColors } from '../lib/blog-types';
 
 // Icon mapping
-const iconMap: Record<string, React.FC<{ className?: string }>> = {
+const iconMap: Record<string, React.FC<{ className?: string; style?: React.CSSProperties }>> = {
   Car,
   FileText,
   Image,

@@ -35,7 +35,7 @@ import { getBlogPostBySlug, getRelatedPosts } from '../lib/blog-data';
 import { blogCategories, blogColors, ContentBlock } from '../lib/blog-types';
 
 // Icon mapping
-const iconMap: Record<string, React.FC<{ className?: string }>> = {
+const iconMap: Record<string, React.FC<{ className?: string; style?: React.CSSProperties }>> = {
   Car,
   FileText,
   Image,
