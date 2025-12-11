@@ -24,6 +24,7 @@ interface ClothingHelpRequestFormProps {
   onBack: () => void;
   onComplete: () => void;
   productTitle?: string;
+  isMobile?: boolean;
 }
 
 interface UploadedFile {
@@ -35,6 +36,7 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
   onBack,
   onComplete,
   productTitle,
+  isMobile = false,
 }) => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [description, setDescription] = useState('');
@@ -96,25 +98,25 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-xl mx-auto text-center py-12"
+        className={`w-full max-w-xl mx-auto text-center ${isMobile ? 'py-6' : 'py-12'}`}
       >
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', delay: 0.2 }}
-          className="w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center"
+          className={`${isMobile ? 'w-16 h-16 mb-4' : 'w-24 h-24 mb-8'} rounded-full mx-auto flex items-center justify-center`}
           style={{ backgroundColor: `${clothingColors.accent}25` }}
         >
-          <CheckCircle className="w-12 h-12" style={{ color: clothingColors.accent }} />
+          <CheckCircle className={isMobile ? 'w-8 h-8' : 'w-12 h-12'} style={{ color: clothingColors.accent }} />
         </motion.div>
 
-        <h2 className="hearns-font text-3xl text-white mb-3">
+        <h2 className={`hearns-font ${isMobile ? 'text-xl' : 'text-3xl'} text-white ${isMobile ? 'mb-1' : 'mb-3'}`}>
           Request Sent!
         </h2>
-        <p className="embossing-font text-xl mb-4" style={{ color: clothingColors.accent }}>
+        <p className={`embossing-font ${isMobile ? 'text-base' : 'text-xl'} mb-4`} style={{ color: clothingColors.accent }}>
           Our designers are on it
         </p>
-        <p className="neuzeit-light-font text-white/70 max-w-md mx-auto">
+        <p className={`neuzeit-light-font ${isMobile ? 'text-sm' : ''} text-white/70 max-w-md mx-auto`}>
           We'll review your request and get back to you within 24 hours with design options and pricing.
         </p>
       </motion.div>
@@ -128,31 +130,31 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         onClick={onBack}
-        className="flex items-center gap-2 mb-8 text-white/60 hover:text-white transition-colors"
+        className={`flex items-center gap-2 ${isMobile ? 'mb-3' : 'mb-8'} text-white/60 hover:text-white transition-colors`}
       >
         <ArrowLeft className="w-4 h-4" />
-        <span className="neuzeit-font text-sm">Back to options</span>
+        <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'}`}>Back to options</span>
       </motion.button>
 
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        className={isMobile ? 'mb-4' : 'mb-8'}
       >
         <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
+          className={`inline-flex items-center gap-2 ${isMobile ? 'px-3 py-1' : 'px-4 py-1.5'} rounded-full ${isMobile ? 'mb-2' : 'mb-4'}`}
           style={{ backgroundColor: `${clothingColors.accent}20` }}
         >
-          <Palette className="w-4 h-4" style={{ color: clothingColors.accent }} />
-          <span className="neuzeit-font text-sm" style={{ color: clothingColors.accent }}>
+          <Palette className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} style={{ color: clothingColors.accent }} />
+          <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'}`} style={{ color: clothingColors.accent }}>
             Design Help
           </span>
         </div>
-        <h2 className="hearns-font text-3xl md:text-4xl text-white mb-3">
+        <h2 className={`hearns-font ${isMobile ? 'text-xl' : 'text-3xl md:text-4xl'} text-white ${isMobile ? 'mb-1' : 'mb-3'}`}>
           Tell us about your project
         </h2>
-        <p className="neuzeit-light-font text-white/60">
+        <p className={`neuzeit-light-font ${isMobile ? 'text-sm' : ''} text-white/60`}>
           Share your ideas and we'll create custom branded workwear designs
         </p>
       </motion.div>
@@ -163,17 +165,17 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-6"
+          className={isMobile ? 'mb-3' : 'mb-6'}
         >
-          <label className="neuzeit-font text-sm font-medium text-white block mb-2">
-            Upload your logo or inspiration images
+          <label className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-white block mb-2`}>
+            Upload logo or inspiration
             <span className="text-white/40 font-normal ml-1">(optional)</span>
           </label>
 
           <div
             {...getRootProps()}
             className={`
-              border-2 border-dashed rounded-[15px] p-5 text-center cursor-pointer
+              border-2 border-dashed rounded-[15px] ${isMobile ? 'p-3' : 'p-5'} text-center cursor-pointer
               transition-all duration-200
               ${isDragActive
                 ? 'border-[#64a70b] bg-[#64a70b]/10'
@@ -182,12 +184,12 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
             `}
           >
             <input {...getInputProps()} />
-            <Upload className="w-8 h-8 mx-auto mb-3 text-white/40" />
-            <p className="neuzeit-font text-sm text-white/70">
+            <Upload className={`${isMobile ? 'w-6 h-6 mb-2' : 'w-8 h-8 mb-3'} mx-auto text-white/40`} />
+            <p className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/70`}>
               Drag files here or <span style={{ color: clothingColors.accent }}>browse</span>
             </p>
-            <p className="neuzeit-light-font text-xs text-white/40 mt-1">
-              PNG, JPG, PDF, SVG up to 25MB each
+            <p className={`neuzeit-light-font ${isMobile ? 'text-[10px]' : 'text-xs'} text-white/40 mt-1`}>
+              PNG, JPG, PDF, SVG up to 25MB
             </p>
           </div>
 
@@ -236,17 +238,17 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-6"
+          className={isMobile ? 'mb-3' : 'mb-6'}
         >
-          <label className="neuzeit-font text-sm font-medium text-white block mb-2">
+          <label className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-white block mb-2`}>
             What do you need? <span className="text-red-400">*</span>
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder={`e.g., "I need polo shirts with our company logo for 20 staff members" or "We're a cafe and need aprons with our branding"`}
-            rows={4}
-            className="w-full px-4 py-3 rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all resize-none neuzeit-light-font text-white placeholder-white/40"
+            placeholder={isMobile ? `e.g., "I need polo shirts with our logo for 20 staff"` : `e.g., "I need polo shirts with our company logo for 20 staff members" or "We're a cafe and need aprons with our branding"`}
+            rows={isMobile ? 3 : 4}
+            className={`w-full ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-3'} rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all resize-none neuzeit-light-font text-white placeholder-white/40`}
           />
         </motion.div>
 
@@ -255,17 +257,17 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="mb-6"
+          className={isMobile ? 'mb-3' : 'mb-6'}
         >
-          <label className="neuzeit-font text-sm font-medium text-white block mb-2">
-            Estimated quantity <span className="text-white/40 font-normal">(optional)</span>
+          <label className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-white block mb-2`}>
+            Est. quantity <span className="text-white/40 font-normal">(optional)</span>
           </label>
           <input
             type="text"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             placeholder="e.g., 20-30 pieces"
-            className="w-full px-4 py-3 rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all neuzeit-light-font text-white placeholder-white/40"
+            className={`w-full ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-3'} rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all neuzeit-light-font text-white placeholder-white/40`}
           />
         </motion.div>
 
@@ -274,10 +276,10 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="grid md:grid-cols-2 gap-4 mb-6"
+          className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'md:grid-cols-2 gap-4'} ${isMobile ? 'mb-3' : 'mb-6'}`}
         >
           <div>
-            <label className="neuzeit-font text-sm font-medium text-white block mb-2">
+            <label className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-white block mb-2`}>
               Your name <span className="text-red-400">*</span>
             </label>
             <input
@@ -285,19 +287,19 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="John Smith"
-              className="w-full px-4 py-3 rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all neuzeit-light-font text-white placeholder-white/40"
+              className={`w-full ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-3'} rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all neuzeit-light-font text-white placeholder-white/40`}
             />
           </div>
           <div>
-            <label className="neuzeit-font text-sm font-medium text-white block mb-2">
-              Email address <span className="text-red-400">*</span>
+            <label className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-white block mb-2`}>
+              Email <span className="text-red-400">*</span>
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="john@example.com"
-              className="w-full px-4 py-3 rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all neuzeit-light-font text-white placeholder-white/40"
+              className={`w-full ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-3'} rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all neuzeit-light-font text-white placeholder-white/40`}
             />
           </div>
         </motion.div>
@@ -306,17 +308,17 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="mb-6"
+          className={isMobile ? 'mb-3' : 'mb-6'}
         >
-          <label className="neuzeit-font text-sm font-medium text-white block mb-2">
-            Phone number <span className="text-white/40 font-normal">(optional)</span>
+          <label className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-white block mb-2`}>
+            Phone <span className="text-white/40 font-normal">(optional)</span>
           </label>
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="07123 456789"
-            className="w-full md:w-1/2 px-4 py-3 rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all neuzeit-light-font text-white placeholder-white/40"
+            className={`w-full ${isMobile ? '' : 'md:w-1/2'} ${isMobile ? 'px-3 py-2 text-sm' : 'px-4 py-3'} rounded-[10px] bg-white/10 border border-white/20 focus:border-[#64a70b] focus:ring-2 focus:ring-[#64a70b]/30 outline-none transition-all neuzeit-light-font text-white placeholder-white/40`}
           />
         </motion.div>
 
@@ -325,16 +327,16 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mb-6 p-4 rounded-[10px] bg-white/5 border border-white/10"
+          className={`${isMobile ? 'mb-3 p-3' : 'mb-6 p-4'} rounded-[10px] bg-white/5 border border-white/10`}
         >
-          <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-white/40 flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2">
+            <Info className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} text-white/40 flex-shrink-0 mt-0.5`} />
             <div>
-              <p className="neuzeit-font text-sm text-white/80 mb-1">
-                <strong>Design service:</strong> Logo digitisation from £25+VAT, bespoke designs quoted individually.
+              <p className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/80 mb-1`}>
+                <strong>Design service:</strong> From £25+VAT
               </p>
-              <p className="neuzeit-light-font text-sm text-white/50">
-                We'll send you a quote and mockup before any work begins.
+              <p className={`neuzeit-light-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/50`}>
+                We'll send a quote before any work begins.
               </p>
             </div>
           </div>
@@ -350,8 +352,8 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
             type="submit"
             disabled={!isValid || isSubmitting}
             className={`
-              w-full flex items-center justify-center gap-3 px-6 py-4 rounded-[15px]
-              neuzeit-font text-base font-semibold transition-all duration-300
+              w-full flex items-center justify-center gap-2 ${isMobile ? 'px-4 py-3' : 'px-6 py-4'} rounded-[15px]
+              neuzeit-font ${isMobile ? 'text-sm' : 'text-base'} font-semibold transition-all duration-300
               ${isValid && !isSubmitting
                 ? 'text-white hover:opacity-90'
                 : 'bg-white/10 text-white/30 cursor-not-allowed'
@@ -361,12 +363,12 @@ const ClothingHelpRequestForm: React.FC<ClothingHelpRequestFormProps> = ({
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} animate-spin`} />
                 Sending...
               </>
             ) : (
               <>
-                <Send className="w-5 h-5" />
+                <Send className={isMobile ? 'w-4 h-4' : 'w-5 h-5'} />
                 Send Request
               </>
             )}

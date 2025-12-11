@@ -24,6 +24,7 @@ interface ClothingConsultationBookerProps {
   onComplete: () => void;
   productName?: string;
   calendarUrl?: string;
+  isMobile?: boolean;
 }
 
 type ConsultationType = 'call' | 'video' | 'inperson';
@@ -42,6 +43,7 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
   onComplete,
   productName = 'workwear project',
   calendarUrl = 'https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID',
+  isMobile = false,
 }) => {
   const [selectedType, setSelectedType] = useState<ConsultationType | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -85,10 +87,10 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         onClick={showCalendar ? () => setShowCalendar(false) : onBack}
-        className="flex items-center gap-2 mb-8 text-white/60 hover:text-white transition-colors"
+        className={`flex items-center gap-1.5 ${isMobile ? 'mb-3' : 'mb-8'} text-white/60 hover:text-white transition-colors`}
       >
-        <ArrowLeft className="w-4 h-4" />
-        <span className="neuzeit-font text-sm">
+        <ArrowLeft className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
+        <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'}`}>
           {showCalendar ? 'Back to options' : 'Back to options'}
         </span>
       </motion.button>
@@ -99,18 +101,18 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-10"
+            className={`text-center ${isMobile ? 'mb-5' : 'mb-10'}`}
           >
             <div
-              className="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center"
+              className={`${isMobile ? 'w-10 h-10 mb-3' : 'w-16 h-16 mb-6'} rounded-full mx-auto flex items-center justify-center`}
               style={{ backgroundColor: `${clothingColors.accent}25` }}
             >
-              <Calendar className="w-8 h-8" style={{ color: clothingColors.accent }} />
+              <Calendar className={isMobile ? 'w-5 h-5' : 'w-8 h-8'} style={{ color: clothingColors.accent }} />
             </div>
-            <h2 className="hearns-font text-3xl md:text-4xl text-white mb-3">
+            <h2 className={`hearns-font text-white ${isMobile ? 'text-xl mb-1.5' : 'text-3xl md:text-4xl mb-3'}`}>
               Book a Free Consultation
             </h2>
-            <p className="neuzeit-light-font text-white/60 max-w-md mx-auto">
+            <p className={`neuzeit-light-font text-white/60 max-w-md mx-auto ${isMobile ? 'text-xs' : ''}`}>
               Chat with our team about your {productName}. No obligation, just friendly expert advice.
             </p>
           </motion.div>
@@ -120,7 +122,7 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="space-y-4 mb-10"
+            className={`${isMobile ? 'space-y-2.5 mb-5' : 'space-y-4 mb-10'}`}
           >
             {consultationOptions.map((option, index) => (
               <motion.button
@@ -131,7 +133,7 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
                 onClick={() => handleSelectType(option.id)}
                 disabled={!option.available}
                 className={`
-                  w-full flex items-center gap-5 p-5 rounded-[15px] border-2 text-left
+                  w-full flex items-center ${isMobile ? 'gap-3 p-3' : 'gap-5 p-5'} rounded-[15px] border-2 text-left
                   transition-all duration-200
                   ${option.available
                     ? 'border-white/20 hover:border-[#64a70b] hover:shadow-lg hover:shadow-[#64a70b]/10 bg-white/5'
@@ -140,20 +142,20 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
                 `}
               >
                 <div
-                  className="w-14 h-14 rounded-[10px] flex items-center justify-center flex-shrink-0"
+                  className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-[10px] flex items-center justify-center flex-shrink-0`}
                   style={{ backgroundColor: `${clothingColors.accent}25` }}
                 >
-                  <option.icon className="w-7 h-7" style={{ color: clothingColors.accent }} />
+                  <option.icon className={isMobile ? 'w-5 h-5' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
                 </div>
-                <div className="flex-1">
-                  <h3 className="neuzeit-font text-lg font-semibold text-white mb-1">
+                <div className="flex-1 min-w-0">
+                  <h3 className={`neuzeit-font font-semibold text-white ${isMobile ? 'text-sm mb-0.5' : 'text-lg mb-1'}`}>
                     {option.title}
                   </h3>
-                  <p className="neuzeit-light-font text-sm text-white/60">
+                  <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-xs line-clamp-1' : 'text-sm'}`}>
                     {option.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-white/40">
+                <div className={`flex items-center gap-1.5 text-white/40 flex-shrink-0 ${isMobile ? 'hidden' : ''}`}>
                   <Clock className="w-4 h-4" />
                   <span className="neuzeit-font text-sm">{option.duration}</span>
                 </div>
@@ -166,15 +168,15 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="p-5 rounded-[15px] bg-white/5 border border-white/10 mb-8"
+            className={`${isMobile ? 'p-3 mb-4' : 'p-5 mb-8'} rounded-[15px] bg-white/5 border border-white/10`}
           >
-            <div className="flex items-center gap-2 mb-3">
-              <Shirt className="w-5 h-5" style={{ color: clothingColors.accent }} />
-              <h4 className="neuzeit-font font-semibold text-white">
+            <div className={`flex items-center gap-2 ${isMobile ? 'mb-2' : 'mb-3'}`}>
+              <Shirt className={isMobile ? 'w-4 h-4' : 'w-5 h-5'} style={{ color: clothingColors.accent }} />
+              <h4 className={`neuzeit-font font-semibold text-white ${isMobile ? 'text-sm' : ''}`}>
                 We can help with
               </h4>
             </div>
-            <ul className="grid md:grid-cols-2 gap-2">
+            <ul className={`grid ${isMobile ? 'grid-cols-1 gap-1.5' : 'md:grid-cols-2 gap-2'}`}>
               {[
                 'Uniform programmes for teams',
                 'Embroidery vs print recommendations',
@@ -184,8 +186,8 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
                 'Branding placement options',
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: clothingColors.accent }} />
-                  <span className="neuzeit-light-font text-sm text-white/70">{item}</span>
+                  <CheckCircle className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'} flex-shrink-0`} style={{ color: clothingColors.accent }} />
+                  <span className={`neuzeit-light-font text-white/70 ${isMobile ? 'text-xs' : 'text-sm'}`}>{item}</span>
                 </li>
               ))}
             </ul>
@@ -196,23 +198,23 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-center pt-6 border-t border-white/10"
+            className={`text-center ${isMobile ? 'pt-3' : 'pt-6'} border-t border-white/10`}
           >
-            <p className="neuzeit-light-font text-sm text-white/50 mb-3">
+            <p className={`neuzeit-light-font text-white/50 ${isMobile ? 'text-xs mb-2' : 'text-sm mb-3'}`}>
               Prefer to reach out directly?
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className={`flex flex-wrap justify-center ${isMobile ? 'gap-3' : 'gap-4'}`}>
               <a
                 href="tel:+441562123456"
-                className="flex items-center gap-2 text-sm neuzeit-font font-medium transition-colors hover:underline"
+                className={`flex items-center gap-1.5 neuzeit-font font-medium transition-colors hover:underline ${isMobile ? 'text-xs' : 'text-sm'}`}
                 style={{ color: clothingColors.accent }}
               >
-                <Phone className="w-4 h-4" />
+                <Phone className={isMobile ? 'w-3 h-3' : 'w-4 h-4'} />
                 01562 123456
               </a>
               <a
                 href="mailto:info@outpostcustom.co.uk"
-                className="flex items-center gap-2 text-sm neuzeit-font font-medium transition-colors hover:underline"
+                className={`flex items-center gap-1.5 neuzeit-font font-medium transition-colors hover:underline ${isMobile ? 'text-xs' : 'text-sm'}`}
                 style={{ color: clothingColors.accent }}
               >
                 info@outpostcustom.co.uk
@@ -227,22 +229,22 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
           animate={{ opacity: 1, y: 0 }}
         >
           {/* Selected type header */}
-          <div className="flex items-center gap-4 mb-8 p-4 rounded-[10px] bg-white/5 border border-white/10">
+          <div className={`flex items-center ${isMobile ? 'gap-3 mb-4 p-3' : 'gap-4 mb-8 p-4'} rounded-[10px] bg-white/5 border border-white/10`}>
             {selectedType && (
               <>
                 <div
-                  className="w-12 h-12 rounded-[10px] flex items-center justify-center"
+                  className={`${isMobile ? 'w-9 h-9' : 'w-12 h-12'} rounded-[10px] flex items-center justify-center`}
                   style={{ backgroundColor: `${clothingColors.accent}25` }}
                 >
-                  {selectedType === 'call' && <Phone className="w-6 h-6" style={{ color: clothingColors.accent }} />}
-                  {selectedType === 'video' && <Video className="w-6 h-6" style={{ color: clothingColors.accent }} />}
-                  {selectedType === 'inperson' && <MapPin className="w-6 h-6" style={{ color: clothingColors.accent }} />}
+                  {selectedType === 'call' && <Phone className={isMobile ? 'w-4 h-4' : 'w-6 h-6'} style={{ color: clothingColors.accent }} />}
+                  {selectedType === 'video' && <Video className={isMobile ? 'w-4 h-4' : 'w-6 h-6'} style={{ color: clothingColors.accent }} />}
+                  {selectedType === 'inperson' && <MapPin className={isMobile ? 'w-4 h-4' : 'w-6 h-6'} style={{ color: clothingColors.accent }} />}
                 </div>
                 <div>
-                  <h3 className="neuzeit-font font-semibold text-white">
+                  <h3 className={`neuzeit-font font-semibold text-white ${isMobile ? 'text-sm' : ''}`}>
                     {consultationOptions.find(o => o.id === selectedType)?.title}
                   </h3>
-                  <p className="neuzeit-light-font text-sm text-white/60">
+                  <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-xs' : 'text-sm'}`}>
                     {consultationOptions.find(o => o.id === selectedType)?.duration}
                   </p>
                 </div>
@@ -253,17 +255,17 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
           {/* Calendar embed placeholder */}
           <div className="rounded-[15px] border-2 border-white/20 overflow-hidden bg-white/5">
             {/* This would be replaced with actual Google Calendar embed */}
-            <div className="aspect-[4/3] flex flex-col items-center justify-center p-8">
-              <Calendar className="w-16 h-16 text-white/30 mb-6" />
-              <h3 className="neuzeit-font text-xl text-white mb-2">
+            <div className={`${isMobile ? 'aspect-square p-4' : 'aspect-[4/3] p-8'} flex flex-col items-center justify-center`}>
+              <Calendar className={`${isMobile ? 'w-10 h-10 mb-3' : 'w-16 h-16 mb-6'} text-white/30`} />
+              <h3 className={`neuzeit-font text-white ${isMobile ? 'text-base mb-1' : 'text-xl mb-2'}`}>
                 Choose a Time
               </h3>
-              <p className="neuzeit-light-font text-white/60 text-center mb-6 max-w-sm">
+              <p className={`neuzeit-light-font text-white/60 text-center max-w-sm ${isMobile ? 'text-xs mb-3' : 'mb-6'}`}>
                 Select an available slot that works for you. We'll send you a confirmation email.
               </p>
 
               {/* Placeholder buttons for demo */}
-              <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
+              <div className={`grid grid-cols-2 ${isMobile ? 'gap-2' : 'gap-3'} w-full max-w-xs`}>
                 {['Tomorrow 10:00', 'Tomorrow 14:00', 'Wed 11:00', 'Thu 15:00'].map((slot) => (
                   <button
                     key={slot}
@@ -271,7 +273,7 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
                       // In real implementation, this would book the slot
                       onComplete();
                     }}
-                    className="px-4 py-3 rounded-[10px] border border-white/20 text-white hover:border-[#64a70b] hover:bg-[#64a70b]/10 transition-all neuzeit-font text-sm"
+                    className={`${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-3 text-sm'} rounded-[10px] border border-white/20 text-white hover:border-[#64a70b] hover:bg-[#64a70b]/10 transition-all neuzeit-font`}
                   >
                     {slot}
                   </button>
@@ -283,30 +285,30 @@ const ClothingConsultationBooker: React.FC<ClothingConsultationBookerProps> = ({
                 href={calendarUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 flex items-center gap-2 text-sm neuzeit-font font-medium transition-colors hover:underline"
+                className={`${isMobile ? 'mt-3 text-xs' : 'mt-6 text-sm'} flex items-center gap-1.5 neuzeit-font font-medium transition-colors hover:underline`}
                 style={{ color: clothingColors.accent }}
               >
                 View all available times
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className={isMobile ? 'w-3 h-3' : 'w-4 h-4'} />
               </a>
             </div>
           </div>
 
           {/* What to expect */}
-          <div className="mt-8 p-5 rounded-[15px] bg-white/5 border border-white/10">
-            <h4 className="neuzeit-font font-semibold text-white mb-3">
+          <div className={`${isMobile ? 'mt-4 p-3' : 'mt-8 p-5'} rounded-[15px] bg-white/5 border border-white/10`}>
+            <h4 className={`neuzeit-font font-semibold text-white ${isMobile ? 'text-sm mb-2' : 'mb-3'}`}>
               What to expect
             </h4>
-            <ul className="space-y-2">
+            <ul className={isMobile ? 'space-y-1.5' : 'space-y-2'}>
               {[
                 'Discuss your workwear requirements and goals',
                 'Get expert advice on fabrics, sizes, and branding',
                 'Receive a detailed quote (no obligation)',
                 'Ask any questions you have about the process',
               ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: clothingColors.accent }} />
-                  <span className="neuzeit-light-font text-sm text-white/70">{item}</span>
+                <li key={i} className={`flex items-center ${isMobile ? 'gap-2' : 'gap-3'}`}>
+                  <CheckCircle className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'} flex-shrink-0`} style={{ color: clothingColors.accent }} />
+                  <span className={`neuzeit-light-font text-white/70 ${isMobile ? 'text-xs' : 'text-sm'}`}>{item}</span>
                 </li>
               ))}
             </ul>

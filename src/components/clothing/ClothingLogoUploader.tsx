@@ -33,6 +33,7 @@ interface ClothingLogoUploaderProps {
   productImage?: string;
   onPreviewLogo?: () => void;
   initialLogoData?: LogoPreviewData;
+  isMobile?: boolean;
 }
 
 type UploadState = 'idle' | 'uploading' | 'processing' | 'complete';
@@ -51,6 +52,7 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
   productImage,
   onPreviewLogo,
   initialLogoData,
+  isMobile = false,
 }) => {
   // If initialLogoData is provided, start in processing state
   const [uploadState, setUploadState] = useState<UploadState>(initialLogoData ? 'processing' : 'idle');
@@ -135,31 +137,31 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         onClick={onBack}
-        className="flex items-center gap-2 mb-8 text-white/60 hover:text-white transition-colors"
+        className={`flex items-center gap-2 ${isMobile ? 'mb-3' : 'mb-8'} text-white/60 hover:text-white transition-colors`}
       >
         <ArrowLeft className="w-4 h-4" />
-        <span className="neuzeit-font text-sm">Back to options</span>
+        <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'}`}>Back to options</span>
       </motion.button>
 
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className={`text-center ${isMobile ? 'mb-4' : 'mb-8'}`}
       >
         <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
+          className={`inline-flex items-center gap-2 ${isMobile ? 'px-3 py-1' : 'px-4 py-1.5'} rounded-full ${isMobile ? 'mb-2' : 'mb-4'}`}
           style={{ backgroundColor: `${clothingColors.accent}20` }}
         >
-          <Shirt className="w-4 h-4" style={{ color: clothingColors.accent }} />
-          <span className="neuzeit-font text-sm" style={{ color: clothingColors.accent }}>
+          <Shirt className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} style={{ color: clothingColors.accent }} />
+          <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'}`} style={{ color: clothingColors.accent }}>
             Logo Upload
           </span>
         </div>
-        <h2 className="hearns-font text-3xl md:text-4xl text-white mb-3">
+        <h2 className={`hearns-font ${isMobile ? 'text-xl' : 'text-3xl md:text-4xl'} text-white ${isMobile ? 'mb-1' : 'mb-3'}`}>
           Upload your logo
         </h2>
-        <p className="neuzeit-light-font text-white/60">
+        <p className={`neuzeit-light-font ${isMobile ? 'text-sm' : ''} text-white/60`}>
           We'll create a mockup showing how it looks on {productTitle}
         </p>
       </motion.div>
@@ -176,7 +178,7 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
             <div
               {...getRootProps()}
               className={`
-                relative border-2 border-dashed rounded-[15px] p-10 text-center cursor-pointer
+                relative border-2 border-dashed rounded-[15px] ${isMobile ? 'p-5' : 'p-10'} text-center cursor-pointer
                 transition-all duration-300 ease-out
                 ${isDragActive
                   ? 'border-[#64a70b] bg-[#64a70b]/10 scale-[1.02]'
@@ -189,27 +191,27 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
               <motion.div
                 animate={{ scale: isDragActive ? 1.1 : 1 }}
                 transition={{ duration: 0.2 }}
-                className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+                className={`${isMobile ? 'w-14 h-14' : 'w-20 h-20'} rounded-full mx-auto ${isMobile ? 'mb-3' : 'mb-6'} flex items-center justify-center`}
                 style={{ backgroundColor: isDragActive ? `${clothingColors.accent}30` : 'rgba(255,255,255,0.1)' }}
               >
                 {isDragActive ? (
-                  <FileImage className="w-10 h-10" style={{ color: clothingColors.accent }} />
+                  <FileImage className={isMobile ? 'w-7 h-7' : 'w-10 h-10'} style={{ color: clothingColors.accent }} />
                 ) : (
-                  <Upload className="w-10 h-10 text-white/60" />
+                  <Upload className={`${isMobile ? 'w-7 h-7' : 'w-10 h-10'} text-white/60`} />
                 )}
               </motion.div>
 
-              <p className="neuzeit-font text-xl text-white mb-2">
+              <p className={`neuzeit-font ${isMobile ? 'text-base' : 'text-xl'} text-white mb-2`}>
                 {isDragActive ? (
                   <span style={{ color: clothingColors.accent }}>Drop it here!</span>
                 ) : (
                   <>Drag & drop your logo</>
                 )}
               </p>
-              <p className="neuzeit-light-font text-white/60 mb-1">
+              <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-sm' : ''} mb-1`}>
                 or click to browse
               </p>
-              <p className="neuzeit-light-font text-sm text-white/40">
+              <p className={`neuzeit-light-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/40`}>
                 PNG, JPG, PDF, SVG, AI, EPS up to 50MB
               </p>
             </div>
@@ -219,42 +221,42 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="mt-6 p-4 rounded-[10px] bg-white/5 border border-white/10"
+              className={`${isMobile ? 'mt-3 p-3' : 'mt-6 p-4'} rounded-[10px] bg-white/5 border border-white/10`}
             >
-              <p className="neuzeit-font text-sm font-medium text-white/80 mb-2">
+              <p className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} font-medium text-white/80 mb-2`}>
                 Tips for best results:
               </p>
-              <ul className="space-y-1 text-sm text-white/60">
+              <ul className={`space-y-1 ${isMobile ? 'text-xs' : 'text-sm'} text-white/60`}>
                 <li className="neuzeit-light-font">- PNG with transparent background works best</li>
                 <li className="neuzeit-light-font">- Vector files (AI, EPS, SVG) give the sharpest results</li>
-                <li className="neuzeit-light-font">- Higher resolution = better embroidery detail</li>
+                {!isMobile && <li className="neuzeit-light-font">- Higher resolution = better embroidery detail</li>}
               </ul>
             </motion.div>
 
             {/* Import sources */}
-            <div className="mt-8">
-              <div className="flex items-center gap-4 mb-5">
+            <div className={isMobile ? 'mt-4' : 'mt-8'}>
+              <div className={`flex items-center gap-4 ${isMobile ? 'mb-3' : 'mb-5'}`}>
                 <div className="flex-1 h-px bg-white/20" />
-                <span className="embossing-font text-sm text-white/50 tracking-wider">or import from</span>
+                <span className={`embossing-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/50 tracking-wider`}>or import from</span>
                 <div className="flex-1 h-px bg-white/20" />
               </div>
 
-              <div className="flex justify-center gap-6">
+              <div className={`flex justify-center ${isMobile ? 'gap-4' : 'gap-6'}`}>
                 {importSources.map((source) => (
                   <div key={source.label} className="group relative flex flex-col items-center">
-                    <button className="relative p-3 rounded-[12px] bg-white/10 border border-white/20 hover:bg-white/15 hover:border-white/30 transition-all duration-300 hover:scale-105">
+                    <button className={`relative ${isMobile ? 'p-2' : 'p-3'} rounded-[12px] bg-white/10 border border-white/20 hover:bg-white/15 hover:border-white/30 transition-all duration-300 hover:scale-105`}>
                       <img
                         src={source.image}
                         alt={source.label}
-                        className="w-10 h-10 object-contain"
+                        className={`${isMobile ? 'w-8 h-8' : 'w-10 h-10'} object-contain`}
                       />
-                      {source.tip && (
+                      {source.tip && !isMobile && (
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-black/90 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap pointer-events-none z-10">
                           <span className="neuzeit-font">{source.tip}</span>
                         </div>
                       )}
                     </button>
-                    <span className="neuzeit-font text-xs text-white/60 mt-2">
+                    <span className={`neuzeit-font ${isMobile ? 'text-[10px]' : 'text-xs'} text-white/60 mt-2`}>
                       {source.label}
                     </span>
                   </div>
@@ -421,7 +423,7 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="text-center mt-8 neuzeit-light-font text-sm text-white/40"
+        className={`text-center ${isMobile ? 'mt-4' : 'mt-8'} neuzeit-light-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/40`}
       >
         Free mockup included - no payment until you approve the design
       </motion.p>

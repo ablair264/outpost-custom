@@ -44,6 +44,7 @@ interface ClothingOrderWizardProps {
     code?: string;
   }>;
   initialColorIndex?: number;
+  isMobile?: boolean;
 }
 
 // Theme colors - matching clothing pages
@@ -66,6 +67,7 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
   productImage,
   productColors = [],
   initialColorIndex = 0,
+  isMobile = false,
 }) => {
   const [step, setStep] = useState<WizardStep>('has-logo');
 
@@ -317,50 +319,68 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
             className="w-full"
           >
             {/* Header */}
-            <div className="text-center mb-8 md:mb-10">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 mb-4">
-                <Shirt className="w-4 h-4" style={{ color: clothingColors.accent }} />
-                <span className="neuzeit-font text-sm text-white/70">Customise Your {productName}</span>
+            <div className={`text-center ${isMobile ? 'mb-4' : 'mb-8 md:mb-10'}`}>
+              <div className={`inline-flex items-center gap-2 ${isMobile ? 'px-3 py-1' : 'px-4 py-1.5'} rounded-full bg-white/10 ${isMobile ? 'mb-2' : 'mb-4'}`}>
+                <Shirt className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} style={{ color: clothingColors.accent }} />
+                <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/70`}>Customise Your {productName}</span>
               </div>
-              <h2 className="hearns-font text-3xl md:text-4xl text-white mb-3">
+              <h2 className={`hearns-font ${isMobile ? 'text-xl' : 'text-3xl md:text-4xl'} text-white ${isMobile ? 'mb-1' : 'mb-3'}`}>
                 Do you have a logo?
               </h2>
-              <p className="neuzeit-light-font text-base text-white/60 max-w-lg mx-auto">
+              <p className={`neuzeit-light-font ${isMobile ? 'text-sm' : 'text-base'} text-white/60 max-w-lg mx-auto`}>
                 Let us know and we'll guide you through the next steps
               </p>
             </div>
 
             {/* Two options */}
-            <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">
+            <div className={`grid ${isMobile ? 'grid-cols-1 gap-2' : 'md:grid-cols-2 gap-4 md:gap-6'} max-w-2xl mx-auto`}>
               <button
                 onClick={() => setStep('upload-logo')}
-                className="group relative text-left p-6 rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1"
+                className={`group relative text-left ${isMobile ? 'p-3' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
               >
-                <div className="w-14 h-14 rounded-[12px] flex items-center justify-center mb-4 bg-white/10">
-                  <Check className="w-7 h-7" style={{ color: clothingColors.accent }} />
-                </div>
-                <h3 className="embossing-font text-lg text-white mb-2 uppercase tracking-wide">Yes, I have a logo</h3>
-                <p className="neuzeit-light-font text-white/60 text-sm mb-4">
-                  I have my logo file ready to upload
-                </p>
-                <div className="inline-flex items-center gap-2 text-white/70 group-hover:text-[#64a70b] neuzeit-font text-sm font-semibold transition-colors">
-                  Continue <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <div className={`flex ${isMobile ? 'items-center gap-3' : 'flex-col'}`}>
+                  <div className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
+                    <Check className={isMobile ? 'w-5 h-5' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className={`embossing-font ${isMobile ? 'text-sm' : 'text-lg'} text-white ${isMobile ? 'mb-0.5' : 'mb-2'} uppercase tracking-wide`}>Yes, I have a logo</h3>
+                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-xs' : 'text-sm mb-4'}`}>
+                      I have my logo file ready to upload
+                    </p>
+                  </div>
+                  {!isMobile && (
+                    <div className="inline-flex items-center gap-2 text-white/70 group-hover:text-[#64a70b] neuzeit-font text-sm font-semibold transition-colors">
+                      Continue <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  )}
+                  {isMobile && (
+                    <ArrowRight className="w-4 h-4 text-white/40 flex-shrink-0" />
+                  )}
                 </div>
               </button>
 
               <button
                 onClick={() => setStep('needs-help-options')}
-                className="group relative text-left p-6 rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1"
+                className={`group relative text-left ${isMobile ? 'p-3' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
               >
-                <div className="w-14 h-14 rounded-[12px] flex items-center justify-center mb-4 bg-white/10">
-                  <Palette className="w-7 h-7" style={{ color: clothingColors.accent }} />
-                </div>
-                <h3 className="embossing-font text-lg text-white mb-2 uppercase tracking-wide">No, I need help</h3>
-                <p className="neuzeit-light-font text-white/60 text-sm mb-4">
-                  I need a logo designed or want to discuss options
-                </p>
-                <div className="inline-flex items-center gap-2 text-white/70 group-hover:text-[#64a70b] neuzeit-font text-sm font-semibold transition-colors">
-                  Continue <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <div className={`flex ${isMobile ? 'items-center gap-3' : 'flex-col'}`}>
+                  <div className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
+                    <Palette className={isMobile ? 'w-5 h-5' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className={`embossing-font ${isMobile ? 'text-sm' : 'text-lg'} text-white ${isMobile ? 'mb-0.5' : 'mb-2'} uppercase tracking-wide`}>No, I need help</h3>
+                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-xs' : 'text-sm mb-4'}`}>
+                      I need a logo designed or want to discuss options
+                    </p>
+                  </div>
+                  {!isMobile && (
+                    <div className="inline-flex items-center gap-2 text-white/70 group-hover:text-[#64a70b] neuzeit-font text-sm font-semibold transition-colors">
+                      Continue <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  )}
+                  {isMobile && (
+                    <ArrowRight className="w-4 h-4 text-white/40 flex-shrink-0" />
+                  )}
                 </div>
               </button>
             </div>
@@ -384,18 +404,18 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                 setLogoSrc('');
                 setLogoError(null);
               }}
-              className="flex items-center gap-2 mb-6 text-white/60 hover:text-white transition-colors"
+              className={`flex items-center gap-2 ${isMobile ? 'mb-3' : 'mb-6'} text-white/60 hover:text-white transition-colors`}
             >
               <ArrowLeft className="w-4 h-4" />
-              <span className="neuzeit-font text-sm">Back</span>
+              <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'}`}>Back</span>
             </button>
 
             {/* Header */}
-            <div className="text-center mb-8">
-              <h2 className="hearns-font text-3xl md:text-4xl text-white mb-3">
+            <div className={`text-center ${isMobile ? 'mb-4' : 'mb-8'}`}>
+              <h2 className={`hearns-font ${isMobile ? 'text-xl' : 'text-3xl md:text-4xl'} text-white ${isMobile ? 'mb-1' : 'mb-3'}`}>
                 Upload Your Logo
               </h2>
-              <p className="neuzeit-light-font text-base text-white/60 max-w-lg mx-auto">
+              <p className={`neuzeit-light-font ${isMobile ? 'text-sm' : 'text-base'} text-white/60 max-w-lg mx-auto`}>
                 We'll create a professional mockup showing how it looks on your garment
               </p>
             </div>
@@ -407,7 +427,7 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 className={`
-                  relative border-2 border-dashed rounded-[15px] p-10 text-center cursor-pointer
+                  relative border-2 border-dashed rounded-[15px] ${isMobile ? 'p-5' : 'p-10'} text-center cursor-pointer
                   transition-all duration-300 ease-out
                   ${isDragging
                     ? 'border-[#64a70b] bg-[#64a70b]/10 scale-[1.02]'
@@ -428,13 +448,13 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                 />
 
                 {logoSrc ? (
-                  <div className="space-y-4">
-                    <div className="w-24 h-24 mx-auto rounded-[12px] overflow-hidden bg-white/10 p-2">
+                  <div className={isMobile ? 'space-y-2' : 'space-y-4'}>
+                    <div className={`${isMobile ? 'w-16 h-16' : 'w-24 h-24'} mx-auto rounded-[12px] overflow-hidden bg-white/10 p-2`}>
                       <img src={logoSrc} alt="Logo preview" className="w-full h-full object-contain" />
                     </div>
                     <div>
-                      <p className="neuzeit-font text-lg text-white mb-1">Logo uploaded!</p>
-                      <p className="neuzeit-light-font text-sm text-white/50">Click to change</p>
+                      <p className={`neuzeit-font ${isMobile ? 'text-sm' : 'text-lg'} text-white mb-1`}>Logo uploaded!</p>
+                      <p className={`neuzeit-light-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/50`}>Click to change</p>
                     </div>
                   </div>
                 ) : (
@@ -442,27 +462,27 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                     <motion.div
                       animate={{ scale: isDragging ? 1.1 : 1 }}
                       transition={{ duration: 0.2 }}
-                      className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+                      className={`${isMobile ? 'w-14 h-14' : 'w-20 h-20'} rounded-full mx-auto ${isMobile ? 'mb-3' : 'mb-6'} flex items-center justify-center`}
                       style={{ backgroundColor: isDragging ? `${clothingColors.accent}30` : 'rgba(255,255,255,0.1)' }}
                     >
                       {isDragging ? (
-                        <FileImage className="w-10 h-10" style={{ color: clothingColors.accent }} />
+                        <FileImage className={isMobile ? 'w-7 h-7' : 'w-10 h-10'} style={{ color: clothingColors.accent }} />
                       ) : (
-                        <Upload className="w-10 h-10 text-white/60" />
+                        <Upload className={`${isMobile ? 'w-7 h-7' : 'w-10 h-10'} text-white/60`} />
                       )}
                     </motion.div>
 
-                    <p className="neuzeit-font text-xl text-white mb-2">
+                    <p className={`neuzeit-font ${isMobile ? 'text-base' : 'text-xl'} text-white mb-2`}>
                       {isDragging ? (
                         <span style={{ color: clothingColors.accent }}>Drop it here!</span>
                       ) : (
                         <>Drag & drop your logo</>
                       )}
                     </p>
-                    <p className="neuzeit-light-font text-white/60 mb-1">
+                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-sm' : ''} mb-1`}>
                       or click to browse
                     </p>
-                    <p className="neuzeit-light-font text-sm text-white/40">
+                    <p className={`neuzeit-light-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/40`}>
                       PNG, JPG, SVG up to 10MB
                     </p>
                   </>
@@ -617,76 +637,124 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
             {/* Back button */}
             <button
               onClick={() => setStep('has-logo')}
-              className="flex items-center gap-2 mb-6 text-white/60 hover:text-white transition-colors"
+              className={`flex items-center gap-2 ${isMobile ? 'mb-3' : 'mb-6'} text-white/60 hover:text-white transition-colors`}
             >
               <ArrowLeft className="w-4 h-4" />
-              <span className="neuzeit-font text-sm">Back</span>
+              <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'}`}>Back</span>
             </button>
 
             {/* Header */}
-            <div className="text-center mb-8">
-              <h2 className="hearns-font text-3xl md:text-4xl text-white mb-3">
+            <div className={`text-center ${isMobile ? 'mb-4' : 'mb-8'}`}>
+              <h2 className={`hearns-font ${isMobile ? 'text-xl' : 'text-3xl md:text-4xl'} text-white ${isMobile ? 'mb-1' : 'mb-3'}`}>
                 How can we help?
               </h2>
-              <p className="neuzeit-light-font text-base text-white/60 max-w-lg mx-auto">
+              <p className={`neuzeit-light-font ${isMobile ? 'text-sm' : 'text-base'} text-white/60 max-w-lg mx-auto`}>
                 Our team can design your logo or discuss your project in detail
               </p>
             </div>
 
             {/* Two options */}
-            <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto">
+            <div className={`grid ${isMobile ? 'grid-cols-1 gap-2' : 'md:grid-cols-2 gap-4 md:gap-6'} max-w-2xl mx-auto`}>
               <button
                 onClick={() => onSelectPath('help')}
-                className="group relative text-left p-6 rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1"
+                className={`group relative text-left ${isMobile ? 'p-3' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
               >
-                <div className="w-14 h-14 rounded-[12px] flex items-center justify-center mb-4 bg-white/10">
-                  <Palette className="w-7 h-7" style={{ color: clothingColors.accent }} />
-                </div>
-                <span className="embossing-font text-sm tracking-wide" style={{ color: clothingColors.accent }}>
-                  FROM £25
-                </span>
-                <h3 className="embossing-font text-lg text-white mb-2 mt-1 uppercase tracking-wide">Design a logo for me</h3>
-                <p className="neuzeit-light-font text-white/60 text-sm mb-4">
-                  Our in-house designers will create a professional logo for your business
-                </p>
-                <ul className="space-y-2 mb-4">
-                  {['Professional designers', 'Logo digitisation', 'Unlimited revisions'].map((item, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 flex-shrink-0" style={{ color: clothingColors.accent }} />
-                      <span className="neuzeit-font text-sm text-white/80">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-white/10 text-white group-hover:bg-[#64a70b] neuzeit-font text-sm font-semibold transition-colors">
-                  Get Design Help <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
+                {isMobile ? (
+                  // Mobile compact layout
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-[12px] flex items-center justify-center bg-white/10 flex-shrink-0">
+                      <Palette className="w-5 h-5" style={{ color: clothingColors.accent }} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <h3 className="embossing-font text-sm text-white uppercase tracking-wide">Design a logo for me</h3>
+                        <span className="embossing-font text-xs tracking-wide" style={{ color: clothingColors.accent }}>
+                          FROM £25
+                        </span>
+                      </div>
+                      <p className="neuzeit-light-font text-white/60 text-xs">
+                        Professional designers • Unlimited revisions
+                      </p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-white/40 flex-shrink-0" />
+                  </div>
+                ) : (
+                  // Desktop layout
+                  <>
+                    <div className="w-14 h-14 rounded-[12px] flex items-center justify-center mb-4 bg-white/10">
+                      <Palette className="w-7 h-7" style={{ color: clothingColors.accent }} />
+                    </div>
+                    <span className="embossing-font text-sm tracking-wide" style={{ color: clothingColors.accent }}>
+                      FROM £25
+                    </span>
+                    <h3 className="embossing-font text-lg text-white mb-2 mt-1 uppercase tracking-wide">Design a logo for me</h3>
+                    <p className="neuzeit-light-font text-white/60 text-sm mb-4">
+                      Our in-house designers will create a professional logo for your business
+                    </p>
+                    <ul className="space-y-2 mb-4">
+                      {['Professional designers', 'Logo digitisation', 'Unlimited revisions'].map((item, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <Check className="w-4 h-4 flex-shrink-0" style={{ color: clothingColors.accent }} />
+                          <span className="neuzeit-font text-sm text-white/80">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-white/10 text-white group-hover:bg-[#64a70b] neuzeit-font text-sm font-semibold transition-colors">
+                      Get Design Help <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </>
+                )}
               </button>
 
               <button
                 onClick={() => onSelectPath('consult')}
-                className="group relative text-left p-6 rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1"
+                className={`group relative text-left ${isMobile ? 'p-3' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
               >
-                <div className="w-14 h-14 rounded-[12px] flex items-center justify-center mb-4 bg-white/10">
-                  <Calendar className="w-7 h-7" style={{ color: clothingColors.accent }} />
-                </div>
-                <span className="embossing-font text-sm tracking-wide" style={{ color: clothingColors.accent }}>
-                  FREE CONSULTATION
-                </span>
-                <h3 className="embossing-font text-lg text-white mb-2 mt-1 uppercase tracking-wide">Let's discuss my project</h3>
-                <p className="neuzeit-light-font text-white/60 text-sm mb-4">
-                  Book a call to discuss uniforms, quantities, and customisation options
-                </p>
-                <ul className="space-y-2 mb-4">
-                  {['No obligation', 'Bulk pricing advice', 'Same-day availability'].map((item, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 flex-shrink-0" style={{ color: clothingColors.accent }} />
-                      <span className="neuzeit-font text-sm text-white/80">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-white/10 text-white group-hover:bg-[#64a70b] neuzeit-font text-sm font-semibold transition-colors">
-                  Book a Call <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
+                {isMobile ? (
+                  // Mobile compact layout
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-[12px] flex items-center justify-center bg-white/10 flex-shrink-0">
+                      <Calendar className="w-5 h-5" style={{ color: clothingColors.accent }} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <h3 className="embossing-font text-sm text-white uppercase tracking-wide">Let's discuss my project</h3>
+                        <span className="embossing-font text-xs tracking-wide" style={{ color: clothingColors.accent }}>
+                          FREE
+                        </span>
+                      </div>
+                      <p className="neuzeit-light-font text-white/60 text-xs">
+                        No obligation • Same-day availability
+                      </p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-white/40 flex-shrink-0" />
+                  </div>
+                ) : (
+                  // Desktop layout
+                  <>
+                    <div className="w-14 h-14 rounded-[12px] flex items-center justify-center mb-4 bg-white/10">
+                      <Calendar className="w-7 h-7" style={{ color: clothingColors.accent }} />
+                    </div>
+                    <span className="embossing-font text-sm tracking-wide" style={{ color: clothingColors.accent }}>
+                      FREE CONSULTATION
+                    </span>
+                    <h3 className="embossing-font text-lg text-white mb-2 mt-1 uppercase tracking-wide">Let's discuss my project</h3>
+                    <p className="neuzeit-light-font text-white/60 text-sm mb-4">
+                      Book a call to discuss uniforms, quantities, and customisation options
+                    </p>
+                    <ul className="space-y-2 mb-4">
+                      {['No obligation', 'Bulk pricing advice', 'Same-day availability'].map((item, i) => (
+                        <li key={i} className="flex items-center gap-2">
+                          <Check className="w-4 h-4 flex-shrink-0" style={{ color: clothingColors.accent }} />
+                          <span className="neuzeit-font text-sm text-white/80">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-white/10 text-white group-hover:bg-[#64a70b] neuzeit-font text-sm font-semibold transition-colors">
+                      Book a Call <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </>
+                )}
               </button>
             </div>
           </motion.div>
@@ -1068,15 +1136,15 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
   return (
     <div className="w-full">
       {/* Slim Progress Indicator */}
-      <div className="mb-8">
-        <div className="flex items-center justify-center gap-2 md:gap-3">
+      <div className={isMobile ? 'mb-4' : 'mb-8'}>
+        <div className={`flex items-center justify-center ${isMobile ? 'gap-1.5' : 'gap-2 md:gap-3'}`}>
           {progressSteps.map((progressStep, index) => (
             <React.Fragment key={progressStep.key}>
               {/* Step */}
               <div className="flex items-center gap-1.5">
                 <div
                   className={`
-                    w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold neuzeit-font
+                    ${isMobile ? 'w-5 h-5 text-[10px]' : 'w-6 h-6 text-xs'} rounded-full flex items-center justify-center font-semibold neuzeit-font
                     transition-all duration-300
                     ${progressStep.completed
                       ? 'bg-[#64a70b] text-white'
@@ -1087,23 +1155,25 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                   `}
                 >
                   {progressStep.completed ? (
-                    <Check className="w-3.5 h-3.5" />
+                    <Check className={isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
                   ) : (
                     index + 1
                   )}
                 </div>
-                <span className={`hidden md:block text-xs neuzeit-font ${
-                  progressStep.active ? 'text-white' : progressStep.completed ? 'text-white/60' : 'text-white/40'
-                }`}>
-                  {progressStep.label}
-                  {progressStep.optional && <span className="text-white/30 ml-1">(optional)</span>}
-                </span>
+                {!isMobile && (
+                  <span className={`hidden md:block text-xs neuzeit-font ${
+                    progressStep.active ? 'text-white' : progressStep.completed ? 'text-white/60' : 'text-white/40'
+                  }`}>
+                    {progressStep.label}
+                    {progressStep.optional && <span className="text-white/30 ml-1">(optional)</span>}
+                  </span>
+                )}
               </div>
 
               {/* Connector line */}
               {index < progressSteps.length - 1 && (
                 <div
-                  className={`w-6 md:w-10 h-0.5 rounded-full transition-all duration-300 ${
+                  className={`${isMobile ? 'w-4' : 'w-6 md:w-10'} h-0.5 rounded-full transition-all duration-300 ${
                     progressStep.completed ? 'bg-[#64a70b]' : 'bg-white/10'
                   }`}
                 />
@@ -1123,20 +1193,20 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-8 pt-6 border-t border-white/10"
+          className={`${isMobile ? 'mt-4 pt-3' : 'mt-8 pt-6'} border-t border-white/10`}
         >
-          <div className="flex flex-wrap justify-center gap-4 md:gap-8 text-xs md:text-sm text-white/50">
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4" style={{ color: clothingColors.accent }} />
-              <span className="neuzeit-font">Free mockup on all orders</span>
+          <div className={`flex flex-wrap justify-center ${isMobile ? 'gap-2 text-[10px]' : 'gap-4 md:gap-8 text-xs md:text-sm'} text-white/50`}>
+            <div className="flex items-center gap-1.5">
+              <Check className={isMobile ? 'w-3 h-3' : 'w-4 h-4'} style={{ color: clothingColors.accent }} />
+              <span className="neuzeit-font">Free mockup</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4" style={{ color: clothingColors.accent }} />
-              <span className="neuzeit-font">No payment until you approve</span>
+            <div className="flex items-center gap-1.5">
+              <Check className={isMobile ? 'w-3 h-3' : 'w-4 h-4'} style={{ color: clothingColors.accent }} />
+              <span className="neuzeit-font">No payment until approved</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4" style={{ color: clothingColors.accent }} />
-              <span className="neuzeit-font">5-10 working day turnaround</span>
+            <div className="flex items-center gap-1.5">
+              <Check className={isMobile ? 'w-3 h-3' : 'w-4 h-4'} style={{ color: clothingColors.accent }} />
+              <span className="neuzeit-font">5-10 day turnaround</span>
             </div>
           </div>
         </motion.div>

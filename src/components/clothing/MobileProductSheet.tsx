@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
-import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn } from 'lucide-react';
 import { ProductGroup } from './ClothingBrowser';
 import { ColorVariant, getRgbValues } from '../../lib/supabase';
 import { useWishlist } from '../../contexts/WishlistContext';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../ui/carousel';
+import { ImageZoom, Image as ZoomImage } from '../animate-ui/primitives/effects/image-zoom';
 import ClothingOrderWizard, { LogoPreviewData } from './ClothingOrderWizard';
 import ClothingLogoUploader from './ClothingLogoUploader';
 import ClothingHelpRequestForm from './ClothingHelpRequestForm';
@@ -43,7 +44,6 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
   const [currentViewIndex, setCurrentViewIndex] = useState(0);
   const [openAccordion, setOpenAccordion] = useState<'overview' | 'details' | 'care' | 'sizing' | null>('overview');
   const [colorDropdownOpen, setColorDropdownOpen] = useState(false);
-  const [zoomedImageSrc, setZoomedImageSrc] = useState<string | null>(null);
   const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
   const [quoteStep, setQuoteStep] = useState<'logo-options' | 'upload' | 'help' | 'consult' | 'success' | 'submitting'>('logo-options');
@@ -271,12 +271,12 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
   const renderQuoteContent = () => {
     if (showHowItWorksModal) {
       return (
-        <div className="p-4">
+        <div className="px-3 py-2">
           <button
             onClick={() => setShowHowItWorksModal(false)}
-            className="mb-4 text-white/70 flex items-center gap-2"
+            className="mb-3 text-white/70 flex items-center gap-1.5 text-sm"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4" />
             Back
           </button>
           <ClothingHowItWorks
@@ -294,70 +294,90 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
     switch (quoteStep) {
       case 'logo-options':
         return (
-          <ClothingOrderWizard
-            productName={productGroup.style_name}
-            productImage={currentColor?.colour_image || productGroup.variants[0]?.primary_product_image_url}
-            productColors={colorVariants.map(c => ({
-              name: c.colour_name,
-              rgb: c.rgb,
-              image: c.colour_image,
-              code: c.colour_code,
-            }))}
-            initialColorIndex={selectedColor}
-            onSelectPath={(path) => {
-              if (path === 'upload') setQuoteStep('upload');
-              else if (path === 'help') setQuoteStep('help');
-              else if (path === 'consult') setQuoteStep('consult');
-            }}
-          />
+          <div className="px-3 py-2">
+            {/* Back button to product details */}
+            <button
+              onClick={() => setShowQuoteModal(false)}
+              className="mb-3 text-white/70 flex items-center gap-1.5 text-sm"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back to product
+            </button>
+            <ClothingOrderWizard
+              productName={productGroup.style_name}
+              productImage={currentColor?.colour_image || productGroup.variants[0]?.primary_product_image_url}
+              productColors={colorVariants.map(c => ({
+                name: c.colour_name,
+                rgb: c.rgb,
+                image: c.colour_image,
+                code: c.colour_code,
+              }))}
+              initialColorIndex={selectedColor}
+              onSelectPath={(path) => {
+                if (path === 'upload') setQuoteStep('upload');
+                else if (path === 'help') setQuoteStep('help');
+                else if (path === 'consult') setQuoteStep('consult');
+              }}
+              isMobile={true}
+            />
+          </div>
         );
       case 'upload':
         return (
-          <ClothingLogoUploader
-            productTitle={productGroup.style_name}
-            productImage={currentColor?.colour_image || productGroup.variants[0]?.primary_product_image_url}
-            onBack={() => setQuoteStep('logo-options')}
-            onComplete={() => setQuoteStep('success')}
-          />
+          <div className="px-3 py-2">
+            <ClothingLogoUploader
+              productTitle={productGroup.style_name}
+              productImage={currentColor?.colour_image || productGroup.variants[0]?.primary_product_image_url}
+              onBack={() => setQuoteStep('logo-options')}
+              onComplete={() => setQuoteStep('success')}
+              isMobile={true}
+            />
+          </div>
         );
       case 'help':
         return (
-          <ClothingHelpRequestForm
-            productTitle={productGroup.style_name}
-            onBack={() => setQuoteStep('logo-options')}
-            onComplete={() => setQuoteStep('success')}
-          />
+          <div className="px-3 py-2">
+            <ClothingHelpRequestForm
+              productTitle={productGroup.style_name}
+              onBack={() => setQuoteStep('logo-options')}
+              onComplete={() => setQuoteStep('success')}
+              isMobile={true}
+            />
+          </div>
         );
       case 'consult':
         return (
-          <ClothingConsultationBooker
-            productName={productGroup.style_name}
-            onBack={() => setQuoteStep('logo-options')}
-            onComplete={() => setQuoteStep('success')}
-          />
+          <div className="px-3 py-2">
+            <ClothingConsultationBooker
+              productName={productGroup.style_name}
+              onBack={() => setQuoteStep('logo-options')}
+              onComplete={() => setQuoteStep('success')}
+              isMobile={true}
+            />
+          </div>
         );
       case 'submitting':
         return (
-          <div className="flex flex-col items-center justify-center py-12">
-            <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin mb-4" />
-            <p className="text-white">Submitting your enquiry...</p>
+          <div className="flex flex-col items-center justify-center py-8 px-3">
+            <div className="w-10 h-10 border-3 border-white/20 border-t-white rounded-full animate-spin mb-3" />
+            <p className="text-white text-sm">Submitting your enquiry...</p>
           </div>
         );
       case 'success':
         return (
-          <div className="text-center py-12 px-4">
-            <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-8 h-8 text-green-400" />
+          <div className="text-center py-8 px-3">
+            <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-3">
+              <Sparkles className="w-6 h-6 text-green-400" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Enquiry Submitted!</h3>
-            <p className="text-white/70 mb-4">Reference: {enquiryRef}</p>
-            <p className="text-white/60 text-sm mb-6">We'll be in touch within 24 hours.</p>
+            <h3 className="text-lg font-bold text-white mb-1">Enquiry Submitted!</h3>
+            <p className="text-white/70 text-sm mb-2">Reference: {enquiryRef}</p>
+            <p className="text-white/60 text-xs mb-4">We'll be in touch within 24 hours.</p>
             <button
               onClick={() => {
                 setShowQuoteModal(false);
                 setQuoteStep('logo-options');
               }}
-              className="px-6 py-3 rounded-lg text-white font-semibold"
+              className="px-5 py-2.5 rounded-lg text-white font-semibold text-sm"
               style={{ backgroundColor: colors.accent }}
             >
               Continue Browsing
@@ -397,7 +417,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.5 }}
             onDragEnd={handleDragEnd}
-            className="fixed inset-x-0 bottom-0 z-50 rounded-t-[10px] overflow-hidden flex flex-col"
+            className="fixed inset-x-0 bottom-0 z-50 rounded-t-[10px] overflow-hidden"
             style={{
               height: '85%',
               backgroundColor: colors.dark,
@@ -417,8 +437,8 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             {/* Content */}
             <div
               ref={contentRef}
-              className="flex-1 overflow-y-auto overscroll-none"
-              style={{ touchAction: 'pan-y' }}
+              className="h-full overflow-y-auto overscroll-none pb-6"
+              style={{ touchAction: 'pan-y', maxHeight: 'calc(100% - 24px)' }}
               onTouchMove={(e) => e.stopPropagation()}
             >
               {showQuoteModal ? (
@@ -431,21 +451,22 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                       <CarouselContent>
                         {galleryImages.map((img, idx) => (
                           <CarouselItem key={idx}>
-                            <div
-                              className="aspect-[4/3] bg-white rounded-lg overflow-hidden cursor-pointer relative group"
-                              onClick={() => setZoomedImageSrc(img.src)}
-                            >
-                              <img
-                                src={img.src}
-                                alt={`${productGroup.style_name} - ${img.label}`}
-                                className="w-full h-full object-contain"
-                              />
-                              {/* Zoom hint overlay */}
-                              <div className="absolute inset-0 bg-black/0 group-active:bg-black/10 transition-colors flex items-center justify-center">
-                                <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 text-white text-xs opacity-70">
-                                  <ZoomIn className="w-3 h-3" />
-                                  <span>Tap to zoom</span>
-                                </div>
+                            <div className="aspect-[4/3] bg-white rounded-lg overflow-hidden relative">
+                              <ImageZoom
+                                zoomScale={2.5}
+                                zoomOnHover={false}
+                                zoomOnClick={true}
+                              >
+                                <ZoomImage
+                                  src={img.src}
+                                  alt={`${productGroup.style_name} - ${img.label}`}
+                                  objectFit="contain"
+                                />
+                              </ImageZoom>
+                              {/* Zoom hint */}
+                              <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 text-white text-xs opacity-70 pointer-events-none">
+                                <ZoomIn className="w-3 h-3" />
+                                <span>Tap to zoom</span>
                               </div>
                             </div>
                           </CarouselItem>
@@ -665,59 +686,28 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                     })}
                   </div>
 
+                  {/* Action Buttons */}
+                  <div className="space-y-2 mt-4">
+                    <button
+                      onClick={() => setShowQuoteModal(true)}
+                      className="w-full py-3 rounded-lg text-white font-bold text-base transition-all active:scale-[0.98]"
+                      style={{ backgroundColor: colors.accent }}
+                    >
+                      Start Order
+                    </button>
+                    <button
+                      onClick={() => setShowHowItWorksModal(true)}
+                      className="w-full py-2 rounded-lg text-white/80 font-medium text-sm border border-white/20 flex items-center justify-center gap-2"
+                    >
+                      <Info className="w-4 h-4" />
+                      How does it work?
+                    </button>
                   </div>
+                </div>
               )}
             </div>
-
-            {/* Action Buttons - Fixed at bottom of sheet */}
-            {!showQuoteModal && (
-              <div className="flex-shrink-0 p-3 space-y-2 border-t border-white/10" style={{ backgroundColor: colors.dark }}>
-                <button
-                  onClick={() => setShowQuoteModal(true)}
-                  className="w-full py-3 rounded-lg text-white font-bold text-base transition-all active:scale-[0.98]"
-                  style={{ backgroundColor: colors.accent }}
-                >
-                  Start Order
-                </button>
-                <button
-                  onClick={() => setShowHowItWorksModal(true)}
-                  className="w-full py-2 rounded-lg text-white/80 font-medium text-sm border border-white/20 flex items-center justify-center gap-2"
-                >
-                  <Info className="w-4 h-4" />
-                  How does it work?
-                </button>
-              </div>
-            )}
           </motion.div>
 
-          {/* Image Zoom Modal */}
-          <AnimatePresence>
-            {zoomedImageSrc && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center"
-                onClick={() => setZoomedImageSrc(null)}
-              >
-                <button
-                  onClick={() => setZoomedImageSrc(null)}
-                  className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white z-10"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-                <motion.img
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.8, opacity: 0 }}
-                  src={zoomedImageSrc}
-                  alt={productGroup.style_name}
-                  className="max-w-full max-h-full object-contain p-4"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
         </>
       )}
     </AnimatePresence>
