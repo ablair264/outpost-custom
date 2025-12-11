@@ -146,7 +146,7 @@ const CaseStudyEditor: React.FC<Props> = ({ caseStudyId, onSave, onCancel }) => 
   }, [caseStudyId]);
 
   const getAuthToken = () => {
-    return localStorage.getItem('adminToken');
+    return localStorage.getItem('admin_token');
   };
 
   const fetchCaseStudy = async (id: string) => {

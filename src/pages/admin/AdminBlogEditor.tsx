@@ -82,7 +82,7 @@ const AdminBlogEditor: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
 
   const getAuthToken = () => {
-    return localStorage.getItem('adminToken');
+    return localStorage.getItem('admin_token');
   };
 
   // Fetch data on mount

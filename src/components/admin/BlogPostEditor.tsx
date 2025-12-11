@@ -201,7 +201,7 @@ const BlogPostEditor: React.FC<Props> = ({ postId, onSave, onCancel }) => {
   }, [postId]);
 
   const getAuthToken = () => {
-    return localStorage.getItem('adminToken');
+    return localStorage.getItem('admin_token');
   };
 
   const fetchAuthors = async () => {

@@ -8,22 +8,18 @@ import {
   LogOut,
   Eye,
   Home,
-  ChevronRight,
-  ChevronLeft,
+  ChevronDown,
+  ChevronUp,
+  ChevronsLeftRight,
   Users,
   Loader2,
-  Pin,
-  PinOff,
   Settings,
-  Shirt,
-  MessageSquare,
   LayoutDashboard,
-  Image as ImageIcon,
-  Printer,
   Bell,
   Mail,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  Calendar
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -32,36 +28,29 @@ interface NavItem {
   label: string;
   icon: React.ReactNode;
   path?: string;
-  color: string;
-  links?: { label: string; path: string; badge?: number }[];
+  links?: { label: string; path: string }[];
   adminOnly?: boolean;
+  section: 'main' | 'settings';
 }
 
 const AdminLayoutNew: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [sidebarPinned, setSidebarPinned] = useState(true);
-  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['enquiries']);
   const [isLiveChatOnline, setIsLiveChatOnline] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(3);
   const [unreadMessages, setUnreadMessages] = useState(2);
   const { isAuthenticated, isLoading, user, signOut, isAdmin } = useAuth();
 
   useEffect(() => {
-    // Redirect to login if not authenticated
     if (!isLoading && !isAuthenticated) {
       navigate('/admin/login');
     }
   }, [isLoading, isAuthenticated, navigate]);
 
-  // Load sidebar preferences and livechat status
   useEffect(() => {
     try {
-      const pinned = localStorage.getItem('adminSidebarPinned');
-      if (pinned !== null) {
-        setSidebarPinned(pinned === 'true');
-      }
       const liveChatStatus = localStorage.getItem('liveChatOnline');
       if (liveChatStatus !== null) {
         setIsLiveChatOnline(liveChatStatus === 'true');
@@ -86,58 +75,44 @@ const AdminLayoutNew: React.FC = () => {
     window.open('/', '_blank');
   };
 
-  const togglePin = () => {
-    const next = !sidebarPinned;
-    setSidebarPinned(next);
-    try {
-      localStorage.setItem('adminSidebarPinned', String(next));
-    } catch {}
-    if (next) setSidebarCollapsed(false);
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev =>
+      prev.includes(sectionId)
+        ? prev.filter(id => id !== sectionId)
+        : [...prev, sectionId]
+    );
   };
 
-  const toggleCollapse = () => {
-    if (sidebarPinned && !sidebarCollapsed) {
-      setSidebarPinned(false);
-      try {
-        localStorage.setItem('adminSidebarPinned', 'false');
-      } catch {}
-    }
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
-
-  // Show loading state while checking auth
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#1a1625] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-10 h-10 text-[#8b5cf6] animate-spin" />
-          <p className="text-gray-400 neuzeit-font">Loading...</p>
+          <p className="text-gray-400" style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}>Loading...</p>
         </div>
       </div>
     );
   }
 
-  // Don't render if not authenticated
   if (!isAuthenticated) {
     return null;
   }
 
   const username = user?.name || user?.email?.split('@')[0] || 'Admin';
 
-  // Navigation items with sections
   const navItems: NavItem[] = [
     {
       id: 'dashboard',
       label: 'Dashboard',
-      icon: <LayoutDashboard className="w-5 h-5" />,
+      icon: <Home className="w-5 h-5" />,
       path: '/admin/dashboard',
-      color: '#64a70b',
+      section: 'main',
     },
     {
       id: 'products',
       label: 'Products',
       icon: <Package className="w-5 h-5" />,
-      color: '#8b5cf6',
+      section: 'main',
       links: [
         { label: 'Product Manager', path: '/admin/products' },
         { label: 'Pricing', path: '/admin/pricing' },
@@ -145,54 +120,60 @@ const AdminLayoutNew: React.FC = () => {
       ],
     },
     {
-      id: 'web-content',
-      label: 'Web Content',
-      icon: <Globe className="w-5 h-5" />,
-      color: '#3b82f6',
-      links: [
-        { label: 'Shop Page', path: '/admin/shop-page' },
-        { label: 'Home Page', path: '/admin/home-page' },
-        { label: 'Signage', path: '/admin/signage' },
-        { label: 'Printing', path: '/admin/printing' },
-      ],
+      id: 'blog',
+      label: 'Blog /',
+      icon: <FileText className="w-5 h-5" />,
+      path: '/admin/blog',
+      section: 'main',
+    },
+    {
+      id: 'schedules',
+      label: 'Schedules',
+      icon: <Calendar className="w-5 h-5" />,
+      path: '/admin/schedules',
+      section: 'main',
     },
     {
       id: 'enquiries',
       label: 'Enquiries',
       icon: <Clipboard className="w-5 h-5" />,
-      color: '#f59e0b',
+      section: 'main',
       links: [
-        { label: 'Clothing Enquiries', path: '/admin/clothing-enquiries' },
-        { label: 'General Enquiries', path: '/admin/enquiries' },
-        { label: 'Settings', path: '/admin/enquiry-settings' },
+        { label: 'Enquiries List', path: '/admin/enquiries' },
+        { label: 'Refunds', path: '/admin/refunds' },
+        { label: 'Declines', path: '/admin/declines' },
+        { label: 'Payouts', path: '/admin/payouts' },
       ],
     },
     {
-      id: 'blog',
-      label: 'Blog Posts',
-      icon: <FileText className="w-5 h-5" />,
-      path: '/admin/blog',
-      color: '#10b981',
+      id: 'notification',
+      label: 'Notification',
+      icon: <Bell className="w-5 h-5" />,
+      path: '/admin/notifications',
+      section: 'settings',
     },
     {
-      id: 'users',
-      label: 'User Management',
-      icon: <Users className="w-5 h-5" />,
-      path: '/admin/users',
-      color: '#ef4444',
+      id: 'settings',
+      label: 'Settings',
+      icon: <Settings className="w-5 h-5" />,
+      section: 'settings',
+      links: [
+        { label: 'General', path: '/admin/settings/general' },
+        { label: 'Users', path: '/admin/users' },
+      ],
       adminOnly: true,
     },
   ];
 
-  // Filter nav items based on role
   const filteredNavItems = navItems.filter((item) => {
     if (item.adminOnly && !isAdmin) return false;
     return true;
   });
 
-  const isActivePath = (path: string) => {
-    return location.pathname === path;
-  };
+  const mainItems = filteredNavItems.filter(item => item.section === 'main');
+  const settingsItems = filteredNavItems.filter(item => item.section === 'settings');
+
+  const isActivePath = (path: string) => location.pathname === path;
 
   const isSectionActive = (item: NavItem) => {
     if (item.path) return isActivePath(item.path);
@@ -202,224 +183,225 @@ const AdminLayoutNew: React.FC = () => {
     return false;
   };
 
+  const isExpanded = (itemId: string) => expandedSections.includes(itemId);
+
+  const renderNavItem = (item: NavItem) => {
+    const hasLinks = item.links && item.links.length > 0;
+    const expanded = isExpanded(item.id);
+    const active = isSectionActive(item);
+
+    return (
+      <div key={item.id} className="mb-1">
+        <button
+          onClick={() => {
+            if (hasLinks) {
+              toggleSection(item.id);
+            } else if (item.path) {
+              navigate(item.path);
+            }
+          }}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+            active && hasLinks
+              ? 'bg-[#3d3456] text-white'
+              : active
+              ? 'text-white'
+              : 'text-gray-400 hover:text-white hover:bg-white/5'
+          }`}
+          style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+        >
+          <span className={active ? 'text-white' : 'text-gray-500'}>
+            {item.icon}
+          </span>
+          {!sidebarCollapsed && (
+            <>
+              <span className="font-medium text-[15px]">{item.label}</span>
+              {hasLinks && (
+                <span className="ml-auto">
+                  {expanded ? (
+                    <ChevronUp className="w-4 h-4 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  )}
+                </span>
+              )}
+            </>
+          )}
+        </button>
+
+        {/* Sub-links */}
+        {hasLinks && expanded && !sidebarCollapsed && (
+          <div className="mt-1 ml-4 pl-4 border-l-2 border-gray-600/50 space-y-1">
+            {item.links!.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`block px-3 py-2.5 rounded-lg text-[14px] transition-colors ${
+                  isActivePath(link.path)
+                    ? 'bg-[#4a3d66] text-white font-medium'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+                style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#1a1625] flex">
-      {/* Sidebar */}
+      {/* Floating Sidebar */}
       <nav
-        className={`fixed top-0 left-0 h-full bg-gradient-to-b from-[#2d2640] to-[#1a1625] border-r border-purple-500/10 flex flex-col z-50 transition-all duration-300 ${
-          sidebarCollapsed ? 'w-[72px]' : 'w-[280px]'
+        className={`fixed top-4 left-4 bottom-4 bg-gradient-to-b from-[#2a2440] to-[#1e1a2e] rounded-2xl flex flex-col z-50 transition-all duration-300 shadow-2xl ${
+          sidebarCollapsed ? 'w-[72px]' : 'w-[260px]'
         }`}
-        onMouseEnter={() => {
-          if (!sidebarPinned && sidebarCollapsed) {
-            setSidebarCollapsed(false);
-          }
-        }}
-        onMouseLeave={() => {
-          if (!sidebarPinned && !sidebarCollapsed) {
-            setSidebarCollapsed(true);
-          }
-        }}
       >
         {/* Header with Logo */}
-        <div className="flex items-center justify-between p-4 border-b border-purple-500/10 min-h-[64px]">
-          <div className={`transition-opacity duration-300 ${sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
+        <div className="relative p-6 pb-4">
+          {!sidebarCollapsed && (
             <img
               src="/images/outpost-logo.png"
               alt="Outpost Custom"
-              className="h-8 w-auto"
+              className="h-10 w-auto"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
             />
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={togglePin}
-              className={`p-2 rounded-lg transition-colors ${
-                sidebarPinned
-                  ? 'bg-purple-500/20 text-purple-400'
-                  : 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
-              }`}
-              title={sidebarPinned ? 'Unpin sidebar' : 'Pin sidebar'}
-            >
-              {sidebarPinned ? <Pin className="w-4 h-4" /> : <PinOff className="w-4 h-4" />}
-            </button>
-            <button
-              onClick={toggleCollapse}
-              className="p-2 rounded-lg text-gray-500 hover:bg-white/5 hover:text-gray-300 transition-colors"
-              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              <ChevronLeft className={`w-4 h-4 transition-transform ${sidebarCollapsed ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-        </div>
-
-        {/* Navigation Items */}
-        <div className="flex-1 py-4 px-2 overflow-y-auto">
-          {filteredNavItems.map((item) => (
-            <div
-              key={item.id}
-              className="relative mb-1"
-              onMouseEnter={() => {
-                if (sidebarCollapsed && item.links) {
-                  setHoveredSection(item.id);
-                }
-              }}
-              onMouseLeave={() => {
-                if (sidebarCollapsed) {
-                  setHoveredSection(null);
-                }
-              }}
-            >
-              <button
-                onClick={() => {
-                  if (item.path) {
-                    navigate(item.path);
-                  } else if (item.links && item.links.length > 0) {
-                    navigate(item.links[0].path);
-                  }
-                }}
-                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${
-                  isSectionActive(item)
-                    ? 'bg-white/10 text-white'
-                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <div
-                  className="flex-shrink-0 relative"
-                  style={{ color: isSectionActive(item) ? item.color : undefined }}
-                >
-                  {item.icon}
-                </div>
-                <span
-                  className={`text-sm font-medium whitespace-nowrap transition-opacity duration-300 ${
-                    sidebarCollapsed ? 'opacity-0 w-0' : 'opacity-100'
-                  }`}
-                >
-                  {item.label}
-                </span>
-                {item.links && !sidebarCollapsed && (
-                  <ChevronRight className="w-4 h-4 ml-auto text-gray-500" />
-                )}
-              </button>
-
-              {/* Hover Popup for collapsed state */}
-              {item.links && sidebarCollapsed && hoveredSection === item.id && (
-                <div
-                  className="absolute left-full top-0 ml-2 bg-[#2d2640] border border-purple-500/20 rounded-xl shadow-xl min-w-[200px] z-50 overflow-hidden"
-                  onMouseEnter={() => setHoveredSection(item.id)}
-                  onMouseLeave={() => setHoveredSection(null)}
-                >
-                  <div className="px-4 py-3 border-b border-purple-500/10 flex items-center gap-2">
-                    <div style={{ color: item.color }}>{item.icon}</div>
-                    <span className="text-white font-semibold text-sm">{item.label}</span>
-                  </div>
-                  <div className="py-2">
-                    {item.links.map((link) => (
-                      <Link
-                        key={link.path}
-                        to={link.path}
-                        className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${
-                          isActivePath(link.path)
-                            ? 'bg-purple-500/20 text-purple-400'
-                            : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                        }`}
-                      >
-                        <span className="text-sm">{link.label}</span>
-                        {link.badge && link.badge > 0 && (
-                          <span className="ml-auto px-2 py-0.5 bg-purple-500 text-white text-xs rounded-full">
-                            {link.badge}
-                          </span>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sub-links for expanded state */}
-              {item.links && !sidebarCollapsed && isSectionActive(item) && (
-                <div className="mt-1 ml-8 space-y-0.5">
-                  {item.links.map((link) => (
-                    <Link
-                      key={link.path}
-                      to={link.path}
-                      className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
-                        isActivePath(link.path)
-                          ? 'bg-purple-500/20 text-purple-400 font-medium'
-                          : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                      }`}
-                    >
-                      {link.label}
-                      {link.badge && link.badge > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-purple-500 text-white text-xs rounded-full">
-                          {link.badge}
-                        </span>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              )}
+          )}
+          {sidebarCollapsed && (
+            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">OC</span>
             </div>
-          ))}
+          )}
+
+          {/* Collapse Button */}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="absolute top-4 -right-3 w-6 h-6 bg-[#2a2440] border border-gray-600/50 rounded-md flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#3d3456] transition-colors shadow-lg"
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            <ChevronsLeftRight className="w-3 h-3" />
+          </button>
         </div>
 
-        {/* Footer with Avatar and Logout */}
-        <div className="p-3 border-t border-purple-500/10 space-y-3">
-          {/* User Avatar Section */}
-          <div className={`flex items-center gap-3 px-2 py-2 rounded-xl bg-purple-500/10 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-lg">
-              {username.substring(0, 2).toUpperCase()}
+        {/* Navigation */}
+        <div className="flex-1 px-3 overflow-y-auto">
+          {/* MAIN Section */}
+          {!sidebarCollapsed && (
+            <div
+              className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-4 mb-3"
+              style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+            >
+              Main
+            </div>
+          )}
+          {mainItems.map(renderNavItem)}
+
+          {/* SETTINGS Section */}
+          {!sidebarCollapsed && (
+            <div
+              className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider px-4 mb-3 mt-6"
+              style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+            >
+              Settings
+            </div>
+          )}
+          {sidebarCollapsed && <div className="my-4 border-t border-gray-600/30" />}
+          {settingsItems.map(renderNavItem)}
+        </div>
+
+        {/* Footer with User Info */}
+        <div className="p-4 bg-[#252035] rounded-b-2xl">
+          {/* User Info */}
+          <div className={`flex items-center gap-3 mb-4 ${sidebarCollapsed ? 'justify-center' : ''}`}>
+            <div className="w-12 h-12 rounded-full bg-gray-600 overflow-hidden flex-shrink-0">
+              <img
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=6b7280&color=fff&size=48`}
+                alt={username}
+                className="w-full h-full object-cover"
+              />
             </div>
             {!sidebarCollapsed && (
               <div className="min-w-0 flex-1">
-                <p className="text-white font-semibold text-sm truncate">{username}</p>
-                <p className="text-purple-300/60 text-xs capitalize">{user?.role || 'Staff'}</p>
+                <p
+                  className="text-white font-semibold text-sm truncate"
+                  style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+                >
+                  {username}
+                </p>
+                <p
+                  className="text-gray-400 text-xs capitalize"
+                  style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+                >
+                  {user?.role || 'Admin'}
+                </p>
               </div>
             )}
           </div>
 
-          {/* View Site Button */}
-          <button
-            onClick={handleViewSite}
-            className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-gray-400 hover:bg-purple-500/10 hover:text-purple-300 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}
-            title="View Site"
-          >
-            <Eye className="w-4 h-4" />
-            {!sidebarCollapsed && <span className="text-sm">View Site</span>}
-          </button>
-
-          {/* Logout Button */}
-          <button
-            onClick={handleLogout}
-            className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}
-            title="Log Out"
-          >
-            <LogOut className="w-4 h-4" />
-            {!sidebarCollapsed && <span className="text-sm">Log Out</span>}
-          </button>
+          {/* Action Buttons */}
+          {!sidebarCollapsed ? (
+            <div className="flex gap-2">
+              <button
+                onClick={handleLogout}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#6b5b95] hover:bg-[#7d6ba8] text-white text-sm font-medium transition-colors"
+                style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+              >
+                Logout
+              </button>
+              <button
+                onClick={handleViewSite}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#3d3456] hover:bg-[#4a3d66] text-gray-300 text-sm font-medium transition-colors"
+                style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+              >
+                View Site
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={handleLogout}
+                className="w-full p-2.5 rounded-lg bg-[#6b5b95] hover:bg-[#7d6ba8] text-white transition-colors flex items-center justify-center"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleViewSite}
+                className="w-full p-2.5 rounded-lg bg-[#3d3456] hover:bg-[#4a3d66] text-gray-300 transition-colors flex items-center justify-center"
+                title="View Site"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </nav>
 
       {/* Main Content */}
       <main
         className={`flex-1 transition-all duration-300 ${
-          sidebarCollapsed ? 'ml-[72px]' : 'ml-[280px]'
+          sidebarCollapsed ? 'ml-[96px]' : 'ml-[284px]'
         }`}
       >
-        {/* Glass Header */}
+        {/* Header */}
         <header className="sticky top-0 z-30 bg-[#1a1625]/90 backdrop-blur-xl border-b border-purple-500/10">
           <div className="px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl text-white font-semibold neuzeit-font">
-                Admin Dashboard
-              </h1>
-            </div>
+            <h1
+              className="text-xl text-white font-semibold"
+              style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+            >
+              Admin Dashboard
+            </h1>
 
-            {/* Right Side Controls */}
             <div className="flex items-center gap-4">
-              {/* Date Display */}
-              <div className="text-sm text-gray-400 hidden md:block">
+              <div
+                className="text-sm text-gray-400 hidden md:block"
+                style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+              >
                 {new Date().toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
@@ -428,10 +410,8 @@ const AdminLayoutNew: React.FC = () => {
                 })}
               </div>
 
-              {/* Divider */}
               <div className="h-6 w-px bg-purple-500/20 hidden md:block" />
 
-              {/* LiveChat Toggle */}
               <button
                 onClick={toggleLiveChat}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
@@ -439,20 +419,22 @@ const AdminLayoutNew: React.FC = () => {
                     ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                     : 'bg-gray-500/20 text-gray-400 border border-gray-500/30 hover:bg-gray-500/30'
                 }`}
-                title={isLiveChatOnline ? 'LiveChat Online - Click to go offline' : 'LiveChat Offline - Click to go online'}
+                title={isLiveChatOnline ? 'LiveChat Online' : 'LiveChat Offline'}
               >
                 {isLiveChatOnline ? (
                   <ToggleRight className="w-5 h-5" />
                 ) : (
                   <ToggleLeft className="w-5 h-5" />
                 )}
-                <span className="text-sm font-medium hidden sm:inline">
+                <span
+                  className="text-sm font-medium hidden sm:inline"
+                  style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+                >
                   {isLiveChatOnline ? 'Online' : 'Offline'}
                 </span>
                 <span className={`w-2 h-2 rounded-full ${isLiveChatOnline ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`} />
               </button>
 
-              {/* Messages Bell */}
               <button
                 className="relative p-2 rounded-lg text-gray-400 hover:bg-purple-500/10 hover:text-purple-300 transition-colors"
                 title="Messages"
@@ -465,7 +447,6 @@ const AdminLayoutNew: React.FC = () => {
                 )}
               </button>
 
-              {/* Notifications Bell */}
               <button
                 className="relative p-2 rounded-lg text-gray-400 hover:bg-purple-500/10 hover:text-purple-300 transition-colors"
                 title="Notifications"
