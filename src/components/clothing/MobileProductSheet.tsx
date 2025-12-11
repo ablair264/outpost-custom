@@ -382,6 +382,8 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-black/60 z-50"
+            style={{ touchAction: 'none' }}
+            onTouchMove={(e) => e.preventDefault()}
           />
 
           {/* Sheet */}
@@ -395,9 +397,9 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.5 }}
             onDragEnd={handleDragEnd}
-            className="fixed inset-x-0 bottom-0 z-50 rounded-t-[10px] overflow-hidden"
+            className="fixed inset-x-0 bottom-0 z-50 rounded-t-[10px] overflow-hidden flex flex-col"
             style={{
-              height: '100%',
+              height: '85%',
               backgroundColor: colors.dark,
             }}
           >
@@ -415,13 +417,14 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             {/* Content */}
             <div
               ref={contentRef}
-              className="h-full overflow-y-auto overscroll-contain pb-20"
-              style={{ maxHeight: 'calc(100% - 24px)' }}
+              className="flex-1 overflow-y-auto overscroll-none"
+              style={{ touchAction: 'pan-y' }}
+              onTouchMove={(e) => e.stopPropagation()}
             >
               {showQuoteModal ? (
                 renderQuoteContent()
               ) : (
-                <div className="px-3 pb-32">
+                <div className="px-3 pb-4">
                   {/* Image Carousel - reduced size */}
                   <div className="relative mb-3">
                     <Carousel setApi={setCarouselApi} className="w-full">
@@ -662,26 +665,29 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                     })}
                   </div>
 
-                  {/* Action Buttons - Fixed at bottom */}
-                  <div className="fixed bottom-0 left-0 right-0 p-3 space-y-2 z-10" style={{ backgroundColor: colors.dark }}>
-                    <button
-                      onClick={() => setShowQuoteModal(true)}
-                      className="w-full py-3 rounded-lg text-white font-bold text-base transition-all active:scale-[0.98]"
-                      style={{ backgroundColor: colors.accent }}
-                    >
-                      Start Order
-                    </button>
-                    <button
-                      onClick={() => setShowHowItWorksModal(true)}
-                      className="w-full py-2 rounded-lg text-white/80 font-medium text-sm border border-white/20 flex items-center justify-center gap-2"
-                    >
-                      <Info className="w-4 h-4" />
-                      How does it work?
-                    </button>
                   </div>
-                </div>
               )}
             </div>
+
+            {/* Action Buttons - Fixed at bottom of sheet */}
+            {!showQuoteModal && (
+              <div className="flex-shrink-0 p-3 space-y-2 border-t border-white/10" style={{ backgroundColor: colors.dark }}>
+                <button
+                  onClick={() => setShowQuoteModal(true)}
+                  className="w-full py-3 rounded-lg text-white font-bold text-base transition-all active:scale-[0.98]"
+                  style={{ backgroundColor: colors.accent }}
+                >
+                  Start Order
+                </button>
+                <button
+                  onClick={() => setShowHowItWorksModal(true)}
+                  className="w-full py-2 rounded-lg text-white/80 font-medium text-sm border border-white/20 flex items-center justify-center gap-2"
+                >
+                  <Info className="w-4 h-4" />
+                  How does it work?
+                </button>
+              </div>
+            )}
           </motion.div>
 
           {/* Image Zoom Modal */}
