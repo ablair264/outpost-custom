@@ -22,18 +22,28 @@ const CLOTHING_PATHS = ['/clothing', '/product/', '/all-clothing'];
 const SMART_SEARCH_PROMPT = `You are a helpful product search assistant for Outpost, a workwear and promotional clothing company.
 
 CRITICAL BEHAVIOR:
-- When the user mentions ANY product type (t-shirts, jackets, polos, etc.), ALWAYS search immediately
+- When the user mentions ANY product type or describes clothing needs, ALWAYS search immediately
 - Don't ask clarifying questions unless the query is genuinely unclear (e.g., just "hi" or "help")
-- "Budget-friendly t-shirts" = search for t-shirts sorted by price. Don't ask about colors first.
-- "Polo shirts for staff" = search for polo shirts. Don't ask about brand preferences first.
 - Search first, then offer to refine. Users can see results and ask for changes.
+- IMPORTANT: When refining a search (e.g., "in red", "under £10"), KEEP the previous category and just ADD the new filter
+
+SEMANTIC UNDERSTANDING - Map user intent to appropriate categories:
+- "Smart clothes/office wear/professional" → Shirts, Polo Shirts
+- "Warm clothing/winter wear" → Fleeces, Jackets, Hoodies, Softshells, Gilets
+- "Staff uniforms/team wear" → Polo Shirts, Shirts, T-Shirts
+- "Safety/construction" → Hi-Vis, Workwear
+
+SEARCHABLE ATTRIBUTES - Use keywords for:
+- Fabric: "cotton", "polyester", "organic", "recycled"
+- Features: "waterproof", "breathable", "lightweight"
+- Certifications: "organic", "vegan", "sustainable"
 
 IMPORTANT: You must respond with a JSON object in this exact format:
 {
   "message": "Your conversational response to the user",
   "searchQuery": {
     "keywords": ["keyword1", "keyword2"],
-    "category": "category name or null",
+    "category": "single category OR comma-separated categories",
     "brand": "brand name or null",
     "priceMax": number or null,
     "priceMin": number or null,
@@ -43,10 +53,12 @@ IMPORTANT: You must respond with a JSON object in this exact format:
   }
 }
 
-When you DO search, your message should briefly describe what you found.
-When you DON'T have enough to search, set searchQuery to null and ask what they're looking for.
+CONVERSATION CONTEXT:
+- Remember the previous search context when user refines
+- "Any in red?" after polo search = keep category "Polo Shirts", add color "red"
+- "Something cheaper?" = keep current filters, add priceMax
 
-Available categories: T-Shirts, Polo Shirts, Sweatshirts, Hoodies, Fleeces, Jackets, Coats, Trousers, Shorts, Hi-Vis, Workwear, Footwear, Caps, Beanies, Bags, Aprons.
+Available categories: T-Shirts, Polo Shirts, Sweatshirts, Hoodies, Fleeces, Jackets, Softshells, Gilets, Shirts, Trousers, Shorts, Hi-Vis, Caps, Beanies, Bags, Aprons.
 
 Keep responses concise (1-2 sentences).`;
 
@@ -132,6 +144,8 @@ const UnifiedChatWidget: React.FC = () => {
     brand?: string;
     priceMax?: number;
     priceMin?: number;
+    color?: string;
+    gender?: string;
   }): Promise<SearchProduct[]> => {
     try {
       const params = new URLSearchParams();
@@ -149,10 +163,19 @@ const UnifiedChatWidget: React.FC = () => {
       if (searchQuery.priceMax !== undefined && searchQuery.priceMax !== null) {
         params.set('priceMax', searchQuery.priceMax.toString());
       }
+      if (searchQuery.color) {
+        // Capitalize first letter to match database format (e.g., "red" -> "Red")
+        const normalizedColor = searchQuery.color.charAt(0).toUpperCase() + searchQuery.color.slice(1).toLowerCase();
+        params.set('colors', normalizedColor);
+      }
+      if (searchQuery.gender) {
+        params.set('gender', searchQuery.gender);
+      }
       if (searchQuery.keywords && searchQuery.keywords.length > 0) {
         params.set('search', searchQuery.keywords.join(' '));
       }
 
+      console.log('[UnifiedChat] Fetching:', `${API_BASE}/styles?${params.toString()}`);
       const response = await fetch(`${API_BASE}/styles?${params.toString()}`);
       if (!response.ok) return [];
 
