@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
-import { ChevronLeft, ChevronRight, Heart, Ruler, Sparkles, Shirt, Info } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn, X } from 'lucide-react';
 import { ProductGroup } from './ClothingBrowser';
-import { Product, ColorVariant, getRgbValues } from '../../lib/supabase';
+import { ColorVariant, getRgbValues } from '../../lib/supabase';
 import { useWishlist } from '../../contexts/WishlistContext';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../ui/carousel';
 import ClothingOrderWizard, { LogoPreviewData } from './ClothingOrderWizard';
@@ -41,7 +41,9 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
   const [selectedSize, setSelectedSize] = useState('');
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentViewIndex, setCurrentViewIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<'overview' | 'details' | 'care' | 'sizing'>('overview');
+  const [openAccordion, setOpenAccordion] = useState<'overview' | 'details' | 'care' | 'sizing' | null>('overview');
+  const [colorDropdownOpen, setColorDropdownOpen] = useState(false);
+  const [zoomedImageSrc, setZoomedImageSrc] = useState<string | null>(null);
   const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [showHowItWorksModal, setShowHowItWorksModal] = useState(false);
   const [quoteStep, setQuoteStep] = useState<'logo-options' | 'upload' | 'help' | 'consult' | 'success' | 'submitting'>('logo-options');
@@ -80,7 +82,8 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
     setSelectedColor(0);
     setSelectedSize('');
     setCurrentViewIndex(0);
-    setActiveTab('overview');
+    setOpenAccordion('overview');
+    setColorDropdownOpen(false);
     setShowQuoteModal(false);
     setShowHowItWorksModal(false);
     setQuoteStep('logo-options');
@@ -418,19 +421,29 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
               {showQuoteModal ? (
                 renderQuoteContent()
               ) : (
-                <div className="px-4 pb-8">
-                  {/* Image Carousel */}
-                  <div className="relative mb-4">
+                <div className="px-3 pb-32">
+                  {/* Image Carousel - reduced size */}
+                  <div className="relative mb-3">
                     <Carousel setApi={setCarouselApi} className="w-full">
                       <CarouselContent>
                         {galleryImages.map((img, idx) => (
                           <CarouselItem key={idx}>
-                            <div className="aspect-square bg-white rounded-lg overflow-hidden">
+                            <div
+                              className="aspect-[4/3] bg-white rounded-lg overflow-hidden cursor-pointer relative group"
+                              onClick={() => setZoomedImageSrc(img.src)}
+                            >
                               <img
                                 src={img.src}
                                 alt={`${productGroup.style_name} - ${img.label}`}
                                 className="w-full h-full object-contain"
                               />
+                              {/* Zoom hint overlay */}
+                              <div className="absolute inset-0 bg-black/0 group-active:bg-black/10 transition-colors flex items-center justify-center">
+                                <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 text-white text-xs opacity-70">
+                                  <ZoomIn className="w-3 h-3" />
+                                  <span>Tap to zoom</span>
+                                </div>
+                              </div>
                             </div>
                           </CarouselItem>
                         ))}
@@ -439,12 +452,12 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
 
                     {/* Carousel Indicators */}
                     {galleryImages.length > 1 && (
-                      <div className="flex justify-center gap-2 mt-3">
+                      <div className="flex justify-center gap-1.5 mt-2">
                         {galleryImages.map((img, idx) => (
                           <button
                             key={idx}
                             onClick={() => carouselApi?.scrollTo(idx)}
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium transition-all ${
                               currentViewIndex === idx
                                 ? 'bg-white text-gray-900'
                                 : 'bg-white/20 text-white/70'
@@ -459,10 +472,10 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                     {/* Wishlist Button */}
                     <button
                       onClick={handleWishlistToggle}
-                      className="absolute top-3 right-3 p-2 rounded-full bg-white/90 shadow-lg"
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 shadow-lg"
                     >
                       <Heart
-                        className={`w-5 h-5 ${
+                        className={`w-4 h-4 ${
                           isInWishlist(productGroup.style_code)
                             ? 'fill-red-500 text-red-500'
                             : 'text-gray-600'
@@ -471,152 +484,198 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                     </button>
                   </div>
 
-                  {/* Product Info */}
-                  <div className="mb-4">
-                    <p className="text-white/60 text-sm mb-1">{productGroup.brand}</p>
-                    <h2 className="text-xl font-bold text-white mb-2">{productGroup.style_name}</h2>
-                    <p className="text-lg font-semibold" style={{ color: colors.accent }}>
+                  {/* Product Info - tighter spacing */}
+                  <div className="mb-3">
+                    <p className="text-white/60 text-xs mb-0.5">{productGroup.brand}</p>
+                    <h2 className="text-lg font-bold text-white mb-1">{productGroup.style_name}</h2>
+                    <p className="text-base font-semibold" style={{ color: colors.accent }}>
                       {currentPrice && 'specific' in currentPrice
                         ? `£${currentPrice.specific.toFixed(2)}`
                         : currentPrice
                         ? `£${currentPrice.min.toFixed(2)} - £${currentPrice.max.toFixed(2)}`
                         : 'Price on request'}
-                      <span className="text-white/50 text-sm ml-2">per unit</span>
+                      <span className="text-white/50 text-xs ml-1">per unit</span>
                     </p>
                   </div>
 
-                  {/* Color Selection */}
-                  <div className="mb-4">
-                    <p className="text-white/70 text-sm mb-2">
-                      Colour: <span className="text-white">{currentColor?.colour_name}</span>
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {colorVariants.slice(0, 12).map((color, idx) => (
-                        <button
-                          key={color.colour_code}
-                          onClick={() => setSelectedColor(idx)}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            selectedColor === idx
-                              ? 'border-white scale-110'
-                              : 'border-transparent'
-                          }`}
-                          style={{ backgroundColor: color.rgb }}
-                          title={color.colour_name}
+                  {/* Color Selection - Dropdown */}
+                  <div className="mb-3 relative">
+                    <button
+                      onClick={() => setColorDropdownOpen(!colorDropdownOpen)}
+                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/10 border border-white/20"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-5 h-5 rounded-full border border-white/30"
+                          style={{ backgroundColor: currentColor?.rgb }}
                         />
-                      ))}
-                      {colorVariants.length > 12 && (
-                        <span className="text-white/50 text-sm self-center ml-2">
-                          +{colorVariants.length - 12} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                        <span className="text-white text-sm">{currentColor?.colour_name}</span>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-white/60 transition-transform ${colorDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
 
-                  {/* Size Selection */}
-                  <div className="mb-6">
-                    <p className="text-white/70 text-sm mb-2">Size Range: {productGroup.size_range}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {availableSizes.map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
-                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                            selectedSize === size
-                              ? 'bg-white text-gray-900'
-                              : 'bg-white/10 text-white hover:bg-white/20'
-                          }`}
+                    <AnimatePresence>
+                      {colorDropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute z-20 top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-lg bg-[#1e3a2f] border border-white/20 shadow-xl"
                         >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
+                          {colorVariants.map((color, idx) => (
+                            <button
+                              key={color.colour_code}
+                              onClick={() => {
+                                setSelectedColor(idx);
+                                setColorDropdownOpen(false);
+                              }}
+                              className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-white/10 transition-colors ${
+                                selectedColor === idx ? 'bg-white/10' : ''
+                              }`}
+                            >
+                              <div
+                                className="w-4 h-4 rounded-full border border-white/30 flex-shrink-0"
+                                style={{ backgroundColor: color.rgb }}
+                              />
+                              <span className="text-white text-sm truncate">{color.colour_name}</span>
+                              {selectedColor === idx && (
+                                <span className="ml-auto text-xs" style={{ color: colors.accent }}>✓</span>
+                              )}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
-                  {/* Product Details Tabs */}
-                  <div className="mb-6">
-                    <div className="flex gap-1 mb-4 overflow-x-auto pb-2">
-                      {(['overview', 'details', 'care', 'sizing'] as const).map((tab) => (
-                        <button
-                          key={tab}
-                          onClick={() => setActiveTab(tab)}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-                            activeTab === tab
-                              ? 'bg-white text-gray-900'
-                              : 'bg-white/10 text-white/70'
-                          }`}
-                        >
-                          {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                        </button>
-                      ))}
+                  {/* Size Selection - improved layout */}
+                  {availableSizes.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-white/70 text-xs mb-1.5">Size Range: {productGroup.size_range}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {availableSizes.map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
+                            className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
+                              selectedSize === size
+                                ? 'bg-white text-gray-900'
+                                : 'bg-white/10 text-white hover:bg-white/20'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
                     </div>
+                  )}
 
-                    <div className="bg-white/5 rounded-lg p-4">
-                      {activeTab === 'overview' && (
-                        <div className="text-white/80 text-sm space-y-2">
-                          <p>{currentVariant?.retail_description || 'No description available.'}</p>
-                          {currentVariant?.product_feature_1 && (
-                            <p className="flex items-center gap-2">
-                              <Sparkles className="w-4 h-4 text-green-400" />
-                              {currentVariant.product_feature_1}
-                            </p>
-                          )}
-                          {currentVariant?.product_feature_2 && (
-                            <p className="flex items-center gap-2">
-                              <Sparkles className="w-4 h-4 text-green-400" />
-                              {currentVariant.product_feature_2}
-                            </p>
-                          )}
-                          {currentVariant?.product_feature_3 && (
-                            <p className="flex items-center gap-2">
-                              <Sparkles className="w-4 h-4 text-green-400" />
-                              {currentVariant.product_feature_3}
-                            </p>
-                          )}
+                  {/* Product Details Accordion */}
+                  <div className="mb-4 space-y-1">
+                    {(['overview', 'details', 'care', 'sizing'] as const).map((section) => {
+                      const isOpen = openAccordion === section;
+                      const hasContent = section === 'overview'
+                        ? true
+                        : section === 'details'
+                          ? !!(currentVariant?.fabric || currentVariant?.weight_gsm || currentVariant?.specification)
+                          : section === 'care'
+                            ? !!currentVariant?.washing_instructions
+                            : true;
+
+                      if (!hasContent && section !== 'overview' && section !== 'sizing') return null;
+
+                      return (
+                        <div key={section} className="rounded-lg overflow-hidden bg-white/5">
+                          <button
+                            onClick={() => setOpenAccordion(isOpen ? null : section)}
+                            className="w-full flex items-center justify-between px-3 py-2 text-left"
+                          >
+                            <span className="text-white text-sm font-medium">
+                              {section.charAt(0).toUpperCase() + section.slice(1)}
+                            </span>
+                            <ChevronDown className={`w-4 h-4 text-white/60 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                          </button>
+
+                          <AnimatePresence>
+                            {isOpen && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="px-3 pb-3 text-white/80 text-xs space-y-1.5">
+                                  {section === 'overview' && (
+                                    <>
+                                      <p>{currentVariant?.retail_description || productGroup.variants[0]?.retail_description || 'No description available.'}</p>
+                                      {(currentVariant?.product_feature_1 || productGroup.product_feature_1) && (
+                                        <p className="flex items-start gap-1.5">
+                                          <Sparkles className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
+                                          <span>{currentVariant?.product_feature_1 || productGroup.product_feature_1}</span>
+                                        </p>
+                                      )}
+                                      {(currentVariant?.product_feature_2 || productGroup.product_feature_2) && (
+                                        <p className="flex items-start gap-1.5">
+                                          <Sparkles className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
+                                          <span>{currentVariant?.product_feature_2 || productGroup.product_feature_2}</span>
+                                        </p>
+                                      )}
+                                      {(currentVariant?.product_feature_3 || productGroup.product_feature_3) && (
+                                        <p className="flex items-start gap-1.5">
+                                          <Sparkles className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
+                                          <span>{currentVariant?.product_feature_3 || productGroup.product_feature_3}</span>
+                                        </p>
+                                      )}
+                                    </>
+                                  )}
+                                  {section === 'details' && (
+                                    <>
+                                      {(currentVariant?.fabric || productGroup.fabric) && (
+                                        <p><span className="text-white/50">Fabric:</span> {currentVariant?.fabric || productGroup.fabric}</p>
+                                      )}
+                                      {currentVariant?.weight_gsm && (
+                                        <p><span className="text-white/50">Weight:</span> {currentVariant.weight_gsm}</p>
+                                      )}
+                                      {currentVariant?.specification && (
+                                        <p><span className="text-white/50">Specification:</span> {currentVariant.specification}</p>
+                                      )}
+                                    </>
+                                  )}
+                                  {section === 'care' && (
+                                    <p>{currentVariant?.washing_instructions || 'Care instructions not available.'}</p>
+                                  )}
+                                  {section === 'sizing' && (
+                                    <>
+                                      <p><span className="text-white/50">Size Range:</span> {productGroup.size_range}</p>
+                                      {currentVariant?.sizing_to_fit && (
+                                        <p><span className="text-white/50">Sizing:</span> {currentVariant.sizing_to_fit}</p>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
-                      )}
-                      {activeTab === 'details' && (
-                        <div className="text-white/80 text-sm space-y-2">
-                          {currentVariant?.fabric && (
-                            <p><span className="text-white/50">Fabric:</span> {currentVariant.fabric}</p>
-                          )}
-                          {currentVariant?.weight_gsm && (
-                            <p><span className="text-white/50">Weight:</span> {currentVariant.weight_gsm}</p>
-                          )}
-                          {currentVariant?.specification && (
-                            <p><span className="text-white/50">Specification:</span> {currentVariant.specification}</p>
-                          )}
-                        </div>
-                      )}
-                      {activeTab === 'care' && (
-                        <div className="text-white/80 text-sm">
-                          <p>{currentVariant?.washing_instructions || 'Care instructions not available.'}</p>
-                        </div>
-                      )}
-                      {activeTab === 'sizing' && (
-                        <div className="text-white/80 text-sm space-y-2">
-                          <p><span className="text-white/50">Size Range:</span> {productGroup.size_range}</p>
-                          {currentVariant?.sizing_to_fit && (
-                            <p><span className="text-white/50">Sizing:</span> {currentVariant.sizing_to_fit}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                      );
+                    })}
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="space-y-3">
+                  {/* Action Buttons - Fixed at bottom */}
+                  <div className="fixed bottom-0 left-0 right-0 p-3 space-y-2 z-10" style={{ backgroundColor: colors.dark }}>
                     <button
                       onClick={() => setShowQuoteModal(true)}
-                      className="w-full py-4 rounded-lg text-white font-bold text-lg transition-all active:scale-[0.98]"
+                      className="w-full py-3 rounded-lg text-white font-bold text-base transition-all active:scale-[0.98]"
                       style={{ backgroundColor: colors.accent }}
                     >
                       Start Order
                     </button>
                     <button
                       onClick={() => setShowHowItWorksModal(true)}
-                      className="w-full py-3 rounded-lg text-white/80 font-medium border border-white/20 flex items-center justify-center gap-2"
+                      className="w-full py-2 rounded-lg text-white/80 font-medium text-sm border border-white/20 flex items-center justify-center gap-2"
                     >
-                      <Info className="w-5 h-5" />
+                      <Info className="w-4 h-4" />
                       How does it work?
                     </button>
                   </div>
@@ -624,6 +683,35 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
               )}
             </div>
           </motion.div>
+
+          {/* Image Zoom Modal */}
+          <AnimatePresence>
+            {zoomedImageSrc && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center"
+                onClick={() => setZoomedImageSrc(null)}
+              >
+                <button
+                  onClick={() => setZoomedImageSrc(null)}
+                  className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white z-10"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+                <motion.img
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  src={zoomedImageSrc}
+                  alt={productGroup.style_name}
+                  className="max-w-full max-h-full object-contain p-4"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
     </AnimatePresence>

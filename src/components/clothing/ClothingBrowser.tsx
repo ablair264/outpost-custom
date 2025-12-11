@@ -524,8 +524,8 @@ const ClothingBrowser: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              {/* Search */}
+            {/* Search - hidden on mobile, shown on sm and up */}
+            <div className="hidden sm:flex items-center gap-3">
               <div className="relative w-full md:w-72">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
                 <input
@@ -544,7 +544,6 @@ const ClothingBrowser: React.FC = () => {
                   </button>
                 )}
               </div>
-
             </div>
           </div>
         </div>
