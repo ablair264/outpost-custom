@@ -345,6 +345,11 @@ const Signboards: React.FC = () => {
             >
               <div className="grid md:grid-cols-2 gap-12">
                 <div>
+                  {/* IMAGE: Aluminium sign tray product */}
+                  <div className="h-48 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                    <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                    <span className="text-[#383349]/40 text-sm">Aluminium sign tray</span>
+                  </div>
                   <Layers className="w-12 h-12 text-[#908d9a] mb-6" />
                   <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Aluminium Sign Tray</h3>
                   <p className="text-[#908d9a] text-lg mb-6">Robust Exterior Option</p>
@@ -379,6 +384,11 @@ const Signboards: React.FC = () => {
                 variants={fadeInUp}
                 className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30"
               >
+                {/* IMAGE: Foamex board product */}
+                <div className="h-36 mb-4 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                  <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-2" />
+                  <span className="text-[#383349]/40 text-xs">Foamex board</span>
+                </div>
                 <Package className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-2xl text-[#221c35] mb-2">Foamex</h3>
                 <p className="text-[#908d9a] mb-4">Indoor & Covered Exterior</p>
@@ -399,6 +409,11 @@ const Signboards: React.FC = () => {
                 variants={fadeInUp}
                 className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30"
               >
+                {/* IMAGE: Correx board product */}
+                <div className="h-36 mb-4 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                  <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-2" />
+                  <span className="text-[#383349]/40 text-xs">Correx board</span>
+                </div>
                 <Hammer className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-2xl text-[#221c35] mb-2">Correx</h3>
                 <p className="text-[#908d9a] mb-4">Temporary Outdoor</p>

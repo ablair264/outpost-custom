@@ -341,6 +341,12 @@ const ProjectingSigns: React.FC = () => {
                   Works with Aluminium Composite Panels for a solid, professional appearance.
                 </p>
 
+                {/* IMAGE: Rigid projecting sign product */}
+                <div className="h-48 mb-8 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                  <ImageIcon className="w-10 h-10 text-[#908d9a]/40 mb-2" />
+                  <span className="text-[#383349]/40 text-sm">Rigid projecting sign</span>
+                </div>
+
                 <div className="space-y-6">
                   <div>
                     <h4 className="font-semibold text-[#221c35] mb-3">Square Sizes</h4>
@@ -412,6 +418,13 @@ const ProjectingSigns: React.FC = () => {
                 <Wrench className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-3xl text-white mb-2">Framed Rigid Sign</h3>
                 <p className="text-xl text-[#908d9a] font-semibold mb-4">Contact us for a quote</p>
+
+                {/* IMAGE: Framed rigid sign product */}
+                <div className="h-40 mb-6 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-white/30 mb-2" />
+                  <span className="text-white/40 text-sm">Framed rigid sign</span>
+                </div>
+
                 <p className="text-white/70 leading-relaxed mb-6">
                   A copy of an old style traditional wooden frame but in long-lasting aluminium. This style is more in-keeping with the character of listed properties and is designed to help keep the planners happy!
                 </p>
@@ -445,6 +458,13 @@ const ProjectingSigns: React.FC = () => {
                 <Lightbulb className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-3xl text-white mb-2">Rigid Illuminated Round Projecting Sign</h3>
                 <p className="text-xl text-[#908d9a] font-semibold mb-4">Contact us for a price</p>
+
+                {/* IMAGE: Illuminated round projecting sign */}
+                <div className="h-40 mb-6 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-white/30 mb-2" />
+                  <span className="text-white/40 text-sm">Illuminated sign</span>
+                </div>
+
                 <p className="text-white/70 leading-relaxed mb-6">
                   Make sure your sign is visible at all times of the day and night, especially during the darker months of the year. All-in-one solution – just add decals!
                 </p>
@@ -497,6 +517,13 @@ const ProjectingSigns: React.FC = () => {
               <motion.div variants={fadeInUp} className="bg-[#f8f8f8] rounded-3xl p-8 md:p-10 border border-[#c1c6c8]/30">
                 <Palette className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-2xl text-[#221c35] mb-4">Printed Vinyl</h3>
+
+                {/* IMAGE: Printed vinyl example */}
+                <div className="h-36 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                  <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-2" />
+                  <span className="text-[#383349]/40 text-sm">Printed vinyl</span>
+                </div>
+
                 <p className="text-[#383349]/70 leading-relaxed mb-6">
                   Great for multiple colours & small details. Inks are printed onto clear or white vinyl – ideal for gradients, photographs and complex illustrations. Due to the ink being on the surface, colour can fade quicker than cut vinyl.
                 </p>
@@ -532,6 +559,13 @@ const ProjectingSigns: React.FC = () => {
               <motion.div variants={fadeInUp} className="bg-[#f8f8f8] rounded-3xl p-8 md:p-10 border border-[#c1c6c8]/30">
                 <CircleDot className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-2xl text-[#221c35] mb-4">Cut Vinyl</h3>
+
+                {/* IMAGE: Cut vinyl example */}
+                <div className="h-36 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                  <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-2" />
+                  <span className="text-[#383349]/40 text-sm">Cut vinyl</span>
+                </div>
+
                 <p className="text-[#383349]/70 leading-relaxed mb-6">
                   Best suited to simple designs, logos and lettering. A specialist machine cuts shapes from pre-coloured vinyl, giving a sharper edge than printed graphics. Cut vinyl has no background – the background is what you install it onto.
                 </p>

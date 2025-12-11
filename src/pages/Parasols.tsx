@@ -460,6 +460,13 @@ const Parasols: React.FC = () => {
               {/* DTF */}
               <div className="bg-white/5 frosted-glass rounded-3xl p-8 md:p-10 border border-white/10">
                 <h3 className="hearns-font text-3xl text-white mb-4">Direct to Film (DTF)</h3>
+
+                {/* IMAGE: DTF customisation example on parasol */}
+                <div className="h-36 mb-6 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-white/30 mb-2" />
+                  <span className="text-white/40 text-sm">DTF example</span>
+                </div>
+
                 <p className="text-white/70 mb-6">DTF is great for multiple colours & small details. Gives a similar finish to screen printing but without the set up fees!</p>
 
                 <div className="space-y-3 mb-6">
@@ -502,6 +509,13 @@ const Parasols: React.FC = () => {
               {/* HTV */}
               <div className="bg-white/5 frosted-glass rounded-3xl p-8 md:p-10 border border-white/10">
                 <h3 className="hearns-font text-3xl text-white mb-4">Heat Transfer Vinyl (HTV)</h3>
+
+                {/* IMAGE: HTV customisation example on parasol */}
+                <div className="h-36 mb-6 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-white/30 mb-2" />
+                  <span className="text-white/40 text-sm">HTV example</span>
+                </div>
+
                 <p className="text-white/70 mb-6">HTV is best suited to simple designs, logos and lettering. Artwork is cut, rather than printed, so the edges are super sharp and crisp.</p>
 
                 <div className="space-y-3 mb-6">

@@ -439,6 +439,12 @@ const Gazebos: React.FC = () => {
                 <Layers className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-2xl text-[#221c35] mb-6">Roof Panels</h3>
 
+                {/* IMAGE: Gazebo roof panel customisation */}
+                <div className="h-32 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                  <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-1" />
+                  <span className="text-[#383349]/40 text-xs">Roof panel</span>
+                </div>
+
                 <div className="space-y-6">
                   <div>
                     <p className="text-sm text-[#383349]/60 mb-3">500 × 500mm</p>
@@ -465,6 +471,12 @@ const Gazebos: React.FC = () => {
                 <Settings className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-2xl text-[#221c35] mb-6">Valance Panels</h3>
 
+                {/* IMAGE: Gazebo valance panel customisation */}
+                <div className="h-32 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                  <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-1" />
+                  <span className="text-[#383349]/40 text-xs">Valance panel</span>
+                </div>
+
                 <div className="space-y-6">
                   <div>
                     <p className="text-sm text-[#383349]/60 mb-3">1.5m wide</p>
@@ -490,6 +502,12 @@ const Gazebos: React.FC = () => {
               <motion.div variants={fadeInUp} className="bg-[#f8f8f8] rounded-3xl p-8">
                 <Wind className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-2xl text-[#221c35] mb-6">Wall Panels</h3>
+
+                {/* IMAGE: Gazebo wall panel customisation */}
+                <div className="h-32 mb-6 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                  <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-1" />
+                  <span className="text-[#383349]/40 text-xs">Wall panel</span>
+                </div>
 
                 <div className="space-y-6">
                   <div>

@@ -19,9 +19,9 @@ const ImageAccordionDB: React.FC = () => {
 
   if (loading) {
     return (
-      <section className="w-full py-16 md:py-24 px-4 md:px-8 lg:px-16 xl:px-24 bg-white">
+      <section className="w-full py-16 md:py-24 px-4 md:px-8 lg:px-16 xl:px-24" style={{ backgroundColor: '#183028' }}>
         <div className="max-w-[1400px] mx-auto flex justify-center items-center h-72">
-          <div className="text-gray-400">Loading...</div>
+          <div className="text-white/40">Loading...</div>
         </div>
       </section>
     );

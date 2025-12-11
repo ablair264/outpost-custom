@@ -280,6 +280,11 @@ const GlassManifestation: React.FC = () => {
                 variants={fadeInUp}
                 className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30 hover:border-[#908d9a]/50 transition-colors"
               >
+                {/* IMAGE: Glass with text/wayfinding manifestation */}
+                <div className="h-32 mb-4 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                  <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-1" />
+                  <span className="text-[#383349]/40 text-xs">Text & wayfinding</span>
+                </div>
                 <Mail className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-2xl text-[#221c35] mb-3">Text & Wayfinding</h3>
                 <p className="text-[#383349]/70 leading-relaxed">
@@ -292,6 +297,11 @@ const GlassManifestation: React.FC = () => {
                 variants={fadeInUp}
                 className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30 hover:border-[#908d9a]/50 transition-colors"
               >
+                {/* IMAGE: Glass with logo/branding manifestation */}
+                <div className="h-32 mb-4 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-[#f8f8f8]">
+                  <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-1" />
+                  <span className="text-[#383349]/40 text-xs">Logos & branding</span>
+                </div>
                 <Palette className="w-10 h-10 text-[#908d9a] mb-4" />
                 <h3 className="hearns-font text-2xl text-[#221c35] mb-3">Logos & Branding</h3>
                 <p className="text-[#383349]/70 leading-relaxed">
@@ -302,18 +312,25 @@ const GlassManifestation: React.FC = () => {
               {/* Opacity - Wide */}
               <motion.div
                 variants={fadeInUp}
-                className="md:col-span-3 bg-gradient-to-r from-[#908d9a]/10 via-[#908d9a]/5 to-transparent rounded-3xl p-10 flex flex-col md:flex-row items-center gap-8"
+                className="md:col-span-3 bg-gradient-to-r from-[#908d9a]/10 via-[#908d9a]/5 to-transparent rounded-3xl p-10"
               >
-                <Eye className="w-16 h-16 text-[#383349] flex-shrink-0" />
-                <div>
-                  <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Opacity Choices</h3>
-                  <p className="text-[#383349]/70 text-lg leading-relaxed">
-                    Standard film allows 80% light through. We also offer lighter and heavier frost options, plus coloured films to match your interior scheme.
-                  </p>
+                <div className="flex flex-col md:flex-row items-center gap-8">
+                  {/* IMAGE: Different opacity levels comparison */}
+                  <div className="w-full md:w-48 h-32 flex-shrink-0 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                    <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-1" />
+                    <span className="text-[#383349]/40 text-xs">Opacity comparison</span>
+                  </div>
+                  <Eye className="w-16 h-16 text-[#383349] flex-shrink-0 hidden md:block" />
+                  <div>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Opacity Choices</h3>
+                    <p className="text-[#383349]/70 text-lg leading-relaxed">
+                      Standard film allows 80% light through. We also offer lighter and heavier frost options, plus coloured films to match your interior scheme.
+                    </p>
+                  </div>
+                  <a href="/contact" className="flex-shrink-0 px-6 py-3 rounded-full bg-[#383349] text-white font-medium hover:bg-[#221c35] transition-colors">
+                    Explore Options
+                  </a>
                 </div>
-                <a href="/contact" className="flex-shrink-0 px-6 py-3 rounded-full bg-[#383349] text-white font-medium hover:bg-[#221c35] transition-colors">
-                  Explore Options
-                </a>
               </motion.div>
             </div>
           </motion.div>

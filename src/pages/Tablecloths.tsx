@@ -348,6 +348,13 @@ const Tablecloths: React.FC = () => {
                   <div>
                     <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Table Runner</h3>
                     <p className="text-2xl font-bold text-[#908d9a] mb-4">From £27 + VAT</p>
+
+                    {/* IMAGE: Branded table runner */}
+                    <div className="h-32 mb-4 rounded-2xl border-2 border-dashed border-[#c1c6c8]/40 flex flex-col items-center justify-center bg-white">
+                      <ImageIcon className="w-8 h-8 text-[#908d9a]/40 mb-1" />
+                      <span className="text-[#383349]/40 text-xs">Table runner</span>
+                    </div>
+
                     <p className="text-[#383349]/70 text-lg leading-relaxed">
                       Our most affordable way to add instant impact to an everyday table. Standard 30cm drop (alternative options available). Perfect for adding branding to tables you already have.
                     </p>
@@ -454,6 +461,13 @@ const Tablecloths: React.FC = () => {
               {/* DTF */}
               <div className="bg-white/5 frosted-glass rounded-3xl p-8 md:p-10 border border-white/10">
                 <h3 className="hearns-font text-3xl text-white mb-4">Direct to Film (DTF)</h3>
+
+                {/* IMAGE: DTF customisation example on tablecloth */}
+                <div className="h-36 mb-6 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-white/30 mb-2" />
+                  <span className="text-white/40 text-sm">DTF example</span>
+                </div>
+
                 <p className="text-white/70 mb-6">DTF is great for multiple colours & small details. Gives a similar finish to screen printing but without the set up fees!</p>
 
                 <div className="space-y-3 mb-6">
@@ -496,6 +510,13 @@ const Tablecloths: React.FC = () => {
               {/* HTV */}
               <div className="bg-white/5 frosted-glass rounded-3xl p-8 md:p-10 border border-white/10">
                 <h3 className="hearns-font text-3xl text-white mb-4">Heat Transfer Vinyl (HTV)</h3>
+
+                {/* IMAGE: HTV customisation example on tablecloth */}
+                <div className="h-36 mb-6 rounded-2xl border-2 border-dashed border-white/20 flex flex-col items-center justify-center">
+                  <ImageIcon className="w-8 h-8 text-white/30 mb-2" />
+                  <span className="text-white/40 text-sm">HTV example</span>
+                </div>
+
                 <p className="text-white/70 mb-6">HTV is best suited to simple designs, logos and lettering. Artwork is cut, rather than printed, so the edges are super sharp and crisp.</p>
 
                 <div className="space-y-3 mb-6">
