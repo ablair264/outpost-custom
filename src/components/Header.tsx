@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useHeaderFilter } from '../contexts/HeaderFilterContext';
 import CartDrawer from './CartDrawer';
 import WishlistDrawer from './WishlistDrawer';
+import HeaderFilterBar from './clothing/HeaderFilterBar';
 
 interface MegaMenuLink {
   label: string;
@@ -180,7 +181,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   const { cart } = useCart();
   const { wishlist } = useWishlist();
   const { colorScheme, colors } = useTheme();
-  const { filterContent } = useHeaderFilter();
+  const { filterData } = useHeaderFilter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -893,9 +894,9 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
       </header>
 
         {/* Dynamic Filter Bar Slot - rendered when on clothing pages */}
-        {filterContent && (
+        {filterData?.isActive && (
           <div className="border-b border-white/10">
-            {filterContent}
+            <HeaderFilterBar />
           </div>
         )}
     </div>

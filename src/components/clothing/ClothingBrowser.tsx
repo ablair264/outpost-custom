@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 import {
@@ -13,7 +13,7 @@ import {
 import { getAllProducts, getFilterOptions, getSizesForProductTypes, ProductFilters, FilterOptions, BrandOption } from '../../lib/productBrowserApi';
 import { Product } from '../../lib/supabase';
 import ClothingCard from './ClothingCard';
-import { useHeaderFilter } from '../../contexts/HeaderFilterContext';
+import { useHeaderFilter, ClothingFilterData } from '../../contexts/HeaderFilterContext';
 
 // Product Type Groups - comprehensive mapping
 const PRODUCT_TYPE_GROUPS = [
@@ -138,7 +138,7 @@ const ClothingBrowser: React.FC = () => {
   const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [headerFilterOpen, setHeaderFilterOpen] = useState(false);
-  const { setFilterContent } = useHeaderFilter();
+  const { setFilterData } = useHeaderFilter();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -373,59 +373,59 @@ const ClothingBrowser: React.FC = () => {
     }
   }, [expandedProduct]);
 
-  const toggleSection = (section: keyof typeof sectionsOpen) => {
+  const toggleSection = useCallback((section: keyof typeof sectionsOpen) => {
     setSectionsOpen(prev => ({ ...prev, [section]: !prev[section] }));
-  };
+  }, []);
 
-  const toggleTypeGroup = (groupName: string) => {
+  const toggleTypeGroup = useCallback((groupName: string) => {
     setTypeGroupsOpen(prev => ({ ...prev, [groupName]: !prev[groupName] }));
-  };
+  }, []);
 
-  const toggleType = (type: string) => {
+  const toggleType = useCallback((type: string) => {
     setSelectedTypes(prev =>
       prev.includes(type) ? prev.filter(x => x !== type) : [...prev, type]
     );
-  };
+  }, []);
 
-  const selectAllInGroup = (items: string[]) => {
+  const selectAllInGroup = useCallback((items: string[]) => {
     setSelectedTypes(prev => {
       const newTypes = new Set(prev);
       items.forEach(item => newTypes.add(item));
       return Array.from(newTypes);
     });
-  };
+  }, []);
 
-  const deselectAllInGroup = (items: string[]) => {
+  const deselectAllInGroup = useCallback((items: string[]) => {
     setSelectedTypes(prev => prev.filter(type => !items.includes(type)));
-  };
+  }, []);
 
-  const isGroupFullySelected = (items: string[]) => {
+  const isGroupFullySelected = useCallback((items: string[]) => {
     return items.every(item => selectedTypes.includes(item));
-  };
+  }, [selectedTypes]);
 
-  const isGroupPartiallySelected = (items: string[]) => {
+  const isGroupPartiallySelected = useCallback((items: string[]) => {
     return items.some(item => selectedTypes.includes(item)) && !isGroupFullySelected(items);
-  };
+  }, [selectedTypes, isGroupFullySelected]);
 
-  const toggleBrand = (brand: string) => {
+  const toggleBrand = useCallback((brand: string) => {
     setSelectedBrands(prev =>
       prev.includes(brand) ? prev.filter(x => x !== brand) : [...prev, brand]
     );
-  };
+  }, []);
 
-  const toggleColor = (color: string) => {
+  const toggleColor = useCallback((color: string) => {
     setSelectedColors(prev =>
       prev.includes(color) ? prev.filter(x => x !== color) : [...prev, color]
     );
-  };
+  }, []);
 
-  const toggleGender = (gender: string) => {
+  const toggleGender = useCallback((gender: string) => {
     setSelectedGenders(prev =>
       prev.includes(gender) ? prev.filter(x => x !== gender) : [...prev, gender]
     );
-  };
+  }, []);
 
-  const clearAllFilters = () => {
+  const clearAllFilters = useCallback(() => {
     setSelectedTypes([]);
     setSelectedBrands([]);
     setSelectedColors([]);
@@ -434,9 +434,9 @@ const ClothingBrowser: React.FC = () => {
     setPriceMax(undefined);
     setSearchQuery('');
     setSearchParams(new URLSearchParams(), { replace: true });
-  };
+  }, [setSearchParams]);
 
-  const hasActiveFilters = selectedTypes.length > 0 || selectedBrands.length > 0 || selectedColors.length > 0 || selectedGenders.length > 0 || priceMin !== undefined || priceMax !== undefined || searchQuery.trim();
+  const hasActiveFilters = selectedTypes.length > 0 || selectedBrands.length > 0 || selectedColors.length > 0 || selectedGenders.length > 0 || priceMin !== undefined || priceMax !== undefined || searchQuery.trim().length > 0;
 
   // Filter available product types based on what exists in filter options
   const availableTypeGroups = PRODUCT_TYPE_GROUPS.map(group => ({
@@ -444,281 +444,48 @@ const ClothingBrowser: React.FC = () => {
     availableItems: group.items.filter(item => filterOptions.productTypes.includes(item))
   })).filter(group => group.availableItems.length > 0);
 
-  // Render filter bar into the Header (mobile only)
+  // Provide filter data to the Header (mobile only)
+  // Use a ref to track if component is mounted to avoid stale closure issues
+  const isMountedRef = useRef(true);
+
   useEffect(() => {
+    isMountedRef.current = true;
+
     const filterCount = selectedTypes.length + selectedBrands.length + selectedColors.length + selectedGenders.length;
     const brandsList = filterOptions.brandOptions?.length > 0
       ? filterOptions.brandOptions.map(b => b.name)
       : filterOptions.brands;
 
-    const filterBar = (
-      <div className="lg:hidden px-4 py-2" style={{ backgroundColor: clothingColors.dark }}>
-        <div className="max-w-[1600px] mx-auto">
-          {/* Collapsible trigger */}
-          <button
-            onClick={() => setHeaderFilterOpen(!headerFilterOpen)}
-            className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-white/20 transition-all"
-            style={{ backgroundColor: clothingColors.secondary }}
-          >
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-white/70" />
-              <span className="font-medium text-white text-sm">Filters</span>
-              {filterCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: clothingColors.accent, color: 'black' }}>
-                  {filterCount}
-                </span>
-              )}
-            </div>
-            <ChevronDown className={`w-5 h-5 text-white/70 transition-transform duration-200 ${headerFilterOpen ? 'rotate-180' : ''}`} />
-          </button>
+    const filterData: ClothingFilterData = {
+      isActive: true,
+      filterCount,
+      headerFilterOpen,
+      setHeaderFilterOpen,
+      hasActiveFilters,
+      selectedTypes,
+      selectedBrands,
+      selectedColors,
+      selectedGenders,
+      toggleType,
+      toggleBrand,
+      toggleColor,
+      toggleGender,
+      clearAllFilters,
+      sectionsOpen,
+      toggleSection,
+      availableTypeGroups,
+      brandsList,
+      colors: filterOptions.colors,
+      genders: filterOptions.genders,
+    };
 
-          {/* Filter panel - matches sidebar structure */}
-          <AnimatePresence>
-            {headerFilterOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
-                <div className="mt-3 rounded-xl border border-white/10 overflow-hidden" style={{ backgroundColor: clothingColors.secondary }}>
-                  {/* Active Filters */}
-                  {hasActiveFilters && (
-                    <div className="px-4 py-3 border-b border-white/10 bg-white/5">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs text-white/50 uppercase tracking-wide">Active Filters</p>
-                        <button
-                          onClick={clearAllFilters}
-                          className="text-xs font-medium px-2 py-1 rounded-md transition-all hover:opacity-80"
-                          style={{ color: clothingColors.accent, backgroundColor: `${clothingColors.accent}20` }}
-                        >
-                          Clear all
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {selectedTypes.map(type => (
-                          <button
-                            key={`mobile-filter-type-${type}`}
-                            onClick={() => toggleType(type)}
-                            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
-                            style={{ backgroundColor: clothingColors.accent, color: 'black' }}
-                          >
-                            {type}
-                            <X className="w-3 h-3" />
-                          </button>
-                        ))}
-                        {selectedBrands.map(brand => (
-                          <button
-                            key={`mobile-filter-brand-${brand}`}
-                            onClick={() => toggleBrand(brand)}
-                            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-500 text-white transition-all hover:opacity-80"
-                          >
-                            {brand}
-                            <X className="w-3 h-3" />
-                          </button>
-                        ))}
-                        {selectedColors.map(color => (
-                          <button
-                            key={`mobile-filter-color-${color}`}
-                            onClick={() => toggleColor(color)}
-                            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white transition-all hover:opacity-80"
-                          >
-                            {color}
-                            <X className="w-3 h-3" />
-                          </button>
-                        ))}
-                        {selectedGenders.map(gender => (
-                          <button
-                            key={`mobile-filter-gender-${gender}`}
-                            onClick={() => toggleGender(gender)}
-                            className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-orange-500 text-white transition-all hover:opacity-80"
-                          >
-                            {gender}
-                            <X className="w-3 h-3" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Scrollable filter sections */}
-                  <div className="max-h-[60vh] overflow-y-auto">
-                    {/* Product Type */}
-                    <div className="border-b border-white/10">
-                      <button
-                        onClick={() => toggleSection('type')}
-                        className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
-                      >
-                        <span className="text-sm font-medium uppercase tracking-wide">Product Type</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.type ? 'rotate-180' : ''}`} />
-                      </button>
-                      {sectionsOpen.type && (
-                        <div className="px-4 pb-4 max-h-48 overflow-y-auto space-y-1">
-                          {availableTypeGroups.map(group => (
-                            <div key={group.name} className="mb-2">
-                              <p className="text-xs text-white/50 uppercase tracking-wide mb-1 px-2">{group.name}</p>
-                              {group.availableItems.map(type => (
-                                <button
-                                  key={type}
-                                  onClick={() => toggleType(type)}
-                                  className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-lg text-sm transition-all ${
-                                    selectedTypes.includes(type)
-                                      ? 'text-black'
-                                      : 'text-white/70 hover:text-white hover:bg-white/5'
-                                  }`}
-                                  style={selectedTypes.includes(type) ? { backgroundColor: clothingColors.accent } : {}}
-                                >
-                                  <div
-                                    className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
-                                      selectedTypes.includes(type)
-                                        ? 'border-transparent bg-white/20'
-                                        : 'border-white/30'
-                                    }`}
-                                  >
-                                    {selectedTypes.includes(type) && <Check className="w-3 h-3" />}
-                                  </div>
-                                  {type}
-                                </button>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Brand */}
-                    <div className="border-b border-white/10">
-                      <button
-                        onClick={() => toggleSection('brand')}
-                        className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
-                      >
-                        <span className="text-sm font-medium uppercase tracking-wide">Brand</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.brand ? 'rotate-180' : ''}`} />
-                      </button>
-                      {sectionsOpen.brand && (
-                        <div className="px-4 pb-4 max-h-48 overflow-y-auto space-y-1">
-                          {brandsList.map(brand => (
-                            <button
-                              key={brand}
-                              onClick={() => toggleBrand(brand)}
-                              className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-lg text-sm transition-all ${
-                                selectedBrands.includes(brand)
-                                  ? 'text-black'
-                                  : 'text-white/70 hover:text-white hover:bg-white/5'
-                              }`}
-                              style={selectedBrands.includes(brand) ? { backgroundColor: clothingColors.accent } : {}}
-                            >
-                              <div
-                                className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
-                                  selectedBrands.includes(brand)
-                                    ? 'border-transparent bg-white/20'
-                                    : 'border-white/30'
-                                }`}
-                              >
-                                {selectedBrands.includes(brand) && <Check className="w-3 h-3" />}
-                              </div>
-                              {brand}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Colour */}
-                    <div className="border-b border-white/10">
-                      <button
-                        onClick={() => toggleSection('colour')}
-                        className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
-                      >
-                        <span className="text-sm font-medium uppercase tracking-wide">Colour</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.colour ? 'rotate-180' : ''}`} />
-                      </button>
-                      {sectionsOpen.colour && (
-                        <div className="px-4 pb-4">
-                          <div className="flex flex-wrap gap-2">
-                            {filterOptions.colors.map(color => {
-                              const isSelected = selectedColors.includes(color);
-                              const colorHex = getColorHexValue(color);
-                              const isLight = colorHex === '#FFFFFF' || colorHex === '#FFFDD0';
-                              return (
-                                <button
-                                  key={color}
-                                  onClick={() => toggleColor(color)}
-                                  className={`relative w-8 h-8 rounded-full border-2 transition-all ${
-                                    isSelected
-                                      ? 'border-[#78BE20] scale-110'
-                                      : isLight
-                                      ? 'border-gray-400 hover:scale-110'
-                                      : 'border-transparent hover:scale-110'
-                                  }`}
-                                  style={{ backgroundColor: colorHex }}
-                                  title={color}
-                                >
-                                  {isSelected && (
-                                    <Check className={`absolute inset-0 m-auto w-4 h-4 ${isLight ? 'text-black' : 'text-white'}`} />
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Gender */}
-                    <div>
-                      <button
-                        onClick={() => toggleSection('gender')}
-                        className="w-full p-4 flex items-center justify-between text-white hover:bg-white/5 transition-colors"
-                      >
-                        <span className="text-sm font-medium uppercase tracking-wide">Gender</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${sectionsOpen.gender ? 'rotate-180' : ''}`} />
-                      </button>
-                      {sectionsOpen.gender && (
-                        <div className="px-4 pb-4 space-y-1">
-                          {filterOptions.genders.filter(gender => gender !== 'None').map(gender => (
-                            <button
-                              key={gender}
-                              onClick={() => toggleGender(gender)}
-                              className={`w-full flex items-center gap-3 px-2 py-1.5 rounded-lg text-sm transition-all ${
-                                selectedGenders.includes(gender)
-                                  ? 'text-black'
-                                  : 'text-white/70 hover:text-white hover:bg-white/5'
-                              }`}
-                              style={selectedGenders.includes(gender) ? { backgroundColor: clothingColors.accent } : {}}
-                            >
-                              <div
-                                className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
-                                  selectedGenders.includes(gender)
-                                    ? 'border-transparent bg-white/20'
-                                    : 'border-white/30'
-                                }`}
-                              >
-                                {selectedGenders.includes(gender) && <Check className="w-3 h-3" />}
-                              </div>
-                              {gender}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    );
-
-    setFilterContent(filterBar);
+    setFilterData(filterData);
 
     // Cleanup on unmount
     return () => {
-      setFilterContent(null);
+      isMountedRef.current = false;
+      setFilterData(null);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     headerFilterOpen,
     hasActiveFilters,
@@ -726,14 +493,19 @@ const ClothingBrowser: React.FC = () => {
     selectedBrands,
     selectedColors,
     selectedGenders,
-    filterOptions.productTypes,
     filterOptions.colors,
-    filterOptions.brands,
     filterOptions.brandOptions,
+    filterOptions.brands,
     filterOptions.genders,
     sectionsOpen,
-    availableTypeGroups
-    // setFilterContent is stable (wrapped in useCallback) so we don't need it here
+    availableTypeGroups,
+    toggleType,
+    toggleBrand,
+    toggleColor,
+    toggleGender,
+    clearAllFilters,
+    toggleSection,
+    setFilterData,
   ]);
 
   const handleProductClick = (styleCode: string) => {

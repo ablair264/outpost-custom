@@ -1,22 +1,46 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 
+// Define the filter data interface instead of passing JSX
+export interface ClothingFilterData {
+  isActive: boolean;
+  filterCount: number;
+  headerFilterOpen: boolean;
+  setHeaderFilterOpen: (open: boolean) => void;
+  hasActiveFilters: boolean;
+  selectedTypes: string[];
+  selectedBrands: string[];
+  selectedColors: string[];
+  selectedGenders: string[];
+  toggleType: (type: string) => void;
+  toggleBrand: (brand: string) => void;
+  toggleColor: (color: string) => void;
+  toggleGender: (gender: string) => void;
+  clearAllFilters: () => void;
+  sectionsOpen: { type: boolean; brand: boolean; colour: boolean; gender: boolean };
+  toggleSection: (section: 'type' | 'brand' | 'colour' | 'gender') => void;
+  availableTypeGroups: Array<{ name: string; availableItems: string[] }>;
+  brandsList: string[];
+  colors: string[];
+  genders: string[];
+}
+
 interface HeaderFilterContextType {
-  filterContent: ReactNode | null;
-  setFilterContent: (content: ReactNode | null) => void;
+  filterData: ClothingFilterData | null;
+  setFilterData: (data: ClothingFilterData | null) => void;
 }
 
 const HeaderFilterContext = createContext<HeaderFilterContextType | undefined>(undefined);
 
 export const HeaderFilterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [filterContent, setFilterContentState] = useState<ReactNode | null>(null);
+  const [filterData, setFilterDataState] = useState<ClothingFilterData | null>(null);
 
   // Wrap in useCallback to ensure stable reference
-  const setFilterContent = useCallback((content: ReactNode | null) => {
-    setFilterContentState(content);
+  const setFilterData = useCallback((data: ClothingFilterData | null) => {
+    setFilterDataState(data);
   }, []);
 
   return (
-    <HeaderFilterContext.Provider value={{ filterContent, setFilterContent }}>
+    <HeaderFilterContext.Provider value={{ filterData, setFilterData }}>
       {children}
     </HeaderFilterContext.Provider>
   );

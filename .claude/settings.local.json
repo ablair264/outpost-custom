@@ -53,7 +53,8 @@
       "mcp__cloudflare-workers__accounts_list",
       "mcp__cloudflare-workers__r2_bucket_create",
       "mcp__cloudflare-workers__r2_bucket_get",
-      "mcp__cloudflare-workers__search_cloudflare_documentation"
+      "mcp__cloudflare-workers__search_cloudflare_documentation",
+      "Bash(npx typescript:*)"
     ],
     "deny": [],
     "ask": []
