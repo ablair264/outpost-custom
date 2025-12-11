@@ -425,9 +425,12 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
                 )}
 
                 {/* CTA */}
-                <div className="flex-shrink-0 ml-6" onClick={(e) => e.stopPropagation()}>
+                <div className="flex-shrink-0 ml-6">
                   <button
-                    onClick={() => navigate(`/products/${productGroup.style_code}`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/products/${productGroup.style_code}`);
+                    }}
                     className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm text-white transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
                     style={{ backgroundColor: clothingColors.accent, boxShadow: '0 4px 12px rgba(100, 167, 11, 0.3)' }}
                   >
@@ -511,7 +514,10 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
 
                 {/* CTA */}
                 <button
-                  onClick={() => navigate(`/products/${productGroup.style_code}`)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/products/${productGroup.style_code}`);
+                  }}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-sm text-white flex-shrink-0"
                   style={{ backgroundColor: clothingColors.accent }}
                 >
