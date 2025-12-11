@@ -18,8 +18,7 @@ import {
   Bell,
   Mail,
   ToggleLeft,
-  ToggleRight,
-  Calendar
+  ToggleRight
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -121,16 +120,9 @@ const AdminLayoutNew: React.FC = () => {
     },
     {
       id: 'blog',
-      label: 'Blog /',
+      label: 'Blog / Case Studies',
       icon: <FileText className="w-5 h-5" />,
       path: '/admin/blog',
-      section: 'main',
-    },
-    {
-      id: 'schedules',
-      label: 'Schedules',
-      icon: <Calendar className="w-5 h-5" />,
-      path: '/admin/schedules',
       section: 'main',
     },
     {
@@ -252,7 +244,28 @@ const AdminLayoutNew: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1625] flex">
+    <div className="min-h-screen bg-[#1a1625] flex admin-layout">
+      <style>{`
+        .admin-layout ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .admin-layout ::-webkit-scrollbar-track {
+          background: #1a1625;
+          border-radius: 4px;
+        }
+        .admin-layout ::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #6b5b95 0%, #4a3d66 100%);
+          border-radius: 4px;
+        }
+        .admin-layout ::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(180deg, #7d6ba8 0%, #5a4d76 100%);
+        }
+        .admin-layout {
+          scrollbar-width: thin;
+          scrollbar-color: #6b5b95 #1a1625;
+        }
+      `}</style>
       {/* Floating Sidebar */}
       <nav
         className={`fixed top-4 left-4 bottom-4 bg-gradient-to-b from-[#2a2440] to-[#1e1a2e] rounded-2xl flex flex-col z-50 transition-all duration-300 shadow-2xl ${
@@ -463,7 +476,7 @@ const AdminLayoutNew: React.FC = () => {
         </header>
 
         {/* Page Content */}
-        <div className="p-6 bg-[#f5f5f7] min-h-[calc(100vh-73px)]">
+        <div className="p-6 min-h-[calc(100vh-73px)] bg-gradient-to-br from-[#1e1a2e] via-[#2a2440] to-[#1a1625]">
           <Outlet />
         </div>
       </main>

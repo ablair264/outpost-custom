@@ -57,7 +57,8 @@
       "Bash(npx typescript:*)",
       "mcp__cloudflare-workers__r2_buckets_list",
       "Bash(node scripts/upload-r2-images.cjs:*)",
-      "Bash(CI=false npx react-scripts build:*)"
+      "Bash(CI=false npx react-scripts build:*)",
+      "mcp__neon__describe_table_schema"
     ],
     "deny": [],
     "ask": []

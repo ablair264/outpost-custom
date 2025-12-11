@@ -531,10 +531,18 @@ export async function handler(event) {
 
   } catch (error) {
     console.error('Blog function error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error name:', error.name);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ success: false, error: 'Internal server error', details: error.message }),
+      body: JSON.stringify({
+        success: false,
+        error: 'Internal server error',
+        details: error.message,
+        name: error.name,
+        code: error.code
+      }),
     };
   } finally {
     await prisma.$disconnect();
