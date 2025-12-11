@@ -107,7 +107,7 @@ const WindowPrivacyFilm: React.FC = () => {
                 <p className="neuzeit-font text-[#908d9a] uppercase tracking-[0.3em] text-sm mb-6">
                   Window Privacy Film
                 </p>
-                <h1 className="hearns-font text-5xl md:text-6xl lg:text-8xl xl:text-9xl text-white leading-[0.95] mb-8">
+                <h1 className="hearns-font text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white leading-[0.95] mb-8">
                   Privacy That<br />
                   <span className="gradient-text">Still Lets the</span><br />
                   Light In

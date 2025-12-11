@@ -1,469 +1,458 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import SlimGridMotion from '../components/SlimGridMotion';
+import { motion } from 'framer-motion';
+import { CheckCircle2, Car, Truck, Magnet, Clock, Wrench, Palette, Mail, Shield, Sparkles } from 'lucide-react';
 import { usePageTheme } from '../contexts/ThemeContext';
 import HowItWorksSection from '../components/HowItWorksSection';
 
 const VehicleSignwriting: React.FC = () => {
-  // Set purple theme for this page
   usePageTheme('purple');
   const headingRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const subtitleRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
-
-  // Vehicle signwriting images for SlimGridMotion
-  const vehicleImages = Array.from({ length: 21 }, (_, index) => {
-    const imageNum = (index % 4) + 1;
-    return `/vehicle-signwriting/vehicle${imageNum}.jpg`;
-  });
 
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-    tl.fromTo(
-      headingRef.current,
-      { opacity: 0, y: 40 },
-      { opacity: 1, y: 0, duration: 1, delay: 0.3 }
-    )
-    .fromTo(
-      contentRef.current,
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.9 },
-      '-=0.6'
-    )
-    .fromTo(
-      ctaRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.8 },
-      '-=0.4'
-    );
+    tl.fromTo(headingRef.current, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1.2, delay: 0.2 })
+      .fromTo(subtitleRef.current, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1 }, '-=0.7')
+      .fromTo(ctaRef.current, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8 }, '-=0.5');
   }, []);
 
-  const steps = [
-    {
-      title: 'Arrange a FREE consultation',
-      description: 'For standard vehicles, we use our library of scaled drawings. For off-spec vehicles, pop down to our Kidderminster unit for photos and measurements.',
-      icon: (
-        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      ),
-    },
-    {
-      title: 'Get a FREE quote + mockup',
-      description: 'Send us your logo and our design team will create a visual of how your vehicle could look. Need a logo designed? We can help with that.',
-      icon: (
-        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-      ),
-    },
-    {
-      title: 'Approve your order',
-      description: 'After approval, book a slot with our team. We have late night slots on Wednesdays or midday slots on Saturdays. We can also come to you on-site.',
-      icon: (
-        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-    },
-    {
-      title: 'Order up!',
-      description: 'Bring your vehicle to our unit, or our professional and fully insured installation team will meet you at a location of your choice.',
-      icon: (
-        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
-      ),
-    }
-  ];
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] as const } }
+  };
 
-  const pricingData = [
-    { vehicle: 'Cars', price: '£200 - £400' },
-    { vehicle: 'SWB - LWB Vans', price: '£300 - £550' },
-    { vehicle: 'Luton / Box', price: '£500 - £800' },
-  ];
-
-  const vinylSpecs = [
-    { label: 'Gloss', value: 'Available in a high gloss or matt finish' },
-    { label: 'Matt', value: 'Outdoor use, matt or gloss finish. Indoor use, matt finish' },
-    { label: 'Application', value: 'Wet or dry application, wet for better results as you can reposition easily' },
-    { label: 'Color', value: 'Printed full colour or cut from a range of coloured vinyl' },
-    { label: 'Finishes', value: 'Gloss, matt, metallic, reflective, fluorescent, carbon fibre, brushed aluminium, wood effect' },
-    { label: 'Longevity', value: 'Indoor vinyl lasts 2-3 years. Outdoor vinyl lasts 5-7 years' },
-    { label: 'Removal', value: 'Heat can be used to remove adhesive vinyl from most surfaces. No damage to paintwork' },
-  ];
+  const stagger = {
+    visible: { transition: { staggerChildren: 0.15 } }
+  };
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section - Black */}
-      <section className="relative h-[70vh] w-full overflow-hidden bg-black">
-        <div className="absolute inset-0">
-          <SlimGridMotion items={vehicleImages} gradientColor="black" />
-        </div>
+    <>
+      <style>{`
+        @font-face {
+          font-family: 'Hearns';
+          src: url('/fonts/Hearns/Hearns.woff') format('woff');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        @font-face {
+          font-family: 'Smilecake';
+          src: url('/fonts/smilecake/Smilecake.otf') format('opentype');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        @font-face {
+          font-family: 'Neuzeit';
+          src: url('/fonts/font/NeuzeitOffice-Regular.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+          font-display: swap;
+        }
+        .hearns-font {
+          font-family: 'Hearns', Georgia, serif;
+        }
+        .smilecake-font {
+          font-family: 'Smilecake', cursive;
+        }
+        .neuzeit-font {
+          font-family: 'Neuzeit', sans-serif;
+        }
 
-        <div className="absolute inset-0 bg-black/70 z-[5]" />
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/50 via-black/25 to-transparent backdrop-blur-sm z-[5]" />
+        /* Frosted glass effect */
+        .frosted-glass {
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+        }
 
-        <div className="relative z-10 h-full flex items-center px-6 md:px-12 lg:px-24">
-          <div className="max-w-5xl mx-auto w-full">
-            <div ref={headingRef} className="mb-6">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white mb-4 leading-[0.95]">
-                Let your vehicle<br />do the talking
-              </h1>
-              <div className="h-1 w-20 bg-[#383349] rounded-full" />
-            </div>
+        /* Light ray animation */
+        @keyframes lightRay {
+          0%, 100% { opacity: 0.3; transform: translateX(-100%) skewX(-15deg); }
+          50% { opacity: 0.6; transform: translateX(200%) skewX(-15deg); }
+        }
+        .light-ray {
+          animation: lightRay 8s ease-in-out infinite;
+        }
 
-            <div ref={contentRef} className="max-w-2xl mb-10">
-              <p className="text-xl md:text-2xl text-white/90 font-light leading-relaxed">
-                Custom decals allow you turn any text, logo, or graphic into a promotional tool for your business. Get spotted on the road or parked on any job.
-              </p>
-            </div>
+        /* Gradient text */
+        .gradient-text {
+          background: linear-gradient(135deg, #ffffff 0%, #c1c6c8 50%, #908d9a 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+      `}</style>
 
-            <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="#how-it-works"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#383349] text-white font-semibold text-base hover:bg-[#4a4460] transition-all duration-300 shadow-lg shadow-[#383349]/30"
-              >
-                How It Works
-              </a>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-white bg-transparent text-white font-semibold text-base hover:bg-white/10 transition-all duration-300"
-              >
-                Book FREE Consultation
-              </a>
+      <div className="min-h-screen bg-[#221c35]">
+
+        {/* Hero Section */}
+        <section className="relative min-h-[90vh] w-full overflow-hidden bg-gradient-to-br from-[#221c35] via-[#2a2442] to-[#383349]">
+          {/* Animated light rays */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="light-ray absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+            <div className="light-ray absolute top-0 left-1/4 w-1/4 h-full bg-gradient-to-r from-transparent via-white/3 to-transparent" style={{ animationDelay: '2s' }} />
+            <div className="light-ray absolute top-0 right-0 w-1/3 h-full bg-gradient-to-r from-transparent via-white/4 to-transparent" style={{ animationDelay: '4s' }} />
+          </div>
+
+          {/* Frosted glass panels decoration */}
+          <div className="absolute top-20 right-10 md:right-20 w-64 h-96 rounded-3xl bg-white/[0.03] frosted-glass border border-white/10 transform rotate-6 hidden lg:block" />
+          <div className="absolute top-40 right-40 md:right-60 w-48 h-72 rounded-2xl bg-white/[0.05] frosted-glass border border-white/5 transform -rotate-3 hidden lg:block" />
+
+          {/* Main content */}
+          <div className="relative z-10 h-full flex items-center px-6 md:px-12 lg:px-24 pt-32 pb-20">
+            <div className="max-w-5xl">
+              <div ref={headingRef}>
+                <p className="neuzeit-font text-[#908d9a] uppercase tracking-[0.3em] text-sm mb-6">
+                  Vehicle Signwriting
+                </p>
+                <h1 className="hearns-font text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white leading-[0.95] mb-8">
+                  Let Your<br />
+                  <span className="gradient-text">Vehicle Do</span><br />
+                  The Talking
+                </h1>
+              </div>
+
+              <div ref={subtitleRef} className="max-w-xl mb-12">
+                <p className="text-xl md:text-2xl text-[#c1c6c8] font-light leading-relaxed">
+                  Custom decals that turn any vehicle into a promotional tool for your business.
+                </p>
+              </div>
+
+              <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4">
+                <a
+                  href="#how-it-works"
+                  className="group inline-flex items-center justify-center px-8 py-4 rounded-full bg-white text-[#221c35] font-semibold text-base hover:bg-[#c1c6c8] transition-all duration-300"
+                >
+                  How It Works
+                  <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+                <a
+                  href="/contact"
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-full border-2 border-white/30 text-white font-semibold text-base hover:bg-white/10 hover:border-white/50 transition-all duration-300"
+                >
+                  Book FREE Consultation
+                </a>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-black z-[6]" />
-      </section>
+          {/* Bottom gradient fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+        </section>
 
-      {/* How It Works Section with Brush Stroke Animation */}
-      <HowItWorksSection
-        serviceType="vehicle-signwriting"
-        sectionId="how-it-works"
-        subtitle="Our vehicle signwriting service comes in a range of styles and sizes to suit your needs."
-      />
+        {/* Perfect For Section - Editorial staggered layout */}
+        <section className="py-24 px-6 md:px-12 lg:px-24 bg-white relative overflow-hidden">
+          {/* Decorative element */}
+          <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-[#908d9a]/5" />
 
-      {/* Can't Lose Your Vehicle Section - Gray */}
-      <section className="py-20 px-6 md:px-12 lg:px-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
-                Can not lose your work vehicle for the day?
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="mb-20">
+              <h2 className="smilecake-font text-5xl md:text-7xl text-[#221c35] mb-4">
+                Why It Works
               </h2>
-              <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                We have late night application slots on Wednesdays or midday slots on Saturdays.
-              </p>
-              <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                We will also come to you on-site… Let us do our job, while you are doing yours.
-              </p>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#383349] text-white font-semibold text-base hover:bg-[#4a4460] transition-all duration-300 shadow-lg shadow-[#383349]/30"
-              >
-                Book a Slot
-              </a>
-            </div>
+              <div className="w-24 h-1 bg-[#908d9a]" />
+            </motion.div>
 
-            <div className="relative">
-              <div className="aspect-square rounded-3xl bg-white border border-gray-200 p-12 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">🚐</div>
-                  <div className="text-2xl font-bold text-gray-900 mb-3">Flexible Installation</div>
-                  <div className="text-base text-gray-600">
-                    Late nights • Midday Saturdays • On-site service
+            {/* Staggered layout */}
+            <div className="grid md:grid-cols-12 gap-8 md:gap-12">
+              {/* 24/7 Advertising */}
+              <motion.div variants={fadeInUp} className="md:col-span-5">
+                <div className="flex items-start gap-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#383349] to-[#221c35] flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-10 h-10 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Round-the-Clock</h3>
+                    <p className="text-lg text-[#383349]/80 leading-relaxed">
+                      Your vehicle is seen by thousands every day, 365 days a year. It's advertising that works even when you're off the clock.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* ROI - offset */}
+              <motion.div variants={fadeInUp} className="md:col-span-5 md:col-start-7 md:mt-24">
+                <div className="flex items-start gap-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#908d9a] to-[#383349] flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-10 h-10 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Best ROI</h3>
+                    <p className="text-lg text-[#383349]/80 leading-relaxed">
+                      Compare £500 signwriting to any other advertising—there's no comparison. One investment, years of impressions.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Stand Out - centered */}
+              <motion.div variants={fadeInUp} className="md:col-span-6 md:col-start-4 md:mt-12">
+                <div className="flex items-start gap-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#c1c6c8] to-[#908d9a] flex items-center justify-center flex-shrink-0">
+                    <Car className="w-10 h-10 text-[#221c35]" />
+                  </div>
+                  <div>
+                    <h3 className="hearns-font text-3xl text-[#221c35] mb-3">Stand Out</h3>
+                    <p className="text-lg text-[#383349]/80 leading-relaxed">
+                      Unique vehicle graphics put you ahead of the competition. Get spotted on the road or parked on any job.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* How It Works Section */}
+        <HowItWorksSection
+          serviceType="vehicle-signwriting"
+          sectionId="how-it-works"
+          subtitle="Our vehicle signwriting service comes in a range of styles and sizes to suit your needs."
+        />
+
+        {/* Pricing Section - Asymmetric grid */}
+        <section className="py-24 px-6 md:px-12 lg:px-24 bg-[#f8f8f8] relative overflow-hidden">
+          {/* Background texture */}
+          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url(/ConcreteTexture.webp)', backgroundSize: 'cover' }} />
+
+          <motion.div
+            className="max-w-7xl mx-auto relative z-10"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="text-center mb-20">
+              <h2 className="hearns-font text-5xl md:text-7xl text-[#221c35] mb-4">
+                Pricing Guide
+              </h2>
+              <p className="text-xl text-[#383349]/70 max-w-2xl mx-auto">
+                Transparent pricing based on vehicle size and design complexity.
+              </p>
+            </motion.div>
+
+            {/* Asymmetric masonry-style layout */}
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Cars - Large */}
+              <motion.div
+                variants={fadeInUp}
+                className="md:col-span-2 md:row-span-2 bg-gradient-to-br from-[#221c35] to-[#383349] rounded-3xl p-10 md:p-14 text-white relative overflow-hidden group"
+              >
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700" />
+                <Car className="w-12 h-12 text-[#908d9a] mb-6" />
+                <h3 className="hearns-font text-4xl md:text-5xl mb-4">Vehicle Pricing</h3>
+                <p className="text-white/80 text-lg leading-relaxed mb-8 max-w-md">
+                  Prices vary depending on design complexity and coverage. Get a free quote and mockup to see exactly how your vehicle will look.
+                </p>
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <span className="text-white/90">Cars</span>
+                    <span className="text-[#908d9a] font-semibold">£200 - £400</span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <span className="text-white/90">SWB - LWB Vans</span>
+                    <span className="text-[#908d9a] font-semibold">£300 - £550</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/90">Luton / Box</span>
+                    <span className="text-[#908d9a] font-semibold">£500 - £800</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">5-7 year outdoor vinyl</span>
+                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">Free mockup</span>
+                  <span className="px-4 py-2 rounded-full bg-white/10 text-sm">No damage removal</span>
+                </div>
+              </motion.div>
+
+              {/* Printed Vinyl */}
+              <motion.div
+                variants={fadeInUp}
+                className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30 hover:border-[#908d9a]/50 transition-colors"
+              >
+                <Palette className="w-10 h-10 text-[#908d9a] mb-4" />
+                <h3 className="hearns-font text-2xl text-[#221c35] mb-3">Printed Vinyl</h3>
+                <p className="text-[#383349]/70 leading-relaxed">
+                  Full-colour designs, gradients, photos. Perfect for complex logos with multiple colours.
+                </p>
+              </motion.div>
+
+              {/* Cut Vinyl */}
+              <motion.div
+                variants={fadeInUp}
+                className="bg-white rounded-3xl p-8 border border-[#c1c6c8]/30 hover:border-[#908d9a]/50 transition-colors"
+              >
+                <Wrench className="w-10 h-10 text-[#908d9a] mb-4" />
+                <h3 className="hearns-font text-2xl text-[#221c35] mb-3">Cut Vinyl</h3>
+                <p className="text-[#383349]/70 leading-relaxed">
+                  Sharp, clean lettering. 100+ colours plus metallic, reflective, and fluorescent options.
+                </p>
+              </motion.div>
+
+              {/* Magnetic Signs - Wide */}
+              <motion.div
+                variants={fadeInUp}
+                className="md:col-span-3 bg-gradient-to-r from-[#908d9a]/10 via-[#908d9a]/5 to-transparent rounded-3xl p-10 flex flex-col md:flex-row items-center gap-8"
+              >
+                <Magnet className="w-16 h-16 text-[#383349] flex-shrink-0" />
+                <div>
+                  <h3 className="hearns-font text-3xl text-[#221c35] mb-2">Need Something Removable?</h3>
+                  <p className="text-[#383349]/70 text-lg leading-relaxed">
+                    Magnetic signs are perfect for dual-use vehicles. Simply attach when needed and remove when you don't. Easy to swap between vehicles.
+                  </p>
+                </div>
+                <a href="/contact" className="flex-shrink-0 px-6 py-3 rounded-full bg-[#383349] text-white font-medium hover:bg-[#221c35] transition-colors">
+                  Ask About Magnetics
+                </a>
+              </motion.div>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Flexible Installation - Full bleed with diagonal split */}
+        <section className="relative py-32 overflow-hidden">
+          {/* Diagonal background */}
+          <div className="absolute inset-0 bg-[#221c35]" />
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-[#383349] transform skew-x-12 origin-top-right hidden md:block" />
+
+          <motion.div
+            className="relative z-10 max-w-6xl mx-auto px-6 md:px-12 lg:px-24"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#908d9a]/20 text-[#908d9a] text-sm font-medium mb-6">
+                  <Clock className="w-4 h-4" />
+                  Flexible Scheduling
+                </div>
+                <h2 className="hearns-font text-4xl md:text-6xl text-white mb-6">
+                  Can't Lose Your<br />Vehicle for a Day?
+                </h2>
+                <p className="text-xl text-white/80 leading-relaxed mb-8">
+                  We have late night slots on Wednesdays and midday slots on Saturdays. We'll also come to you on-site—let us do our job while you're doing yours.
+                </p>
+                <div className="flex items-center gap-4">
+                  <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
+                  <span className="text-white/90">Professional, fully insured installation team</span>
+                </div>
+              </div>
+
+              <div className="bg-white/5 frosted-glass rounded-3xl p-8 md:p-10 border border-white/10">
+                <h3 className="smilecake-font text-3xl text-white mb-6">Installation Options</h3>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
+                    <span className="text-white/80">Visit our Kidderminster unit</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
+                    <span className="text-white/80">On-site installation at your location</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
+                    <span className="text-white/80">Late night Wednesday slots available</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[#908d9a] flex-shrink-0 mt-1" />
+                    <span className="text-white/80">Midday Saturday appointments</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Vinyl Specs & CTA - Split screen */}
+        <section className="bg-white">
+          <div className="grid md:grid-cols-2">
+            {/* Vinyl Specs */}
+            <motion.div
+              className="py-24 px-6 md:px-12 lg:px-16 bg-[#f8f8f8]"
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="hearns-font text-4xl md:text-5xl text-[#221c35] mb-8">
+                Quality That<br />
+                <span className="text-[#908d9a]">Lasts</span>
+              </h2>
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#221c35] flex items-center justify-center flex-shrink-0">
+                    <Shield className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">5-7 Year Outdoor Vinyl</h3>
+                    <p className="text-[#383349]/70">High-quality vinyl designed specifically for vehicle applications.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#908d9a] flex items-center justify-center flex-shrink-0">
+                    <Truck className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-[#221c35] text-lg mb-1">Easy Removal</h3>
+                    <p className="text-[#383349]/70">When it's time to update, vinyl removes with heat—no damage to paintwork.</p>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
+            </motion.div>
 
-      {/* ROI Section - Black */}
-      <section className="py-20 px-6 md:px-12 lg:px-24 bg-black">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
-              Signwriting pays for itself
-            </h2>
-            <div className="h-1 w-20 bg-[#383349] mx-auto rounded-full mb-8" />
-            <p className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed">
-              We offer a wide range of graphic options to suit your budget. Vehicle signage is round-the-clock advertising. Since vinyl decals can last for many years, you will not be replacing yours for quite a while.
-            </p>
-          </div>
-
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 mb-12">
-            <p className="text-lg text-white/80 leading-relaxed mb-6">
-              Whatever goods or services you provide, unique vehicle graphics will put you ahead of the competition and help your brand stand out.
-            </p>
-            <p className="text-lg text-white/80 leading-relaxed">
-              If you compare the cost of £500 signwriting to the cost of any other advertising then there really is no comparison. A vehicle on the road gets seen by thousands of other road users every day, 365 days a year. It is even working whilst you are off the clock.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-4xl font-black text-[#383349] mb-3">£500</div>
-              <div className="text-sm text-white/60">One-time investment</div>
-            </div>
-            <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-4xl font-black text-[#383349] mb-3">365</div>
-              <div className="text-sm text-white/60">Days advertising per year</div>
-            </div>
-            <div className="text-center p-8 rounded-2xl bg-white/5 border border-white/10">
-              <div className="text-4xl font-black text-[#383349] mb-3">1000s</div>
-              <div className="text-sm text-white/60">Impressions daily</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section - White */}
-      <section className="py-20 px-6 md:px-12 lg:px-24 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
-              Pricing Guide
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Transparent pricing for your vehicle signwriting needs
-            </p>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b-2 border-[#383349]">
-                  <th className="text-left py-4 px-6 text-gray-900 font-bold text-lg">Vehicle Type</th>
-                  <th className="text-right py-4 px-6 text-gray-900 font-bold text-lg">Price Range</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pricingData.map((item, idx) => (
-                  <tr key={idx} className={`border-b border-gray-200 ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
-                    <td className="py-6 px-6 text-gray-900 font-medium">{item.vehicle}</td>
-                    <td className="py-6 px-6 text-right text-[#383349] font-bold text-xl">{item.price}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-12 bg-gray-50 border border-gray-200 rounded-2xl p-8">
-            <p className="text-gray-700 leading-relaxed mb-4">
-              <span className="font-bold text-gray-900">Note:</span> Prices vary depending on the complexity of the design and the amount of coverage required.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              Get a <span className="text-[#383349] font-semibold">FREE quote and mockup</span> to see exactly how your vehicle will look before committing.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Magnetic Signs Section - Gray */}
-      <section className="py-20 px-6 md:px-12 lg:px-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="relative">
-              <div className="aspect-video rounded-3xl bg-gradient-to-br from-[#383349]/20 to-[#383349]/5 border border-[#383349]/30 p-12 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">🧲</div>
-                  <div className="text-2xl font-bold text-gray-900">Magnetic Signs</div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
-                Need something removable?
+            {/* CTA */}
+            <motion.div
+              className="py-24 px-6 md:px-12 lg:px-16 bg-[#221c35]"
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="smilecake-font text-4xl text-white mb-8">
+                Ready to Get Noticed on the Road?
               </h2>
-              <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                Magnetic signs are perfect if you use your vehicle for both work and personal use, or if you need temporary branding.
+              <p className="text-white/80 text-lg leading-relaxed mb-8">
+                Get a free mockup and quote for your vehicle signwriting. See exactly how your vehicle will look before committing.
               </p>
-              <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                Simply attach them when you need them and remove them when you do not. Easy to swap between vehicles too.
-              </p>
+              <ul className="space-y-4 mb-10">
+                <li className="flex items-center gap-4">
+                  <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
+                  <span className="text-white/80">Free consultation & mockup</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
+                  <span className="text-white/80">Professional installation</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <CheckCircle2 className="w-6 h-6 text-[#908d9a]" />
+                  <span className="text-white/80">Logo design available</span>
+                </li>
+              </ul>
+
               <a
                 href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#383349] text-white font-semibold text-base hover:bg-[#4a4460] transition-all duration-300 shadow-lg shadow-[#383349]/30"
+                className="w-full inline-flex items-center justify-center px-8 py-4 rounded-full bg-white text-[#221c35] font-semibold hover:bg-[#c1c6c8] transition-all duration-300"
               >
-                Ask About Magnetic Signs
+                <Mail className="w-5 h-5 mr-2" />
+                Book FREE Consultation
               </a>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      </section>
-
-      {/* Installation Team Section - Black */}
-      <section className="py-20 px-6 md:px-12 lg:px-24 bg-black">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-            Professional installation team
-          </h2>
-          <div className="h-1 w-20 bg-[#383349] mx-auto rounded-full mb-8" />
-          <p className="text-lg text-white/80 max-w-3xl mx-auto leading-relaxed mb-12">
-            Our installation team are professional, fully insured, and experienced in working with all types of vehicles. Whether you come to our unit in Kidderminster or we come to you on-site, you can trust us to deliver exceptional results.
-          </p>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <div className="text-4xl mb-4">✓</div>
-              <h3 className="text-xl font-bold text-white mb-3">Professional</h3>
-              <p className="text-white/70">
-                Years of experience with vehicles of all shapes and sizes
-              </p>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <div className="text-4xl mb-4">🛡️</div>
-              <h3 className="text-xl font-bold text-white mb-3">Fully Insured</h3>
-              <p className="text-white/70">
-                Complete peace of mind with comprehensive insurance coverage
-              </p>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-xl font-bold text-white mb-3">Quality Guarantee</h3>
-              <p className="text-white/70">
-                We stand behind our work with a satisfaction guarantee
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Types of Customisation Section - White */}
-      <section className="py-20 px-6 md:px-12 lg:px-24 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
-              Types of customisation
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Choose between printed vinyl for full-colour designs or cut vinyl for clean, professional lettering
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Printed Vinyl */}
-            <div className="bg-gray-50 border-2 border-gray-200 rounded-3xl p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Printed Vinyl</h3>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
-                  <span className="text-gray-700">Full colour printing for complex designs and photos</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
-                  <span className="text-gray-700">Perfect for logos with gradients and multiple colours</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
-                  <span className="text-gray-700">Can include photographs and intricate graphics</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
-                  <span className="text-gray-700">Available in gloss or matt finish</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-red-500 text-2xl flex-shrink-0">✗</span>
-                  <span className="text-gray-500">Slightly shorter lifespan than cut vinyl</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Cut Vinyl */}
-            <div className="bg-[#383349]/5 border-2 border-[#383349] rounded-3xl p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Cut Vinyl</h3>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
-                  <span className="text-gray-700">Longest lasting option (5-7 years outdoor)</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
-                  <span className="text-gray-700">Sharp, clean edges for professional lettering</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
-                  <span className="text-gray-700">Available in 100+ solid colours plus special finishes</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#383349] text-2xl flex-shrink-0">✓</span>
-                  <span className="text-gray-700">Metallic, reflective, and fluorescent options available</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-red-500 text-2xl flex-shrink-0">✗</span>
-                  <span className="text-gray-500">Not suitable for complex multi-colour designs</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Vinyl Specifications Section - Gray */}
-      <section className="py-20 px-6 md:px-12 lg:px-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
-              Vinyl specifications
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              High-quality vinyl designed specifically for vehicle applications
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {vinylSpecs.map((spec, idx) => (
-              <div key={idx} className="bg-white border border-gray-200 rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-[#383349] mb-2">{spec.label}</h3>
-                <p className="text-gray-700 leading-relaxed">{spec.value}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 bg-white border-2 border-[#383349] rounded-2xl p-8 text-center">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Easy removal when needed
-            </h3>
-            <p className="text-gray-700 leading-relaxed max-w-2xl mx-auto">
-              When it is time to update your branding or sell your vehicle, our vinyl can be removed using heat without damaging the paintwork underneath.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA Section - Black */}
-      <section className="py-20 px-6 md:px-12 lg:px-24 bg-black">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
-            Ready to get noticed on the road?
-          </h2>
-          <p className="text-xl text-white/80 mb-10">
-            Get a free mockup and quote for your vehicle signwriting
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center px-10 py-4 rounded-full bg-[#383349] text-white font-semibold text-lg hover:bg-[#4a4460] transition-all duration-300 shadow-lg shadow-[#383349]/30"
-            >
-              Book FREE Consultation
-            </a>
-            <a
-              href="tel:01562227117"
-              className="inline-flex items-center justify-center px-10 py-4 rounded-full border-2 border-white/30 bg-transparent text-white font-semibold text-lg hover:bg-white/10 hover:border-white/50 transition-all duration-300"
-            >
-              Call 01562 227 117
-            </a>
-          </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 };
 
