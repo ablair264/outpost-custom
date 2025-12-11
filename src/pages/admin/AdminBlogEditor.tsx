@@ -248,21 +248,21 @@ const AdminBlogEditor: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-black text-gray-900">Blog & Case Studies</h1>
-          <p className="text-gray-500 mt-1">Create and manage blog posts and case studies</p>
+          <h1 className="text-3xl font-black text-white">Blog & Case Studies</h1>
+          <p className="text-gray-400 mt-1">Create and manage blog posts and case studies</p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={fetchData}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 border border-purple-500/20 bg-[#2a2440] text-gray-300 rounded-xl hover:bg-[#3d3456] transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
           <button
             onClick={() => setEditorMode(activeTab === 'posts' ? 'new-post' : 'new-case-study')}
-            className="flex items-center gap-2 px-5 py-3 bg-[#64a70b] text-white rounded-xl font-semibold hover:bg-[#578f09] transition-colors shadow-lg"
+            className="flex items-center gap-2 px-5 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors shadow-lg"
           >
             <Plus className="w-5 h-5" />
             New {activeTab === 'posts' ? 'Post' : 'Case Study'}
@@ -277,7 +277,7 @@ const AdminBlogEditor: React.FC = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700"
+            className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-300"
           >
             <AlertCircle className="w-5 h-5" />
             {error}
@@ -294,8 +294,8 @@ const AdminBlogEditor: React.FC = () => {
           onClick={() => setActiveTab('posts')}
           className={`px-5 py-2.5 rounded-lg font-medium transition-all ${
             activeTab === 'posts'
-              ? 'bg-[#183028] text-white'
-              : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+              ? 'bg-purple-600 text-white'
+              : 'bg-[#2a2440] text-gray-400 hover:bg-[#3d3456] border border-purple-500/10'
           }`}
         >
           Blog Posts ({posts.length})
@@ -304,8 +304,8 @@ const AdminBlogEditor: React.FC = () => {
           onClick={() => setActiveTab('case-studies')}
           className={`px-5 py-2.5 rounded-lg font-medium transition-all ${
             activeTab === 'case-studies'
-              ? 'bg-[#183028] text-white'
-              : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+              ? 'bg-purple-600 text-white'
+              : 'bg-[#2a2440] text-gray-400 hover:bg-[#3d3456] border border-purple-500/10'
           }`}
         >
           Case Studies ({caseStudies.length})
@@ -313,32 +313,32 @@ const AdminBlogEditor: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 flex flex-wrap gap-4 items-center">
+      <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 p-4 mb-6 flex flex-wrap gap-4 items-center">
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
           <input
             type="text"
             placeholder={activeTab === 'posts' ? 'Search posts...' : 'Search case studies...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#64a70b]/20 focus:border-[#64a70b] outline-none"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 outline-none"
           />
         </div>
 
         {activeTab === 'posts' && (
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value as BlogCategory | 'all')}
-              className="pl-9 pr-8 py-2.5 border border-gray-200 rounded-lg appearance-none bg-white focus:ring-2 focus:ring-[#64a70b]/20 focus:border-[#64a70b] outline-none"
+              className="pl-9 pr-8 py-2.5 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 appearance-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 outline-none"
             >
               <option value="all">All Categories</option>
               {blogCategories.map(cat => (
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
           </div>
         )}
 
@@ -346,76 +346,75 @@ const AdminBlogEditor: React.FC = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as 'all' | 'published' | 'draft')}
-            className="px-4 pr-8 py-2.5 border border-gray-200 rounded-lg appearance-none bg-white focus:ring-2 focus:ring-[#64a70b]/20 focus:border-[#64a70b] outline-none"
+            className="px-4 pr-8 py-2.5 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 appearance-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/50 outline-none"
           >
             <option value="all">All Status</option>
             <option value="published">Published</option>
             <option value="draft">Draft</option>
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
         </div>
       </div>
 
       {/* Content */}
       {loading ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-16 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[#64a70b]" />
+        <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 p-16 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
           {activeTab === 'posts' ? (
             // Posts Table
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-[#1e1a2e]/50 border-b border-purple-500/10">
                 <tr>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Title</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Category</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Author</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Date</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Status</th>
-                  <th className="text-right px-6 py-4 text-sm font-semibold text-gray-600">Actions</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Title</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Category</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Author</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Date</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Status</th>
+                  <th className="text-right px-6 py-4 text-sm font-semibold text-gray-400">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-purple-500/10">
                 {filteredPosts.map((post) => (
-                  <tr key={post.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={post.id} className="hover:bg-purple-500/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: '#183028' }}
+                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-500/20"
                         >
-                          <FileText className="w-5 h-5 text-[#64a70b]" />
+                          <FileText className="w-5 h-5 text-purple-400" />
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 line-clamp-1">{post.title}</p>
+                          <p className="font-semibold text-gray-200 line-clamp-1">{post.title}</p>
                           <p className="text-sm text-gray-500">/blog/{post.slug}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#64a70b]/10 text-[#64a70b]">
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300">
                         {getCategoryLabel(post.category)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-gray-400">
                       {post.author?.name || 'No author'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-gray-400">
                       {formatDate(post.publishedAt)}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         {post.featured && (
-                          <span className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                          <span className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300">
                             <Star className="w-3 h-3" />
                             Featured
                           </span>
                         )}
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           post.status === 'published'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-600'
+                            ? 'bg-purple-500/20 text-purple-300'
+                            : 'bg-gray-500/20 text-gray-400'
                         }`}>
                           {post.status === 'published' ? 'Published' : 'Draft'}
                         </span>
@@ -426,7 +425,7 @@ const AdminBlogEditor: React.FC = () => {
                         <Link
                           to={`/blog/${post.slug}`}
                           target="_blank"
-                          className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                          className="p-2 rounded-lg hover:bg-purple-500/10 text-gray-500 hover:text-gray-300 transition-colors"
                           title="View"
                         >
                           <Eye className="w-4 h-4" />
@@ -436,14 +435,14 @@ const AdminBlogEditor: React.FC = () => {
                             setEditingId(post.id);
                             setEditorMode('edit-post');
                           }}
-                          className="p-2 rounded-lg hover:bg-[#64a70b]/10 text-gray-500 hover:text-[#64a70b] transition-colors"
+                          className="p-2 rounded-lg hover:bg-purple-500/10 text-gray-500 hover:text-purple-400 transition-colors"
                           title="Edit"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeleteConfirm({ type: 'post', id: post.id, title: post.title })}
-                          className="p-2 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-500 transition-colors"
+                          className="p-2 rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-400 transition-colors"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -457,52 +456,51 @@ const AdminBlogEditor: React.FC = () => {
           ) : (
             // Case Studies Table
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-[#1e1a2e]/50 border-b border-purple-500/10">
                 <tr>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Title</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Client</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Industry</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Date</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">Status</th>
-                  <th className="text-right px-6 py-4 text-sm font-semibold text-gray-600">Actions</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Title</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Client</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Industry</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Date</th>
+                  <th className="text-left px-6 py-4 text-sm font-semibold text-gray-400">Status</th>
+                  <th className="text-right px-6 py-4 text-sm font-semibold text-gray-400">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-purple-500/10">
                 {filteredCaseStudies.map((cs) => (
-                  <tr key={cs.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={cs.id} className="hover:bg-purple-500/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: '#183028' }}
+                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-500/20"
                         >
-                          <Coffee className="w-5 h-5 text-[#64a70b]" />
+                          <Coffee className="w-5 h-5 text-purple-400" />
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 line-clamp-1">{cs.title}</p>
+                          <p className="font-semibold text-gray-200 line-clamp-1">{cs.title}</p>
                           <p className="text-sm text-gray-500">/case-study/{cs.slug}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{cs.clientName}</p>
+                        <p className="text-sm font-medium text-gray-200">{cs.clientName}</p>
                         {cs.clientLocation && (
                           <p className="text-sm text-gray-500">{cs.clientLocation}</p>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-gray-400">
                       {cs.industry || '-'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-gray-400">
                       {formatDate(cs.publishedAt)}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         cs.status === 'published'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-600'
+                          ? 'bg-purple-500/20 text-purple-300'
+                          : 'bg-gray-500/20 text-gray-400'
                       }`}>
                         {cs.status === 'published' ? 'Published' : 'Draft'}
                       </span>
@@ -512,7 +510,7 @@ const AdminBlogEditor: React.FC = () => {
                         <Link
                           to={`/case-study/${cs.slug}`}
                           target="_blank"
-                          className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                          className="p-2 rounded-lg hover:bg-purple-500/10 text-gray-500 hover:text-gray-300 transition-colors"
                           title="View"
                         >
                           <Eye className="w-4 h-4" />
@@ -522,14 +520,14 @@ const AdminBlogEditor: React.FC = () => {
                             setEditingId(cs.id);
                             setEditorMode('edit-case-study');
                           }}
-                          className="p-2 rounded-lg hover:bg-[#64a70b]/10 text-gray-500 hover:text-[#64a70b] transition-colors"
+                          className="p-2 rounded-lg hover:bg-purple-500/10 text-gray-500 hover:text-purple-400 transition-colors"
                           title="Edit"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeleteConfirm({ type: 'case-study', id: cs.id, title: cs.title })}
-                          className="p-2 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-500 transition-colors"
+                          className="p-2 rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-400 transition-colors"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -547,14 +545,14 @@ const AdminBlogEditor: React.FC = () => {
             (activeTab === 'case-studies' && filteredCaseStudies.length === 0)) && (
             <div className="px-6 py-16 text-center">
               {activeTab === 'posts' ? (
-                <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <FileText className="w-12 h-12 text-gray-600 mx-auto mb-4" />
               ) : (
-                <Coffee className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <Coffee className="w-12 h-12 text-gray-600 mx-auto mb-4" />
               )}
-              <p className="text-gray-500 font-medium">
+              <p className="text-gray-300 font-medium">
                 No {activeTab === 'posts' ? 'blog posts' : 'case studies'} found
               </p>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-gray-500 text-sm mt-1">
                 {searchQuery || filterCategory !== 'all' || filterStatus !== 'all'
                   ? 'Try adjusting your search or filters'
                   : `Click "New ${activeTab === 'posts' ? 'Post' : 'Case Study'}" to create one`}
@@ -568,35 +566,35 @@ const AdminBlogEditor: React.FC = () => {
       <AnimatePresence>
         {deleteConfirm && (
           <motion.div
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setDeleteConfirm(null)}
           >
             <motion.div
-              className="bg-white rounded-xl max-w-md w-full p-6"
+              className="bg-[#2a2440] border border-purple-500/20 rounded-xl max-w-md w-full p-6"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-                  <Trash2 className="w-6 h-6 text-red-500" />
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <Trash2 className="w-6 h-6 text-red-400" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">Delete {deleteConfirm.type === 'post' ? 'Post' : 'Case Study'}</h3>
-                  <p className="text-sm text-gray-500">This action cannot be undone</p>
+                  <h3 className="text-lg font-bold text-white">Delete {deleteConfirm.type === 'post' ? 'Post' : 'Case Study'}</h3>
+                  <p className="text-sm text-gray-400">This action cannot be undone</p>
                 </div>
               </div>
-              <p className="text-gray-600 mb-6">
-                Are you sure you want to delete "<strong>{deleteConfirm.title}</strong>"?
+              <p className="text-gray-300 mb-6">
+                Are you sure you want to delete "<strong className="text-white">{deleteConfirm.title}</strong>"?
               </p>
               <div className="flex justify-end gap-3">
                 <button
                   onClick={() => setDeleteConfirm(null)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-300 hover:bg-purple-500/10 rounded-lg transition-colors"
                   disabled={deleting}
                 >
                   Cancel

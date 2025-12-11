@@ -402,12 +402,12 @@ const AdminLayoutNew: React.FC = () => {
 
       {/* Main Content */}
       <main
-        className={`flex-1 transition-all duration-300 ${
+        className={`flex-1 min-h-screen bg-gradient-to-br from-[#1e1a2e] via-[#2a2440] to-[#1a1625] transition-all duration-300 ${
           sidebarCollapsed ? 'ml-[96px]' : 'ml-[284px]'
         }`}
       >
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-[#1a1625]/90 backdrop-blur-xl border-b border-purple-500/10">
+        <header className="sticky top-0 z-30 bg-transparent backdrop-blur-sm border-b border-purple-500/10">
           <div className="px-6 py-4 flex items-center justify-between">
             <h1
               className="text-xl text-white font-semibold"
@@ -435,7 +435,7 @@ const AdminLayoutNew: React.FC = () => {
                 onClick={toggleLiveChat}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
                   isLiveChatOnline
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
                     : 'bg-gray-500/20 text-gray-400 border border-gray-500/30 hover:bg-gray-500/30'
                 }`}
                 title={isLiveChatOnline ? 'LiveChat Online' : 'LiveChat Offline'}
@@ -451,7 +451,7 @@ const AdminLayoutNew: React.FC = () => {
                 >
                   {isLiveChatOnline ? 'Online' : 'Offline'}
                 </span>
-                <span className={`w-2 h-2 rounded-full ${isLiveChatOnline ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`} />
+                <span className={`w-2 h-2 rounded-full ${isLiveChatOnline ? 'bg-purple-400 animate-pulse' : 'bg-gray-500'}`} />
               </button>
 
               <button
@@ -472,7 +472,7 @@ const AdminLayoutNew: React.FC = () => {
               >
                 <Bell className="w-5 h-5" />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                     {unreadNotifications}
                   </span>
                 )}
@@ -482,7 +482,7 @@ const AdminLayoutNew: React.FC = () => {
         </header>
 
         {/* Page Content */}
-        <div className="p-6 min-h-[calc(100vh-73px)] bg-gradient-to-br from-[#1e1a2e] via-[#2a2440] to-[#1a1625]">
+        <div className="p-6 min-h-[calc(100vh-73px)]">
           <Outlet />
         </div>
       </main>

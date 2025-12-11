@@ -28,22 +28,22 @@ import {
 import { enquiriesApi, ClothingEnquiry, EnquiryNote } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 
-// Status configuration
+// Status configuration - purple theme
 const statusConfig: Record<string, { color: string; bgColor: string; label: string; icon: React.ReactNode }> = {
-  new: { color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)', label: 'New', icon: <Inbox className="w-4 h-4" /> },
-  in_progress: { color: '#8b5cf6', bgColor: 'rgba(139, 92, 246, 0.1)', label: 'In Progress', icon: <Clock className="w-4 h-4" /> },
-  quoted: { color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.1)', label: 'Quoted', icon: <FileCheck className="w-4 h-4" /> },
-  approved: { color: '#64a70b', bgColor: 'rgba(100, 167, 11, 0.1)', label: 'Approved', icon: <CheckCircle2 className="w-4 h-4" /> },
-  in_production: { color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.1)', label: 'In Production', icon: <Package className="w-4 h-4" /> },
-  completed: { color: '#22c55e', bgColor: 'rgba(34, 197, 94, 0.1)', label: 'Completed', icon: <CheckCircle2 className="w-4 h-4" /> },
-  cancelled: { color: '#6b7280', bgColor: 'rgba(107, 114, 128, 0.1)', label: 'Cancelled', icon: <XCircle className="w-4 h-4" /> },
+  new: { color: '#a78bfa', bgColor: 'rgba(167, 139, 250, 0.15)', label: 'New', icon: <Inbox className="w-4 h-4" /> },
+  in_progress: { color: '#c4b5fd', bgColor: 'rgba(196, 181, 253, 0.15)', label: 'In Progress', icon: <Clock className="w-4 h-4" /> },
+  quoted: { color: '#e9d5ff', bgColor: 'rgba(233, 213, 255, 0.15)', label: 'Quoted', icon: <FileCheck className="w-4 h-4" /> },
+  approved: { color: '#a78bfa', bgColor: 'rgba(167, 139, 250, 0.15)', label: 'Approved', icon: <CheckCircle2 className="w-4 h-4" /> },
+  in_production: { color: '#8b5cf6', bgColor: 'rgba(139, 92, 246, 0.15)', label: 'In Production', icon: <Package className="w-4 h-4" /> },
+  completed: { color: '#7c3aed', bgColor: 'rgba(124, 58, 237, 0.15)', label: 'Completed', icon: <CheckCircle2 className="w-4 h-4" /> },
+  cancelled: { color: '#6b7280', bgColor: 'rgba(107, 114, 128, 0.15)', label: 'Cancelled', icon: <XCircle className="w-4 h-4" /> },
 };
 
-// Quality tier colors
+// Quality tier colors - purple theme
 const qualityColors: Record<string, { color: string; label: string }> = {
-  excellent: { color: '#22c55e', label: 'Excellent' },
-  good: { color: '#64a70b', label: 'Good' },
-  acceptable: { color: '#f59e0b', label: 'Acceptable' },
+  excellent: { color: '#a78bfa', label: 'Excellent' },
+  good: { color: '#8b5cf6', label: 'Good' },
+  acceptable: { color: '#c4b5fd', label: 'Acceptable' },
   low: { color: '#ef4444', label: 'Low Quality' },
 };
 
@@ -147,8 +147,8 @@ const ClothingEnquiryDetail: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 text-[#64a70b] animate-spin" />
-          <p className="text-gray-600 neuzeit-font">Loading enquiry...</p>
+          <Loader2 className="w-10 h-10 text-purple-400 animate-spin" />
+          <p className="text-gray-400 neuzeit-font">Loading enquiry...</p>
         </div>
       </div>
     );
@@ -158,17 +158,17 @@ const ClothingEnquiryDetail: React.FC = () => {
     return (
       <div className="p-8">
         <button
-          onClick={() => navigate('/admin/clothing-enquiries')}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 neuzeit-font"
+          onClick={() => navigate('/admin/enquiries')}
+          className="flex items-center gap-2 text-gray-400 hover:text-gray-200 mb-6 neuzeit-font"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Enquiries
         </button>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex items-center gap-3">
-          <AlertCircle className="w-6 h-6 text-red-500" />
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 flex items-center gap-3">
+          <AlertCircle className="w-6 h-6 text-red-400" />
           <div>
-            <p className="text-red-700 font-semibold">Error Loading Enquiry</p>
-            <p className="text-red-600 text-sm">{error || 'Enquiry not found'}</p>
+            <p className="text-red-300 font-semibold">Error Loading Enquiry</p>
+            <p className="text-red-400 text-sm">{error || 'Enquiry not found'}</p>
           </div>
         </div>
       </div>
@@ -176,24 +176,24 @@ const ClothingEnquiryDetail: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="p-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate('/admin/clothing-enquiries')}
-            className="p-2 rounded-lg hover:bg-white transition-colors"
+            onClick={() => navigate('/admin/enquiries')}
+            className="p-2 rounded-lg hover:bg-purple-500/10 transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
+            <ArrowLeft className="w-5 h-5 text-gray-400" />
           </button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: "'Hearns', sans-serif" }}>
+              <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "'Hearns', sans-serif" }}>
                 Enquiry Details
               </h1>
               <span className="text-sm font-mono text-gray-500">#{enquiry.id.slice(0, 8)}</span>
             </div>
-            <p className="text-gray-600 text-sm neuzeit-font mt-1">
+            <p className="text-gray-400 text-sm neuzeit-font mt-1">
               Submitted {formatDate(enquiry.createdAt)}
             </p>
           </div>
@@ -217,9 +217,9 @@ const ClothingEnquiryDetail: React.FC = () => {
         {/* Left Column - Enquiry Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Customer Info Card */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-              <h2 className="font-semibold text-gray-900 neuzeit-font flex items-center gap-2">
+          <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
+            <div className="px-5 py-4 border-b border-purple-500/10 bg-[#1e1a2e]/50">
+              <h2 className="font-semibold text-gray-200 neuzeit-font flex items-center gap-2">
                 <User className="w-4 h-4 text-gray-500" />
                 Customer Information
               </h2>
@@ -228,37 +228,37 @@ const ClothingEnquiryDetail: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Name</label>
-                  <p className="text-gray-900 font-medium neuzeit-font mt-1">{enquiry.customerName}</p>
+                  <p className="text-gray-200 font-medium neuzeit-font mt-1">{enquiry.customerName}</p>
                 </div>
                 <div>
                   <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Company</label>
-                  <p className="text-gray-900 neuzeit-font mt-1">{enquiry.companyName || '-'}</p>
+                  <p className="text-gray-300 neuzeit-font mt-1">{enquiry.companyName || '-'}</p>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                    <Mail className="w-4 h-4 text-blue-500" />
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center">
+                    <Mail className="w-4 h-4 text-purple-400" />
                   </div>
                   <div>
                     <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Email</label>
                     <a
                       href={`mailto:${enquiry.customerEmail}`}
-                      className="block text-gray-900 hover:text-[#64a70b] neuzeit-font mt-0.5"
+                      className="block text-gray-200 hover:text-purple-400 neuzeit-font mt-0.5"
                     >
                       {enquiry.customerEmail}
                     </a>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
-                    <Phone className="w-4 h-4 text-green-500" />
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center">
+                    <Phone className="w-4 h-4 text-purple-400" />
                   </div>
                   <div>
                     <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Phone</label>
                     <a
                       href={`tel:${enquiry.customerPhone}`}
-                      className="block text-gray-900 hover:text-[#64a70b] neuzeit-font mt-0.5"
+                      className="block text-gray-200 hover:text-purple-400 neuzeit-font mt-0.5"
                     >
                       {enquiry.customerPhone}
                     </a>
@@ -269,9 +269,9 @@ const ClothingEnquiryDetail: React.FC = () => {
           </div>
 
           {/* Product Info Card */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-              <h2 className="font-semibold text-gray-900 neuzeit-font flex items-center gap-2">
+          <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
+            <div className="px-5 py-4 border-b border-purple-500/10 bg-[#1e1a2e]/50">
+              <h2 className="font-semibold text-gray-200 neuzeit-font flex items-center gap-2">
                 <Package className="w-4 h-4 text-gray-500" />
                 Product Details
               </h2>
@@ -279,7 +279,7 @@ const ClothingEnquiryDetail: React.FC = () => {
             <div className="p-5">
               <div className="flex flex-col md:flex-row gap-5">
                 {/* Product Image */}
-                <div className="w-32 h-32 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                <div className="w-32 h-32 rounded-lg bg-[#1e1a2e] flex items-center justify-center overflow-hidden flex-shrink-0">
                   {enquiry.productImageUrl ? (
                     <img
                       src={enquiry.productImageUrl}
@@ -287,14 +287,14 @@ const ClothingEnquiryDetail: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                    <ImageIcon className="w-8 h-8 text-gray-600" />
                   )}
                 </div>
 
                 {/* Product Details */}
                 <div className="flex-1 space-y-3">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 neuzeit-font">
+                    <h3 className="text-lg font-semibold text-gray-200 neuzeit-font">
                       {enquiry.productName || 'No product specified'}
                     </h3>
                     {enquiry.productStyleCode && (
@@ -308,14 +308,14 @@ const ClothingEnquiryDetail: React.FC = () => {
                   <div className="grid grid-cols-2 gap-3">
                     {enquiry.productColor && (
                       <div className="flex items-center gap-2">
-                        <Palette className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">{enquiry.productColor}</span>
+                        <Palette className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-300">{enquiry.productColor}</span>
                       </div>
                     )}
                     {enquiry.quantity && (
                       <div className="flex items-center gap-2">
-                        <Ruler className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">Qty: {enquiry.quantity}</span>
+                        <Ruler className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-300">Qty: {enquiry.quantity}</span>
                       </div>
                     )}
                   </div>
@@ -327,7 +327,7 @@ const ClothingEnquiryDetail: React.FC = () => {
                         {Object.entries(enquiry.sizes).map(([size, qty]) => (
                           <span
                             key={size}
-                            className="px-2.5 py-1 bg-gray-100 rounded-md text-sm text-gray-700 neuzeit-font"
+                            className="px-2.5 py-1 bg-[#1e1a2e] border border-purple-500/20 rounded-md text-sm text-gray-300 neuzeit-font"
                           >
                             {size}: {qty as number}
                           </span>
@@ -342,9 +342,9 @@ const ClothingEnquiryDetail: React.FC = () => {
 
           {/* Logo Info Card */}
           {(enquiry.logoFileUrl || enquiry.logoQualityTier) && (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-                <h2 className="font-semibold text-gray-900 neuzeit-font flex items-center gap-2">
+            <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
+              <div className="px-5 py-4 border-b border-purple-500/10 bg-[#1e1a2e]/50">
+                <h2 className="font-semibold text-gray-200 neuzeit-font flex items-center gap-2">
                   <ImageIcon className="w-4 h-4 text-gray-500" />
                   Logo Details
                 </h2>
@@ -353,7 +353,7 @@ const ClothingEnquiryDetail: React.FC = () => {
                 <div className="flex flex-col md:flex-row gap-5">
                   {/* Logo Preview */}
                   {enquiry.logoFileUrl && (
-                    <div className="w-40 h-40 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0 bg-gray-50">
+                    <div className="w-40 h-40 rounded-lg border-2 border-dashed border-purple-500/20 flex items-center justify-center overflow-hidden flex-shrink-0 bg-[#1e1a2e]">
                       <img
                         src={enquiry.logoFileUrl}
                         alt="Customer Logo"
@@ -386,7 +386,7 @@ const ClothingEnquiryDetail: React.FC = () => {
                     {(enquiry.logoWidth && enquiry.logoHeight) && (
                       <div>
                         <label className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Dimensions</label>
-                        <p className="text-gray-700 neuzeit-font mt-1">
+                        <p className="text-gray-300 neuzeit-font mt-1">
                           {enquiry.logoWidth} x {enquiry.logoHeight}px
                         </p>
                       </div>
@@ -398,7 +398,7 @@ const ClothingEnquiryDetail: React.FC = () => {
                         href={enquiry.logoFileUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors neuzeit-font"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 hover:bg-purple-500/10 rounded-lg text-sm text-gray-300 transition-colors neuzeit-font"
                       >
                         <Download className="w-4 h-4" />
                         Download Original
@@ -412,15 +412,15 @@ const ClothingEnquiryDetail: React.FC = () => {
 
           {/* Additional Notes from Customer */}
           {enquiry.additionalNotes && (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-                <h2 className="font-semibold text-gray-900 neuzeit-font flex items-center gap-2">
+            <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
+              <div className="px-5 py-4 border-b border-purple-500/10 bg-[#1e1a2e]/50">
+                <h2 className="font-semibold text-gray-200 neuzeit-font flex items-center gap-2">
                   <FileText className="w-4 h-4 text-gray-500" />
                   Customer Notes
                 </h2>
               </div>
               <div className="p-5">
-                <p className="text-gray-700 whitespace-pre-wrap neuzeit-font">{enquiry.additionalNotes}</p>
+                <p className="text-gray-300 whitespace-pre-wrap neuzeit-font">{enquiry.additionalNotes}</p>
               </div>
             </div>
           )}
@@ -429,9 +429,9 @@ const ClothingEnquiryDetail: React.FC = () => {
         {/* Right Column - Actions & Activity */}
         <div className="space-y-6">
           {/* Quick Actions Card */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-              <h2 className="font-semibold text-gray-900 neuzeit-font">Quick Actions</h2>
+          <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
+            <div className="px-5 py-4 border-b border-purple-500/10 bg-[#1e1a2e]/50">
+              <h2 className="font-semibold text-gray-200 neuzeit-font">Quick Actions</h2>
             </div>
             <div className="p-5 space-y-4">
               {/* Status Dropdown */}
@@ -443,7 +443,7 @@ const ClothingEnquiryDetail: React.FC = () => {
                   value={enquiry.status}
                   onChange={(e) => handleStatusChange(e.target.value)}
                   disabled={updatingStatus}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm neuzeit-font focus:outline-none focus:ring-2 focus:ring-[#64a70b]/20 focus:border-[#64a70b] bg-white disabled:opacity-50"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[#1e1a2e] border border-purple-500/20 text-gray-200 text-sm neuzeit-font focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/40 disabled:opacity-50"
                 >
                   {Object.entries(statusConfig).map(([key, { label }]) => (
                     <option key={key} value={key}>{label}</option>
@@ -455,14 +455,14 @@ const ClothingEnquiryDetail: React.FC = () => {
               <div className="space-y-2">
                 <a
                   href={`mailto:${enquiry.customerEmail}?subject=RE: Clothing Enquiry #${enquiry.id.slice(0, 8)}`}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#64a70b] text-white hover:bg-[#578f09] transition-colors neuzeit-font text-sm font-medium"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors neuzeit-font text-sm font-medium"
                 >
                   <Mail className="w-4 h-4" />
                   Email Customer
                 </a>
                 <a
                   href={`tel:${enquiry.customerPhone}`}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors neuzeit-font text-sm"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-purple-500/20 text-gray-300 hover:bg-purple-500/10 transition-colors neuzeit-font text-sm"
                 >
                   <Phone className="w-4 h-4" />
                   Call Customer
@@ -472,9 +472,9 @@ const ClothingEnquiryDetail: React.FC = () => {
           </div>
 
           {/* Activity Timeline */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-              <h2 className="font-semibold text-gray-900 neuzeit-font flex items-center gap-2">
+          <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
+            <div className="px-5 py-4 border-b border-purple-500/10 bg-[#1e1a2e]/50">
+              <h2 className="font-semibold text-gray-200 neuzeit-font flex items-center gap-2">
                 <Clock className="w-4 h-4 text-gray-500" />
                 Activity
               </h2>
@@ -487,12 +487,12 @@ const ClothingEnquiryDetail: React.FC = () => {
                   onChange={(e) => setNewNote(e.target.value)}
                   placeholder="Add a note..."
                   rows={3}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm neuzeit-font focus:outline-none focus:ring-2 focus:ring-[#64a70b]/20 focus:border-[#64a70b] resize-none"
+                  className="w-full px-4 py-3 rounded-lg bg-[#1e1a2e] border border-purple-500/20 text-gray-200 placeholder-gray-500 text-sm neuzeit-font focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500/40 resize-none"
                 />
                 <button
                   onClick={handleAddNote}
                   disabled={!newNote.trim() || submittingNote}
-                  className="mt-2 flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm neuzeit-font transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-2 flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1e1a2e] border border-purple-500/20 hover:bg-purple-500/10 text-gray-300 text-sm neuzeit-font transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submittingNote ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -512,14 +512,14 @@ const ClothingEnquiryDetail: React.FC = () => {
                     <div key={note.id} className="relative pl-6">
                       {/* Timeline line */}
                       {index < notes.length - 1 && (
-                        <div className="absolute left-[7px] top-6 w-0.5 h-full bg-gray-200" />
+                        <div className="absolute left-[7px] top-6 w-0.5 h-full bg-purple-500/20" />
                       )}
                       {/* Timeline dot */}
                       <div
                         className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 ${
                           note.noteType === 'status_change'
-                            ? 'bg-[#64a70b] border-[#64a70b]'
-                            : 'bg-white border-gray-300'
+                            ? 'bg-purple-500 border-purple-500'
+                            : 'bg-[#2a2440] border-purple-500/30'
                         }`}
                       />
                       {/* Content */}
@@ -529,14 +529,14 @@ const ClothingEnquiryDetail: React.FC = () => {
                             {formatDateRelative(note.createdAt)}
                           </span>
                           {note.noteType === 'status_change' && (
-                            <span className="px-1.5 py-0.5 bg-gray-100 rounded text-xs text-gray-600">
+                            <span className="px-1.5 py-0.5 bg-purple-500/15 rounded text-xs text-purple-300">
                               Status Change
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-700 neuzeit-font">{note.content}</p>
+                        <p className="text-sm text-gray-300 neuzeit-font">{note.content}</p>
                         {note.author?.name && (
-                          <p className="text-xs text-gray-400 mt-1">by {note.author.name}</p>
+                          <p className="text-xs text-gray-500 mt-1">by {note.author.name}</p>
                         )}
                       </div>
                     </div>
@@ -547,22 +547,22 @@ const ClothingEnquiryDetail: React.FC = () => {
           </div>
 
           {/* Enquiry Meta */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
-              <h2 className="font-semibold text-gray-900 neuzeit-font">Enquiry Info</h2>
+          <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
+            <div className="px-5 py-4 border-b border-purple-500/10 bg-[#1e1a2e]/50">
+              <h2 className="font-semibold text-gray-200 neuzeit-font">Enquiry Info</h2>
             </div>
             <div className="p-5 space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Created</span>
-                <span className="text-gray-900">{formatDate(enquiry.createdAt)}</span>
+                <span className="text-gray-300">{formatDate(enquiry.createdAt)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Last Updated</span>
-                <span className="text-gray-900">{formatDate(enquiry.updatedAt)}</span>
+                <span className="text-gray-300">{formatDate(enquiry.updatedAt)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">Enquiry ID</span>
-                <span className="text-gray-900 font-mono text-xs">{enquiry.id}</span>
+                <span className="text-gray-300 font-mono text-xs">{enquiry.id}</span>
               </div>
             </div>
           </div>

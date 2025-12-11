@@ -576,8 +576,11 @@ const ShopPageEditor: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+      <div className="flex items-center justify-center h-96">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -587,7 +590,7 @@ const ShopPageEditor: React.FC = () => {
   const rightTiles = bentoTiles.filter(t => t.grid_section === 'right' && t.is_active).sort((a, b) => a.grid_position - b.grid_position);
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
+    <div className="p-8">
       {/* Custom styles for react-grid-layout */}
       <style>{`
         .react-grid-item {
@@ -619,13 +622,13 @@ const ShopPageEditor: React.FC = () => {
           bottom: 3px;
           width: 8px;
           height: 8px;
-          border-right: 2px solid rgba(255, 255, 255, 0.6);
-          border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+          border-right: 2px solid rgba(167, 139, 250, 0.6);
+          border-bottom: 2px solid rgba(167, 139, 250, 0.6);
           cursor: se-resize;
         }
         .react-grid-item:hover > .react-resizable-handle::after {
-          border-right: 2px solid rgba(255, 255, 255, 0.9);
-          border-bottom: 2px solid rgba(255, 255, 255, 0.9);
+          border-right: 2px solid rgba(167, 139, 250, 0.9);
+          border-bottom: 2px solid rgba(167, 139, 250, 0.9);
         }
         .react-resizable-handle-se {
           bottom: 0;
@@ -635,33 +638,31 @@ const ShopPageEditor: React.FC = () => {
       `}</style>
 
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
-        <div className="px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-black text-gray-900">Shop Page Editor</h1>
-              <p className="text-gray-600 mt-1">Edit your shop page layout in real-time</p>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPreviewMode(!previewMode)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all"
-              >
-                {previewMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                {previewMode ? 'Edit Mode' : 'Preview Mode'}
-              </button>
-            </div>
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "'Hearns', sans-serif" }}>Shop Page Editor</h1>
+            <p className="text-gray-400 mt-1">Edit your shop page layout in real-time</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPreviewMode(!previewMode)}
+              className="flex items-center gap-2 px-4 py-2 bg-[#2a2440]/50 border border-purple-500/20 hover:bg-purple-500/10 text-gray-300 rounded-lg transition-all"
+            >
+              {previewMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+              {previewMode ? 'Edit Mode' : 'Preview Mode'}
+            </button>
           </div>
         </div>
       </div>
 
       {/* Live Page Preview/Editor */}
-      <div className="max-w-[1400px] mx-auto p-6">
+      <div className="space-y-8">
 
         {/* ADVERTISEMENT CAROUSEL SECTION */}
-        <div className="mb-8">
+        <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Advertisement Carousel</h2>
+            <h2 className="text-xl font-bold text-white">Advertisement Carousel</h2>
             {!previewMode && (
               <button
                 onClick={() => {
@@ -669,7 +670,7 @@ const ShopPageEditor: React.FC = () => {
                   setEditingSlide(null);
                   setShowSlideModal(true);
                 }}
-                className="flex items-center gap-2 px-3 py-1.5 bg-[#78BE20] hover:bg-[#6da71d] text-white text-sm font-semibold rounded-lg transition-all"
+                className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg transition-all"
               >
                 <Plus className="w-4 h-4" />
                 Add Slide
@@ -678,13 +679,13 @@ const ShopPageEditor: React.FC = () => {
           </div>
 
           {/* Carousel Preview */}
-          <div className="bg-white rounded-xl overflow-hidden shadow-md">
+          <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
             {activeSlides.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                 {activeSlides.map((slide) => (
                   <div
                     key={slide.id}
-                    className="relative group bg-gray-100 rounded-lg overflow-hidden aspect-video"
+                    className="relative group bg-[#1e1a2e] rounded-lg overflow-hidden aspect-video"
                   >
                     <img
                       src={slide.image_url}
@@ -698,14 +699,14 @@ const ShopPageEditor: React.FC = () => {
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                         <button
                           onClick={() => openEditSlide(slide)}
-                          className="px-4 py-2 bg-white hover:bg-gray-100 text-gray-900 rounded-lg transition-all flex items-center gap-2"
+                          className="px-4 py-2 bg-[#2a2440] hover:bg-purple-500/20 text-gray-200 rounded-lg transition-all flex items-center gap-2 border border-purple-500/20"
                         >
                           <Edit2 className="w-4 h-4" />
                           Edit
                         </button>
                         <button
                           onClick={() => handleDeleteSlide(slide.id)}
-                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all flex items-center gap-2"
+                          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all flex items-center gap-2"
                         >
                           <Trash2 className="w-4 h-4" />
                           Delete
@@ -717,8 +718,8 @@ const ShopPageEditor: React.FC = () => {
               </div>
             ) : (
               <div className="p-12 text-center">
-                <Image className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-600 mb-4">No carousel slides yet</p>
+                <Image className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-400 mb-4">No carousel slides yet</p>
                 {!previewMode && (
                   <button
                     onClick={() => {
@@ -726,7 +727,7 @@ const ShopPageEditor: React.FC = () => {
                       setEditingSlide(null);
                       setShowSlideModal(true);
                     }}
-                    className="px-4 py-2 bg-[#78BE20] hover:bg-[#6da71d] text-white rounded-lg transition-all"
+                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all"
                   >
                     Add First Slide
                   </button>
@@ -737,41 +738,41 @@ const ShopPageEditor: React.FC = () => {
         </div>
 
         {/* HERO GRID IMAGES SECTION */}
-        <div className="mb-8">
+        <div>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Hero Grid Images</h2>
+              <h2 className="text-xl font-bold text-white">Hero Grid Images</h2>
               <p className="text-sm text-gray-500 mt-1">
-                Animated background grid on shop hero section (21 slots: 3 rows × 7 columns)
+                Animated background grid on shop hero section (21 slots: 3 rows x 7 columns)
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 p-6">
             {/* Upload Area */}
             <div
               {...heroGridDropzone.getRootProps()}
               className={`border-2 border-dashed rounded-xl p-6 mb-6 text-center cursor-pointer transition-colors ${
                 heroGridDropzone.isDragActive
-                  ? 'border-[#78BE20] bg-[#78BE20]/10'
-                  : 'border-gray-300 hover:border-gray-400'
+                  ? 'border-purple-500 bg-purple-500/10'
+                  : 'border-purple-500/20 hover:border-purple-500/40'
               }`}
             >
               <input {...heroGridDropzone.getInputProps()} />
-              <Upload className="w-10 h-10 mx-auto mb-3 text-gray-400" />
-              <p className="text-gray-600 font-medium mb-1">
+              <Upload className="w-10 h-10 mx-auto mb-3 text-gray-500" />
+              <p className="text-gray-300 font-medium mb-1">
                 {uploadingHeroGrid ? 'Uploading...' : 'Drop images here or click to upload'}
               </p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-500 text-sm">
                 Supports: PNG, JPG, WEBP, GIF (multiple files)
               </p>
             </div>
 
             {/* Drag hint */}
             {heroGridImages.length > 1 && !previewMode && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm text-blue-800">
-                <p className="font-semibold">💡 Tip:</p>
-                <p className="text-blue-700">Drag and drop images to reorder them in the grid</p>
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 mb-4 text-sm text-purple-300">
+                <p className="font-semibold">Tip:</p>
+                <p className="text-purple-400">Drag and drop images to reorder them in the grid</p>
               </div>
             )}
 
@@ -787,7 +788,7 @@ const ShopPageEditor: React.FC = () => {
                   onDragOver={handleHeroGridDragOver}
                   onDrop={(e) => handleHeroGridDrop(e, index)}
                   onDragEnd={handleHeroGridDragEnd}
-                  className={`relative group bg-gray-100 rounded-lg overflow-hidden aspect-square transition-all ${
+                  className={`relative group bg-[#1e1a2e] rounded-lg overflow-hidden aspect-square transition-all ${
                     !previewMode ? 'cursor-move' : ''
                   } ${
                     draggedImageIndex === index ? 'opacity-50 scale-95' : ''
@@ -813,7 +814,7 @@ const ShopPageEditor: React.FC = () => {
                         onClick={() => handleToggleHeroGridImage(image)}
                         className={`p-1.5 rounded-full transition-colors ${
                           image.is_active
-                            ? 'bg-[#78BE20] text-white'
+                            ? 'bg-purple-500 text-white'
                             : 'bg-gray-700 text-gray-300'
                         }`}
                         title={image.is_active ? 'Active' : 'Inactive'}
@@ -845,20 +846,20 @@ const ShopPageEditor: React.FC = () => {
               {Array.from({ length: Math.max(0, 21 - heroGridImages.length) }).map((_, index) => (
                 <div
                   key={`empty-${index}`}
-                  className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center border-2 border-dashed border-gray-300"
+                  className="bg-[#1e1a2e] rounded-lg aspect-square flex items-center justify-center border-2 border-dashed border-purple-500/20"
                 >
-                  <Plus className="w-6 h-6 text-gray-400" />
+                  <Plus className="w-6 h-6 text-gray-600" />
                 </div>
               ))}
             </div>
 
             {/* Stats */}
-            <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between text-sm text-gray-600">
+            <div className="mt-4 pt-4 border-t border-purple-500/10 flex items-center justify-between text-sm text-gray-400">
               <div>
-                <strong>{heroGridImages.length}</strong> / 21 slots filled
+                <strong className="text-gray-300">{heroGridImages.length}</strong> / 21 slots filled
               </div>
               <div>
-                <strong>{heroGridImages.filter(img => img.is_active).length}</strong> active
+                <strong className="text-gray-300">{heroGridImages.filter(img => img.is_active).length}</strong> active
               </div>
             </div>
           </div>
@@ -867,16 +868,16 @@ const ShopPageEditor: React.FC = () => {
         {/* BENTO GRID SECTION - HIDDEN BUT KEEPING LOGIC INTACT */}
         {false && <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Bento Grid Categories</h2>
+            <h2 className="text-xl font-bold text-white">Bento Grid Categories</h2>
             <div className="flex gap-2">
               {!previewMode && (
-                <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+                <div className="flex gap-1 bg-[#1e1a2e] rounded-lg p-1">
                   <button
                     onClick={() => setLayoutMode(false)}
                     className={`px-3 py-1.5 text-sm font-semibold rounded transition-all ${
                       !layoutMode
-                        ? 'bg-white text-gray-900 shadow'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-purple-500/20 text-purple-300'
+                        : 'text-gray-400 hover:text-gray-200'
                     }`}
                   >
                     Content Mode
@@ -885,8 +886,8 @@ const ShopPageEditor: React.FC = () => {
                     onClick={() => setLayoutMode(true)}
                     className={`px-3 py-1.5 text-sm font-semibold rounded transition-all ${
                       layoutMode
-                        ? 'bg-white text-gray-900 shadow'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-purple-500/20 text-purple-300'
+                        : 'text-gray-400 hover:text-gray-200'
                     }`}
                   >
                     Layout Mode
@@ -904,7 +905,7 @@ const ShopPageEditor: React.FC = () => {
                   </button>
                   <button
                     onClick={handleSaveLayout}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-all animate-pulse"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg transition-all animate-pulse"
                   >
                     <Save className="w-4 h-4" />
                     Save Layout
@@ -918,7 +919,7 @@ const ShopPageEditor: React.FC = () => {
                     setEditingTile(null);
                     setShowTileModal(true);
                   }}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-[#78BE20] hover:bg-[#6da71d] text-white text-sm font-semibold rounded-lg transition-all"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg transition-all"
                 >
                   <Plus className="w-4 h-4" />
                   Add Tile
@@ -928,27 +929,27 @@ const ShopPageEditor: React.FC = () => {
           </div>
 
           {!previewMode && layoutMode && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm text-blue-800">
-              <p className="font-semibold">🎨 Layout Mode Active:</p>
-              <p className="text-blue-700">Drag tiles to reposition them or use the resize handle in the bottom-right corner to change their size.</p>
+            <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 mb-4 text-sm text-purple-300">
+              <p className="font-semibold">Layout Mode Active:</p>
+              <p className="text-purple-400">Drag tiles to reposition them or use the resize handle in the bottom-right corner to change their size.</p>
             </div>
           )}
           {!previewMode && !layoutMode && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 text-sm text-green-800">
-              <p className="font-semibold">✏️ Content Mode Active:</p>
-              <p className="text-green-700">Click Edit on any tile to change its image, title, and link. Use Layout Mode to rearrange or resize tiles.</p>
+            <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 mb-4 text-sm text-purple-300">
+              <p className="font-semibold">Content Mode Active:</p>
+              <p className="text-purple-400">Click Edit on any tile to change its image, title, and link. Use Layout Mode to rearrange or resize tiles.</p>
             </div>
           )}
 
           {/* Bento Grid Layout */}
-          <div className="bg-[#2a2a2a] rounded-xl p-6">
+          <div className="bg-[#1e1a2e] rounded-xl p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
               {/* LEFT GRID */}
               <div>
-                <h3 className="text-white text-sm font-semibold mb-3 opacity-70">Left Grid (4 columns)</h3>
+                <h3 className="text-gray-400 text-sm font-semibold mb-3">Left Grid (4 columns)</h3>
                 {leftTiles.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
+                  <div className="text-center py-12 text-gray-500">
                     No left grid tiles yet
                   </div>
                 ) : (
@@ -984,7 +985,7 @@ const ShopPageEditor: React.FC = () => {
 
                       return (
                       <div key={tile.id} className="relative group">
-                        <div className="w-full h-full bg-gray-900 rounded-lg overflow-hidden">
+                        <div className="w-full h-full bg-[#2a2440] rounded-lg overflow-hidden">
                           <img
                             src={tile.image_url}
                             alt={tile.title}
@@ -997,14 +998,14 @@ const ShopPageEditor: React.FC = () => {
                             <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-10">
                               <button
                                 onClick={() => openEditTile(tile)}
-                                className="px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-900 rounded text-sm transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#2a2440] hover:bg-purple-500/20 text-gray-200 rounded text-sm transition-all flex items-center gap-1 border border-purple-500/20"
                               >
                                 <Edit2 className="w-3 h-3" />
                                 Edit
                               </button>
                               <button
                                 onClick={() => handleDeleteTile(tile.id)}
-                                className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded text-sm transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-all flex items-center gap-1"
                               >
                                 <Trash2 className="w-3 h-3" />
                                 Delete
@@ -1012,8 +1013,8 @@ const ShopPageEditor: React.FC = () => {
                             </div>
                           )}
                           {layoutMode && (
-                            <div className="absolute top-2 left-2 bg-white/20 backdrop-blur text-white px-2 py-0.5 rounded text-xs z-10">
-                              {tile.span_cols}×{tile.span_rows}
+                            <div className="absolute top-2 left-2 bg-purple-500/30 backdrop-blur text-white px-2 py-0.5 rounded text-xs z-10">
+                              {tile.span_cols}x{tile.span_rows}
                             </div>
                           )}
                         </div>
@@ -1026,9 +1027,9 @@ const ShopPageEditor: React.FC = () => {
 
               {/* RIGHT GRID */}
               <div>
-                <h3 className="text-white text-sm font-semibold mb-3 opacity-70">Right Grid (4 columns)</h3>
+                <h3 className="text-gray-400 text-sm font-semibold mb-3">Right Grid (4 columns)</h3>
                 {rightTiles.length === 0 ? (
-                  <div className="text-center py-12 text-gray-400">
+                  <div className="text-center py-12 text-gray-500">
                     No right grid tiles yet
                   </div>
                 ) : (
@@ -1064,7 +1065,7 @@ const ShopPageEditor: React.FC = () => {
 
                       return (
                       <div key={tile.id} className="relative group">
-                        <div className="w-full h-full bg-gray-900 rounded-lg overflow-hidden">
+                        <div className="w-full h-full bg-[#2a2440] rounded-lg overflow-hidden">
                           <img
                             src={tile.image_url}
                             alt={tile.title}
@@ -1077,14 +1078,14 @@ const ShopPageEditor: React.FC = () => {
                             <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-10">
                               <button
                                 onClick={() => openEditTile(tile)}
-                                className="px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-900 rounded text-sm transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-[#2a2440] hover:bg-purple-500/20 text-gray-200 rounded text-sm transition-all flex items-center gap-1 border border-purple-500/20"
                               >
                                 <Edit2 className="w-3 h-3" />
                                 Edit
                               </button>
                               <button
                                 onClick={() => handleDeleteTile(tile.id)}
-                                className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded text-sm transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-all flex items-center gap-1"
                               >
                                 <Trash2 className="w-3 h-3" />
                                 Delete
@@ -1092,8 +1093,8 @@ const ShopPageEditor: React.FC = () => {
                             </div>
                           )}
                           {layoutMode && (
-                            <div className="absolute top-2 left-2 bg-white/20 backdrop-blur text-white px-2 py-0.5 rounded text-xs z-10">
-                              {tile.span_cols}×{tile.span_rows}
+                            <div className="absolute top-2 left-2 bg-purple-500/30 backdrop-blur text-white px-2 py-0.5 rounded text-xs z-10">
+                              {tile.span_cols}x{tile.span_rows}
                             </div>
                           )}
                         </div>
@@ -1108,36 +1109,36 @@ const ShopPageEditor: React.FC = () => {
         </div>}
 
         {/* IMAGE ACCORDION SECTION */}
-        <div className="mb-8">
+        <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Image Accordion</h2>
+            <h2 className="text-xl font-bold text-white">Image Accordion</h2>
             <button
               onClick={() => {
                 resetAccordionForm();
                 setEditingAccordionItem(null);
                 setShowAccordionModal(true);
               }}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#78BE20] hover:bg-[#6da71d] text-white text-sm font-semibold rounded-lg transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg transition-all"
             >
               <Plus className="w-4 h-4" />
               Add Item
             </button>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
             {accordionItems.length === 0 ? (
-              <div className="text-center py-12 text-gray-400">
+              <div className="text-center py-12 text-gray-500">
                 No accordion items yet. Click "Add Item" to create one.
               </div>
             ) : (
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-purple-500/10">
                 {accordionItems
                   .sort((a, b) => a.order_position - b.order_position)
                   .map((item, index) => (
-                  <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <div key={item.id} className="p-4 hover:bg-purple-500/5 transition-colors">
                     <div className="flex items-center gap-4">
                       {/* Preview Image */}
-                      <div className="w-24 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                      <div className="w-24 h-16 rounded-lg overflow-hidden bg-[#1e1a2e] flex-shrink-0">
                         <img
                           src={item.image_url}
                           alt={item.title}
@@ -1147,12 +1148,12 @@ const ShopPageEditor: React.FC = () => {
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 truncate">{item.title}</h3>
-                        <p className="text-sm text-gray-600 truncate">{item.description}</p>
+                        <h3 className="font-semibold text-gray-200 truncate">{item.title}</h3>
+                        <p className="text-sm text-gray-400 truncate">{item.description}</p>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="text-xs text-gray-500">Position: {item.order_position}</span>
                           {item.link_url && (
-                            <span className="text-xs text-blue-600 truncate max-w-xs">
+                            <span className="text-xs text-purple-400 truncate max-w-xs">
                               → {item.link_url}
                             </span>
                           )}
@@ -1165,8 +1166,8 @@ const ShopPageEditor: React.FC = () => {
                           onClick={() => handleToggleAccordionItem(item)}
                           className={`p-2 rounded transition-colors ${
                             item.is_active
-                              ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                              : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                              ? 'bg-purple-500/15 text-purple-400 hover:bg-purple-500/25'
+                              : 'bg-gray-500/15 text-gray-500 hover:bg-gray-500/25'
                           }`}
                           title={item.is_active ? 'Active' : 'Inactive'}
                         >
@@ -1174,13 +1175,13 @@ const ShopPageEditor: React.FC = () => {
                         </button>
                         <button
                           onClick={() => openEditAccordionItem(item)}
-                          className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
+                          className="p-2 bg-purple-500/10 hover:bg-purple-500/20 text-gray-300 rounded transition-colors"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteAccordionItem(item.id)}
-                          className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded transition-colors"
+                          className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -1193,20 +1194,20 @@ const ShopPageEditor: React.FC = () => {
           </div>
 
           {/* Summary */}
-          <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
+          <div className="mt-3 flex items-center justify-between text-sm text-gray-500">
             <div>
-              Total: <strong>{accordionItems.length}</strong> items
+              Total: <strong className="text-gray-300">{accordionItems.length}</strong> items
             </div>
             <div>
-              <strong>{accordionItems.filter(item => item.is_active).length}</strong> active
+              <strong className="text-gray-300">{accordionItems.filter(item => item.is_active).length}</strong> active
             </div>
           </div>
         </div>
 
         {/* Info Note */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-          <p className="font-semibold mb-1">💡 How to use this editor:</p>
-          <ul className="list-disc list-inside space-y-1 text-blue-700">
+        <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4 text-sm text-purple-300">
+          <p className="font-semibold mb-1">How to use this editor:</p>
+          <ul className="list-disc list-inside space-y-1 text-purple-400">
             <li>Hover over any element to see edit/delete buttons</li>
             <li>Click "Add Slide" or "Add Tile" to create new content</li>
             <li>Toggle "Preview Mode" to see how it looks without edit buttons</li>
@@ -1217,10 +1218,10 @@ const ShopPageEditor: React.FC = () => {
 
       {/* SLIDE MODAL */}
       {showSlideModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
-              <h3 className="text-xl font-bold text-gray-900">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#2a2440] border border-purple-500/20 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-purple-500/10 flex items-center justify-between sticky top-0 bg-[#2a2440]">
+              <h3 className="text-xl font-bold text-white">
                 {editingSlide ? 'Edit Slide' : 'Add New Slide'}
               </h3>
               <button
@@ -1228,7 +1229,7 @@ const ShopPageEditor: React.FC = () => {
                   setShowSlideModal(false);
                   setEditingSlide(null);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-500 hover:text-gray-300"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -1237,7 +1238,7 @@ const ShopPageEditor: React.FC = () => {
             <div className="p-6 space-y-4">
               {/* Image Upload Dropzone */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Image *
                 </label>
 
@@ -1246,15 +1247,15 @@ const ShopPageEditor: React.FC = () => {
                   {...slideDropzone.getRootProps()}
                   className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
                     slideDropzone.isDragActive
-                      ? 'border-[#78BE20] bg-green-50'
-                      : 'border-gray-300 hover:border-[#78BE20] hover:bg-gray-50'
+                      ? 'border-purple-500 bg-purple-500/10'
+                      : 'border-purple-500/20 hover:border-purple-500/40'
                   }`}
                 >
                   <input {...slideDropzone.getInputProps()} />
                   {uploadingSlide ? (
                     <div className="flex flex-col items-center">
-                      <Upload className="w-12 h-12 text-[#78BE20] mb-2 animate-pulse" />
-                      <p className="text-sm text-gray-600">Uploading...</p>
+                      <Upload className="w-12 h-12 text-purple-400 mb-2 animate-pulse" />
+                      <p className="text-sm text-gray-400">Uploading...</p>
                     </div>
                   ) : slideForm.image_url ? (
                     <div className="flex flex-col items-center">
@@ -1263,14 +1264,14 @@ const ShopPageEditor: React.FC = () => {
                         alt="Preview"
                         className="max-h-40 rounded-lg mb-3"
                       />
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-400">
                         Drag and drop to replace, or click to browse
                       </p>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center">
-                      <Upload className="w-12 h-12 text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-600 mb-1">
+                      <Upload className="w-12 h-12 text-gray-500 mb-2" />
+                      <p className="text-sm text-gray-400 mb-1">
                         Drag and drop an image here, or click to browse
                       </p>
                       <p className="text-xs text-gray-500">
@@ -1282,7 +1283,7 @@ const ShopPageEditor: React.FC = () => {
 
                 {/* Manual URL Input */}
                 <div className="mt-3">
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-gray-500 mb-1">
                     Or paste image URL:
                   </label>
                   <input
@@ -1290,13 +1291,13 @@ const ShopPageEditor: React.FC = () => {
                     value={slideForm.image_url}
                     onChange={(e) => setSlideForm({ ...slideForm, image_url: e.target.value })}
                     placeholder="https://example.com/image.jpg"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                    className="w-full px-3 py-2 text-sm bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Alt Text *
                 </label>
                 <input
@@ -1304,12 +1305,12 @@ const ShopPageEditor: React.FC = () => {
                   value={slideForm.alt_text}
                   onChange={(e) => setSlideForm({ ...slideForm, alt_text: e.target.value })}
                   placeholder="Description of the slide"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Link URL (optional)
                 </label>
                 <input
@@ -1317,12 +1318,12 @@ const ShopPageEditor: React.FC = () => {
                   value={slideForm.link_url}
                   onChange={(e) => setSlideForm({ ...slideForm, link_url: e.target.value })}
                   placeholder="/products or https://example.com"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Order Position
                 </label>
                 <input
@@ -1330,7 +1331,7 @@ const ShopPageEditor: React.FC = () => {
                   min="1"
                   value={slideForm.order_position}
                   onChange={(e) => setSlideForm({ ...slideForm, order_position: parseInt(e.target.value) })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                 />
               </div>
 
@@ -1340,27 +1341,27 @@ const ShopPageEditor: React.FC = () => {
                   id="slide-active"
                   checked={slideForm.is_active}
                   onChange={(e) => setSlideForm({ ...slideForm, is_active: e.target.checked })}
-                  className="w-4 h-4 text-[#78BE20] rounded focus:ring-[#78BE20]"
+                  className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 bg-[#1e1a2e] border-purple-500/20"
                 />
-                <label htmlFor="slide-active" className="text-sm font-medium text-gray-700">
+                <label htmlFor="slide-active" className="text-sm font-medium text-gray-300">
                   Active (show on website)
                 </label>
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex gap-3">
+            <div className="p-6 border-t border-purple-500/10 flex gap-3 bg-[#1e1a2e]/50">
               <button
                 onClick={() => {
                   setShowSlideModal(false);
                   setEditingSlide(null);
                 }}
-                className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all"
+                className="flex-1 px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 hover:bg-purple-500/10 text-gray-300 rounded-lg transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={editingSlide ? handleUpdateSlide : handleCreateSlide}
-                className="flex-1 px-4 py-2 bg-[#78BE20] hover:bg-[#6da71d] text-white rounded-lg transition-all"
+                className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all"
               >
                 {editingSlide ? 'Update' : 'Create'}
               </button>
@@ -1371,10 +1372,10 @@ const ShopPageEditor: React.FC = () => {
 
       {/* TILE MODAL */}
       {showTileModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
-              <h3 className="text-xl font-bold text-gray-900">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#2a2440] border border-purple-500/20 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-purple-500/10 flex items-center justify-between sticky top-0 bg-[#2a2440]">
+              <h3 className="text-xl font-bold text-white">
                 {editingTile ? 'Edit Tile' : 'Add New Tile'}
               </h3>
               <button
@@ -1382,7 +1383,7 @@ const ShopPageEditor: React.FC = () => {
                   setShowTileModal(false);
                   setEditingTile(null);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-500 hover:text-gray-300"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -1390,7 +1391,7 @@ const ShopPageEditor: React.FC = () => {
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Title *
                 </label>
                 <input
@@ -1398,13 +1399,13 @@ const ShopPageEditor: React.FC = () => {
                   value={tileForm.title}
                   onChange={(e) => setTileForm({ ...tileForm, title: e.target.value })}
                   placeholder="TOPS"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                 />
               </div>
 
               {/* Image Upload Dropzone */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Image *
                 </label>
 
@@ -1413,15 +1414,15 @@ const ShopPageEditor: React.FC = () => {
                   {...tileDropzone.getRootProps()}
                   className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
                     tileDropzone.isDragActive
-                      ? 'border-[#78BE20] bg-green-50'
-                      : 'border-gray-300 hover:border-[#78BE20] hover:bg-gray-50'
+                      ? 'border-purple-500 bg-purple-500/10'
+                      : 'border-purple-500/20 hover:border-purple-500/40'
                   }`}
                 >
                   <input {...tileDropzone.getInputProps()} />
                   {uploadingTile ? (
                     <div className="flex flex-col items-center">
-                      <Upload className="w-12 h-12 text-[#78BE20] mb-2 animate-pulse" />
-                      <p className="text-sm text-gray-600">Uploading...</p>
+                      <Upload className="w-12 h-12 text-purple-400 mb-2 animate-pulse" />
+                      <p className="text-sm text-gray-400">Uploading...</p>
                     </div>
                   ) : tileForm.image_url ? (
                     <div className="flex flex-col items-center">
@@ -1430,14 +1431,14 @@ const ShopPageEditor: React.FC = () => {
                         alt="Preview"
                         className="max-h-40 rounded-lg mb-3"
                       />
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-400">
                         Drag and drop to replace, or click to browse
                       </p>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center">
-                      <Upload className="w-12 h-12 text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-600 mb-1">
+                      <Upload className="w-12 h-12 text-gray-500 mb-2" />
+                      <p className="text-sm text-gray-400 mb-1">
                         Drag and drop an image here, or click to browse
                       </p>
                       <p className="text-xs text-gray-500">
@@ -1449,7 +1450,7 @@ const ShopPageEditor: React.FC = () => {
 
                 {/* Manual URL Input */}
                 <div className="mt-3">
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-gray-500 mb-1">
                     Or paste image URL:
                   </label>
                   <input
@@ -1457,13 +1458,13 @@ const ShopPageEditor: React.FC = () => {
                     value={tileForm.image_url}
                     onChange={(e) => setTileForm({ ...tileForm, image_url: e.target.value })}
                     placeholder="https://example.com/image.jpg"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                    className="w-full px-3 py-2 text-sm bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Link URL *
                 </label>
                 <input
@@ -1471,38 +1472,38 @@ const ShopPageEditor: React.FC = () => {
                   value={tileForm.link_url}
                   onChange={(e) => setTileForm({ ...tileForm, link_url: e.target.value })}
                   placeholder="/products?type=T-Shirts"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Grid Section
                 </label>
                 <select
                   value={tileForm.grid_section}
                   onChange={(e) => setTileForm({ ...tileForm, grid_section: e.target.value as 'left' | 'right' })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                 >
                   <option value="left">Left Grid</option>
                   <option value="right">Right Grid</option>
                 </select>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-sm text-blue-800">
-                  💡 <strong>Tip:</strong> Use Layout Mode (toggle button above) to drag and arrange tiles on the grid.
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3">
+                <p className="text-sm text-purple-300">
+                  <strong>Tip:</strong> Use Layout Mode (toggle button above) to drag and arrange tiles on the grid.
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Text Size
                 </label>
                 <select
                   value={tileForm.font_size}
                   onChange={(e) => setTileForm({ ...tileForm, font_size: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                 >
                   <option value="text-sm">Small</option>
                   <option value="text-base">Medium</option>
@@ -1517,13 +1518,13 @@ const ShopPageEditor: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Text Position
                 </label>
                 <select
                   value={tileForm.font_position}
                   onChange={(e) => setTileForm({ ...tileForm, font_position: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                 >
                   <option value="top-left">Top Left</option>
                   <option value="top-center">Top Center</option>
@@ -1540,9 +1541,9 @@ const ShopPageEditor: React.FC = () => {
                 </p>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
-                <p className="font-semibold mb-1">💡 Tip:</p>
-                <p className="text-blue-700">Use <strong>Layout Mode</strong> to drag and resize tiles visually instead of manually entering dimensions.</p>
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 text-sm text-purple-300">
+                <p className="font-semibold mb-1">Tip:</p>
+                <p className="text-purple-400">Use <strong>Layout Mode</strong> to drag and resize tiles visually instead of manually entering dimensions.</p>
               </div>
 
               <div className="flex items-center gap-2">
@@ -1551,27 +1552,27 @@ const ShopPageEditor: React.FC = () => {
                   id="tile-active"
                   checked={tileForm.is_active}
                   onChange={(e) => setTileForm({ ...tileForm, is_active: e.target.checked })}
-                  className="w-4 h-4 text-[#78BE20] rounded focus:ring-[#78BE20]"
+                  className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 bg-[#1e1a2e] border-purple-500/20"
                 />
-                <label htmlFor="tile-active" className="text-sm font-medium text-gray-700">
+                <label htmlFor="tile-active" className="text-sm font-medium text-gray-300">
                   Active (show on website)
                 </label>
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex gap-3">
+            <div className="p-6 border-t border-purple-500/10 flex gap-3 bg-[#1e1a2e]/50">
               <button
                 onClick={() => {
                   setShowTileModal(false);
                   setEditingTile(null);
                 }}
-                className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all"
+                className="flex-1 px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 hover:bg-purple-500/10 text-gray-300 rounded-lg transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={editingTile ? handleUpdateTile : handleCreateTile}
-                className="flex-1 px-4 py-2 bg-[#78BE20] hover:bg-[#6da71d] text-white rounded-lg transition-all"
+                className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all"
               >
                 {editingTile ? 'Update' : 'Create'}
               </button>
@@ -1582,10 +1583,10 @@ const ShopPageEditor: React.FC = () => {
 
       {/* ACCORDION MODAL */}
       {showAccordionModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
-              <h3 className="text-xl font-bold text-gray-900">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#2a2440] border border-purple-500/20 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-purple-500/10 flex items-center justify-between sticky top-0 bg-[#2a2440]">
+              <h3 className="text-xl font-bold text-white">
                 {editingAccordionItem ? 'Edit Accordion Item' : 'Add New Accordion Item'}
               </h3>
               <button
@@ -1593,7 +1594,7 @@ const ShopPageEditor: React.FC = () => {
                   setShowAccordionModal(false);
                   setEditingAccordionItem(null);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-500 hover:text-gray-300"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -1602,20 +1603,20 @@ const ShopPageEditor: React.FC = () => {
             <div className="p-6 space-y-4">
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Image *
                 </label>
                 <div
                   {...accordionDropzone.getRootProps()}
                   className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
                     accordionDropzone.isDragActive
-                      ? 'border-[#78BE20] bg-green-50'
-                      : 'border-gray-300 hover:border-gray-400'
+                      ? 'border-purple-500 bg-purple-500/10'
+                      : 'border-purple-500/20 hover:border-purple-500/40'
                   }`}
                 >
                   <input {...accordionDropzone.getInputProps()} />
                   {uploadingAccordion ? (
-                    <div className="text-gray-400">Uploading...</div>
+                    <div className="text-gray-500">Uploading...</div>
                   ) : accordionForm.image_url ? (
                     <div className="space-y-2">
                       <img
@@ -1623,12 +1624,12 @@ const ShopPageEditor: React.FC = () => {
                         alt="Preview"
                         className="mx-auto h-32 rounded object-cover"
                       />
-                      <p className="text-sm text-gray-600">Click or drag to replace</p>
+                      <p className="text-sm text-gray-400">Click or drag to replace</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Upload className="w-10 h-10 mx-auto text-gray-400" />
-                      <p className="text-sm text-gray-600">
+                      <Upload className="w-10 h-10 mx-auto text-gray-500" />
+                      <p className="text-sm text-gray-400">
                         Click or drag image here
                       </p>
                     </div>
@@ -1638,7 +1639,7 @@ const ShopPageEditor: React.FC = () => {
 
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Title *
                 </label>
                 <input
@@ -1647,14 +1648,14 @@ const ShopPageEditor: React.FC = () => {
                   onChange={(e) =>
                     setAccordionForm({ ...accordionForm, title: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-3 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                   placeholder="e.g., Custom T-Shirts"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Description *
                 </label>
                 <input
@@ -1663,14 +1664,14 @@ const ShopPageEditor: React.FC = () => {
                   onChange={(e) =>
                     setAccordionForm({ ...accordionForm, description: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-3 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                   placeholder="e.g., Personalized designs for every occasion"
                 />
               </div>
 
               {/* Link URL */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Link URL (optional)
                 </label>
                 <input
@@ -1679,14 +1680,14 @@ const ShopPageEditor: React.FC = () => {
                   onChange={(e) =>
                     setAccordionForm({ ...accordionForm, link_url: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-3 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                   placeholder="/products or https://example.com"
                 />
               </div>
 
               {/* Order Position */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Order Position
                 </label>
                 <input
@@ -1696,7 +1697,7 @@ const ShopPageEditor: React.FC = () => {
                   onChange={(e) =>
                     setAccordionForm({ ...accordionForm, order_position: parseInt(e.target.value) || 1 })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#78BE20]"
+                  className="w-full px-3 py-2 bg-[#1e1a2e] border border-purple-500/20 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/30"
                 />
               </div>
 
@@ -1709,27 +1710,27 @@ const ShopPageEditor: React.FC = () => {
                   onChange={(e) =>
                     setAccordionForm({ ...accordionForm, is_active: e.target.checked })
                   }
-                  className="w-4 h-4 text-[#78BE20] rounded focus:ring-[#78BE20]"
+                  className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 bg-[#1e1a2e] border-purple-500/20"
                 />
-                <label htmlFor="accordion-active" className="text-sm font-medium text-gray-700">
+                <label htmlFor="accordion-active" className="text-sm font-medium text-gray-300">
                   Active (show on website)
                 </label>
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex gap-3">
+            <div className="p-6 border-t border-purple-500/10 flex gap-3 bg-[#1e1a2e]/50">
               <button
                 onClick={() => {
                   setShowAccordionModal(false);
                   setEditingAccordionItem(null);
                 }}
-                className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all"
+                className="flex-1 px-4 py-2 bg-[#1e1a2e] border border-purple-500/20 hover:bg-purple-500/10 text-gray-300 rounded-lg transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={editingAccordionItem ? handleUpdateAccordionItem : handleCreateAccordionItem}
-                className="flex-1 px-4 py-2 bg-[#78BE20] hover:bg-[#6da71d] text-white rounded-lg transition-all"
+                className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all"
               >
                 {editingAccordionItem ? 'Update' : 'Create'}
               </button>
