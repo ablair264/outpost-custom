@@ -8,7 +8,12 @@ interface HeaderFilterContextType {
 const HeaderFilterContext = createContext<HeaderFilterContextType | undefined>(undefined);
 
 export const HeaderFilterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [filterContent, setFilterContent] = useState<ReactNode | null>(null);
+  const [filterContent, setFilterContentState] = useState<ReactNode | null>(null);
+
+  // Wrap in useCallback to ensure stable reference
+  const setFilterContent = useCallback((content: ReactNode | null) => {
+    setFilterContentState(content);
+  }, []);
 
   return (
     <HeaderFilterContext.Provider value={{ filterContent, setFilterContent }}>

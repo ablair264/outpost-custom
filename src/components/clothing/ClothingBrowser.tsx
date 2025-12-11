@@ -718,6 +718,7 @@ const ClothingBrowser: React.FC = () => {
     return () => {
       setFilterContent(null);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     headerFilterOpen,
     hasActiveFilters,
@@ -731,8 +732,8 @@ const ClothingBrowser: React.FC = () => {
     filterOptions.brandOptions,
     filterOptions.genders,
     sectionsOpen,
-    availableTypeGroups,
-    setFilterContent
+    availableTypeGroups
+    // setFilterContent is stable (wrapped in useCallback) so we don't need it here
   ]);
 
   const handleProductClick = (styleCode: string) => {
