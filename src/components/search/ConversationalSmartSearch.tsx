@@ -133,7 +133,10 @@ const ConversationalSmartSearch: React.FC<ConversationalSmartSearchProps> = ({
         params.set('search', searchQuery.keywords.join(' '));
       }
 
-      const response = await fetch(`${API_BASE}/styles?${params.toString()}`);
+      const url = `${API_BASE}/styles?${params.toString()}`;
+      console.log('[SmartSearch] Fetching URL:', url);
+
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Search request failed');
       }
@@ -227,16 +230,21 @@ const ConversationalSmartSearch: React.FC<ConversationalSmartSearchProps> = ({
       ]);
 
       // Execute search only if we have meaningful query criteria
-      // Check specifically for keywords or category - the main search drivers
       const hasSearchCriteria = searchQuery && (
         (searchQuery.keywords && searchQuery.keywords.length > 0) ||
         (searchQuery.category && searchQuery.category.trim() !== '') ||
-        (searchQuery.brand && searchQuery.brand.trim() !== '')
+        (searchQuery.brand && searchQuery.brand.trim() !== '') ||
+        (searchQuery.color && searchQuery.color.trim() !== '')
       );
+
+      // Debug logging
+      console.log('[SmartSearch] AI searchQuery:', JSON.stringify(searchQuery, null, 2));
+      console.log('[SmartSearch] hasSearchCriteria:', hasSearchCriteria);
 
       if (hasSearchCriteria) {
         setHasSearched(true);
         const results = await executeSearch(searchQuery);
+        console.log('[SmartSearch] Results count:', results.length);
         setProducts(results);
       }
     } catch (error) {
