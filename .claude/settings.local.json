@@ -59,7 +59,8 @@
       "Bash(node scripts/upload-r2-images.cjs:*)",
       "Bash(CI=false npx react-scripts build:*)",
       "mcp__neon__describe_table_schema",
-      "WebFetch(domain:outpostcustom.co.uk)"
+      "WebFetch(domain:outpostcustom.co.uk)",
+      "Bash(CI=false npm run build:*)"
     ],
     "deny": [],
     "ask": []

@@ -22,6 +22,7 @@ import ClothingEnquiries from './pages/admin/ClothingEnquiries';
 import ClothingEnquiryDetail from './pages/admin/ClothingEnquiryDetail';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminBlogEditor from './pages/admin/AdminBlogEditor';
+import ProductManager from './pages/admin/ProductManager';
 import Collection from './pages/Collection';
 import AllSignage from './pages/AllSignage';
 import PavementSigns from './pages/PavementSigns';
@@ -92,7 +93,7 @@ function App() {
                 <Route path="blog" element={<AdminBlogEditor />} />
 
                 {/* Product Management */}
-                <Route path="products" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Product Manager</h1><p className="text-gray-400 mt-2">Manage your product catalog</p></div>} />
+                <Route path="products" element={<ProductManager />} />
                 <Route path="images" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Image Manager</h1><p className="text-gray-400 mt-2">Coming soon - Manage product images</p></div>} />
                 <Route path="updater" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Updater</h1><p className="text-gray-400 mt-2">Coming soon - Sync product data</p></div>} />
 

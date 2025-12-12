@@ -197,11 +197,25 @@ model ProductData {
   specSheet                String?  @map("spec_sheet") @db.Text
   eanCode                  String?  @map("ean_code") @db.VarChar(50)
 
+  // Margin and pricing fields
+  marginPercentage         Decimal? @default(30.00) @map("margin_percentage") @db.Decimal(5, 2)
+  calculatedPrice          Decimal? @map("calculated_price") @db.Decimal(10, 2)
+  appliedRuleId            String?  @map("applied_rule_id") @db.Uuid
+  isSpecialOffer           Boolean  @default(false) @map("is_special_offer")
+  offerDiscountPercentage  Decimal? @map("offer_discount_percentage") @db.Decimal(5, 2)
+  finalPrice               Decimal? @map("final_price") @db.Decimal(10, 2)
+
+  // Relations
+  appliedRule              MarginRule? @relation(fields: [appliedRuleId], references: [id])
+
   @@unique([skuCode], name: "product_data_sku_unique")
   @@index([styleCode], name: "idx_product_style_code")
   @@index([productType], name: "idx_product_type")
   @@index([brand], name: "idx_product_brand")
   @@index([skuStatus], name: "idx_product_status")
+  @@index([marginPercentage], name: "idx_product_margin")
+  @@index([isSpecialOffer], name: "idx_product_special_offer")
+  @@index([appliedRuleId], name: "idx_product_applied_rule")
   @@map("product_data")
 }
 
@@ -413,4 +427,68 @@ model CaseStudyGallery {
   caseStudy CaseStudy @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
 
   @@map("case_study_gallery")
+}
+
+// ============================================
+// MARGIN & PRICING TABLES
+// ============================================
+
+model MarginRule {
+  id               String    @id @default(uuid()) @db.Uuid
+  name             String    @db.VarChar(100)
+  priority         Int       // 1=highest (product override), 6=lowest (default)
+  ruleType         String    @map("rule_type") @db.VarChar(50) // 'default', 'category', 'brand', 'product_type', 'product_type_category', 'product_override'
+  productType      String?   @map("product_type") @db.VarChar(255)
+  category         String?   @db.VarChar(255)
+  brand            String?   @db.VarChar(255)
+  skuCode          String?   @map("sku_code") @db.VarChar(100)
+  marginPercentage Decimal   @map("margin_percentage") @db.Decimal(5, 2)
+  isActive         Boolean   @default(true) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  createdBy        String?   @map("created_by") @db.Uuid
+
+  // Relations
+  products         ProductData[]
+
+  @@index([priority], name: "idx_margin_rules_priority")
+  @@index([ruleType], name: "idx_margin_rules_rule_type")
+  @@index([brand], name: "idx_margin_rules_brand")
+  @@index([category], name: "idx_margin_rules_category")
+  @@index([productType], name: "idx_margin_rules_product_type")
+  @@map("margin_rules")
+}
+
+model SpecialOffer {
+  id                 String    @id @default(uuid()) @db.Uuid
+  name               String    @db.VarChar(100)
+  discountPercentage Decimal   @map("discount_percentage") @db.Decimal(5, 2)
+  ruleType           String    @map("rule_type") @db.VarChar(50)
+  productType        String?   @map("product_type") @db.VarChar(255)
+  category           String?   @db.VarChar(255)
+  brand              String?   @db.VarChar(255)
+  skuCode            String?   @map("sku_code") @db.VarChar(100)
+  startDate          DateTime? @map("start_date") @db.Timestamptz
+  endDate            DateTime? @map("end_date") @db.Timestamptz
+  isActive           Boolean   @default(true) @map("is_active")
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  createdBy          String?   @map("created_by") @db.Uuid
+
+  @@index([isActive], name: "idx_special_offers_active")
+  @@index([startDate, endDate], name: "idx_special_offers_dates")
+  @@map("special_offers")
+}
+
+model MarginAuditLog {
+  id                   String   @id @default(uuid()) @db.Uuid
+  action               String   @db.VarChar(50) // 'rule_created', 'rule_updated', 'rule_deleted', 'bulk_apply', 'rollback'
+  ruleId               String?  @map("rule_id") @db.Uuid
+  ruleSnapshot         Json?    @map("rule_snapshot")
+  affectedProductCount Int?     @map("affected_product_count")
+  performedBy          String?  @map("performed_by") @db.Uuid
+  performedAt          DateTime @default(now()) @map("performed_at") @db.Timestamptz
+  rollbackData         Json?    @map("rollback_data")
+
+  @@index([performedAt], name: "idx_margin_audit_performed_at")
+  @@map("margin_audit_log")
 }
