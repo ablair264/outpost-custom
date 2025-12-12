@@ -322,32 +322,54 @@ export async function handler(event) {
 
       let affectedCount = 0;
 
-      // IMPORTANT: First, reset applied_rule_id to NULL for all products
-      // This ensures products with deleted/inactive rules will be re-evaluated
-      await sql`UPDATE product_data SET applied_rule_id = NULL WHERE single_price IS NOT NULL`;
+      // Get IDs of active rules for the eligibility check
+      const activeRuleIds = rules.map(r => r.id);
 
       // Apply rules in priority order - higher priority rules (lower number) win
       for (const rule of rules) {
         let whereClause = 'WHERE single_price IS NOT NULL';
 
+        // Eligibility condition: product can be updated if:
+        // 1. No rule applied yet (applied_rule_id IS NULL)
+        // 2. Current rule is inactive/deleted (not in active rules list)
+        // 3. Current rule has lower priority than this rule
+        const inactiveRuleCheck = activeRuleIds.length > 0
+          ? `applied_rule_id NOT IN (${activeRuleIds.map(id => `'${id}'::uuid`).join(',')})`
+          : 'applied_rule_id IS NOT NULL'; // If no active rules, any applied rule is inactive
+
+        const eligibilityCondition = `(
+          applied_rule_id IS NULL
+          OR ${inactiveRuleCheck}
+          OR applied_rule_id IN (SELECT id FROM margin_rules WHERE priority > ${rule.priority})
+        )`;
+
+        // OPTIMIZATION: Only update if margin would actually change
+        // Skip products that already have this exact rule with same margin
+        const marginChangeCondition = `(
+          applied_rule_id IS DISTINCT FROM '${rule.id}'::uuid
+          OR margin_percentage IS DISTINCT FROM ${rule.margin_percentage}
+        )`;
+
         // Only apply this rule where no higher-priority rule has already been applied
         // Or where the rule matches more specifically
+        // AND only if the margin would actually change (optimization to reduce updates)
         if (rule.rule_type === 'product_override' && rule.sku_code) {
           whereClause += ` AND sku_code = '${rule.sku_code.replace(/'/g, "''")}'`;
+          whereClause += ` AND ${marginChangeCondition}`;
         } else if (rule.rule_type === 'product_type_category' && rule.product_type && rule.category) {
           whereClause += ` AND product_type = '${rule.product_type.replace(/'/g, "''")}' AND categorisation ILIKE '%${rule.category.replace(/'/g, "''")}%'`;
-          whereClause += ` AND (applied_rule_id IS NULL OR applied_rule_id IN (SELECT id FROM margin_rules WHERE priority > ${rule.priority}))`;
+          whereClause += ` AND ${eligibilityCondition} AND ${marginChangeCondition}`;
         } else if (rule.rule_type === 'product_type' && rule.product_type) {
           whereClause += ` AND product_type = '${rule.product_type.replace(/'/g, "''")}'`;
-          whereClause += ` AND (applied_rule_id IS NULL OR applied_rule_id IN (SELECT id FROM margin_rules WHERE priority > ${rule.priority}))`;
+          whereClause += ` AND ${eligibilityCondition} AND ${marginChangeCondition}`;
         } else if (rule.rule_type === 'brand' && rule.brand) {
           whereClause += ` AND brand = '${rule.brand.replace(/'/g, "''")}'`;
-          whereClause += ` AND (applied_rule_id IS NULL OR applied_rule_id IN (SELECT id FROM margin_rules WHERE priority > ${rule.priority}))`;
+          whereClause += ` AND ${eligibilityCondition} AND ${marginChangeCondition}`;
         } else if (rule.rule_type === 'category' && rule.category) {
           whereClause += ` AND categorisation ILIKE '%${rule.category.replace(/'/g, "''")}%'`;
-          whereClause += ` AND (applied_rule_id IS NULL OR applied_rule_id IN (SELECT id FROM margin_rules WHERE priority > ${rule.priority}))`;
+          whereClause += ` AND ${eligibilityCondition} AND ${marginChangeCondition}`;
         } else if (rule.rule_type === 'default') {
-          whereClause += ` AND (applied_rule_id IS NULL OR applied_rule_id IN (SELECT id FROM margin_rules WHERE priority > ${rule.priority}))`;
+          whereClause += ` AND ${eligibilityCondition} AND ${marginChangeCondition}`;
         }
 
         const updateQuery = `

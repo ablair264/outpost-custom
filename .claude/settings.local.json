@@ -61,7 +61,8 @@
       "mcp__neon__describe_table_schema",
       "WebFetch(domain:outpostcustom.co.uk)",
       "Bash(CI=false npm run build:*)",
-      "Bash(npx prisma migrate dev:*)"
+      "Bash(npx prisma migrate dev:*)",
+      "mcp__neon__describe_project"
     ],
     "deny": [],
     "ask": []
