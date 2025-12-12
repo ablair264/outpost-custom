@@ -335,7 +335,7 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
             {/* Two options */}
             <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'md:grid-cols-2 gap-4 md:gap-6'} max-w-2xl mx-auto`}>
               <button
-                onClick={() => setStep('upload-logo')}
+                onClick={() => onSelectPath('upload')}
                 className={`group relative text-left ${isMobile ? 'p-4' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
               >
                 <div className={`flex ${isMobile ? 'items-center gap-4' : 'flex-col'}`}>
