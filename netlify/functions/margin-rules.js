@@ -322,6 +322,10 @@ export async function handler(event) {
 
       let affectedCount = 0;
 
+      // IMPORTANT: First, reset applied_rule_id to NULL for all products
+      // This ensures products with deleted/inactive rules will be re-evaluated
+      await sql`UPDATE product_data SET applied_rule_id = NULL WHERE single_price IS NOT NULL`;
+
       // Apply rules in priority order - higher priority rules (lower number) win
       for (const rule of rules) {
         let whereClause = 'WHERE single_price IS NOT NULL';

@@ -78,51 +78,41 @@ export function ApplyRuleModal({ isOpen, onClose, selectedSkus, onSuccess }: App
     }
   }, [isOpen, token]);
 
-  // Preview impact
-  const handlePreview = async () => {
-    if (!useCustomMargin && !selectedRuleId) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const body = useCustomMargin
-        ? { skuCodes: selectedSkus, marginPercentage: parseFloat(customMargin) }
-        : { skuCodes: selectedSkus, ruleId: selectedRuleId };
-
-      const response = await fetch(`${API_BASE}/products-admin/bulk/margin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ ...body, preview: true }),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        setPreview(result.preview);
-      } else {
-        setError(result.error || 'Failed to preview');
-      }
-    } catch (err) {
-      setError('Failed to preview changes');
-    } finally {
-      setLoading(false);
+  // Get margin percentage from selected rule or custom input
+  const getMarginPercentage = (): number | null => {
+    if (useCustomMargin) {
+      const value = parseFloat(customMargin);
+      return isNaN(value) ? null : value;
+    } else if (selectedRuleId) {
+      const selectedRule = rules.find(r => r.id === selectedRuleId);
+      return selectedRule ? parseFloat(selectedRule.margin_percentage) : null;
     }
+    return null;
+  };
+
+  // Preview impact - just show confirmation since backend doesn't support preview
+  const handlePreview = () => {
+    const margin = getMarginPercentage();
+    if (margin === null) return;
+
+    // Show preview info based on selected options
+    setPreview({
+      productsAffected: selectedSkus.length,
+      marginPercentage: margin,
+    });
   };
 
   // Apply rule
   const handleApply = async () => {
-    if (!useCustomMargin && !selectedRuleId) return;
+    const marginPercentage = getMarginPercentage();
+    if (marginPercentage === null) {
+      setError('Please select a rule or enter a custom margin');
+      return;
+    }
 
     try {
       setLoading(true);
       setError(null);
-
-      const body = useCustomMargin
-        ? { skuCodes: selectedSkus, marginPercentage: parseFloat(customMargin) }
-        : { skuCodes: selectedSkus, ruleId: selectedRuleId };
 
       const response = await fetch(`${API_BASE}/products-admin/bulk/margin`, {
         method: 'POST',
@@ -130,7 +120,7 @@ export function ApplyRuleModal({ isOpen, onClose, selectedSkus, onSuccess }: App
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ skuCodes: selectedSkus, marginPercentage }),
       });
 
       const result = await response.json();
@@ -263,18 +253,15 @@ export function ApplyRuleModal({ isOpen, onClose, selectedSkus, onSuccess }: App
                   className="p-4 rounded-lg"
                   style={{ background: colors.bgInput, border: `1px solid ${colors.borderLight}` }}
                 >
-                  <h4 className="text-sm font-medium text-gray-400 mb-3">Preview Impact</h4>
+                  <h4 className="text-sm font-medium text-gray-400 mb-3">Confirm Changes</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-xs text-gray-500">Products Affected</p>
                       <p className="text-lg text-white">{preview.productsAffected}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">Avg Price Change</p>
-                      <p className="text-lg text-white">
-                        {preview.avgPriceChange > 0 ? '+' : ''}
-                        £{preview.avgPriceChange?.toFixed(2) || '0.00'}
-                      </p>
+                      <p className="text-xs text-gray-500">New Margin</p>
+                      <p className="text-lg text-white">{preview.marginPercentage}%</p>
                     </div>
                   </div>
                 </div>
