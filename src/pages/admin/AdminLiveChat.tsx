@@ -89,7 +89,14 @@ export default function AdminLiveChat() {
   // Notification state
   const [notificationModal, setNotificationModal] = useState<ChatSession | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const soundEnabledRef = useRef(true);
   const seenWaitingSessions = useRef<Set<string>>(new Set());
+  const isFirstLoad = useRef(true);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
 
   // Fetch all sessions
   const fetchSessions = useCallback(async () => {
@@ -110,9 +117,9 @@ export default function AdminLiveChat() {
             // New waiting session detected!
             seenWaitingSessions.current.add(session.id);
 
-            // Only show notification if not first load and sound enabled
-            if (!loading) {
-              if (soundEnabled) {
+            // Only show notification if not first load
+            if (!isFirstLoad.current) {
+              if (soundEnabledRef.current) {
                 playNotificationSound();
               }
               // Show notification modal
@@ -134,7 +141,7 @@ export default function AdminLiveChat() {
     } catch (error) {
       console.error('Failed to fetch sessions:', error);
     }
-  }, [token, loading, soundEnabled]);
+  }, [token]);
 
   // Fetch messages for selected session
   const fetchMessages = useCallback(async (sessionId: string) => {
@@ -157,6 +164,7 @@ export default function AdminLiveChat() {
     const loadData = async () => {
       setLoading(true);
       await fetchSessions();
+      isFirstLoad.current = false;
       setLoading(false);
     };
     loadData();
