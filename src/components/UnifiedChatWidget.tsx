@@ -708,14 +708,16 @@ const UnifiedChatWidget: React.FC = () => {
                           value={escalateName}
                           onChange={(e) => setEscalateName(e.target.value)}
                           placeholder="Your name (optional)"
-                          className="w-full px-3 py-2 rounded-lg bg-white/10 text-white text-sm placeholder-white/40 outline-none border border-white/10 focus:border-[#64a70b]/50"
+                          className="w-full px-3 py-2 rounded-lg bg-white/10 text-white text-base placeholder-white/40 outline-none border border-white/10 focus:border-[#64a70b]/50"
+                          style={{ fontSize: '16px' }}
                         />
                         <input
                           type="email"
                           value={escalateEmail}
                           onChange={(e) => setEscalateEmail(e.target.value)}
                           placeholder="Your email (optional)"
-                          className="w-full px-3 py-2 rounded-lg bg-white/10 text-white text-sm placeholder-white/40 outline-none border border-white/10 focus:border-[#64a70b]/50"
+                          className="w-full px-3 py-2 rounded-lg bg-white/10 text-white text-base placeholder-white/40 outline-none border border-white/10 focus:border-[#64a70b]/50"
+                          style={{ fontSize: '16px' }}
                         />
                         <div className="flex gap-2">
                           <button
@@ -760,7 +762,8 @@ const UnifiedChatWidget: React.FC = () => {
                         onKeyDown={handleKey}
                         placeholder={mode === 'smartsearch' ? 'Describe what you need...' : 'Type a message...'}
                         disabled={loading}
-                        className="flex-1 bg-transparent text-sm text-white placeholder-white/40 outline-none"
+                        className="flex-1 bg-transparent text-base sm:text-sm text-white placeholder-white/40 outline-none"
+                        style={{ fontSize: '16px' }}
                       />
                       <button
                         onClick={sendMessage}

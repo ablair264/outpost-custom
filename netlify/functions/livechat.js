@@ -327,15 +327,14 @@ export async function handler(event) {
       await sql`
         UPDATE chat_sessions
         SET status = 'admin_joined',
-            taken_over_by = ${decoded.userId}::uuid,
+            taken_over_by = ${decoded.id}::uuid,
             taken_over_at = NOW(),
             updated_at = NOW()
         WHERE id = ${sessionId}
       `;
 
-      // Get admin name
-      const admin = await sql`SELECT name FROM admin_users WHERE id = ${decoded.userId}`;
-      const adminName = admin[0]?.name || 'Team Member';
+      // Get admin name from token (or fallback to database lookup)
+      const adminName = decoded.name || 'Team Member';
 
       // Add system message
       await sql`
@@ -365,7 +364,7 @@ export async function handler(event) {
 
       const message = await sql`
         INSERT INTO chat_messages (session_id, sender_type, admin_id, content, metadata)
-        VALUES (${sessionId}, 'admin', ${decoded.userId}::uuid, ${content}, ${metadata ? JSON.stringify(metadata) : null})
+        VALUES (${sessionId}, 'admin', ${decoded.id}::uuid, ${content}, ${metadata ? JSON.stringify(metadata) : null})
         RETURNING *
       `;
 
@@ -439,7 +438,7 @@ export async function handler(event) {
       if (existing.length === 0) {
         await sql`
           INSERT INTO livechat_settings (is_online, welcome_message, offline_message, escalation_keywords, auto_escalate_after, updated_by)
-          VALUES (${isOnline ?? false}, ${welcomeMessage || null}, ${offlineMessage || null}, ${escalationKeywords || []}, ${autoEscalateAfter || null}, ${decoded.userId}::uuid)
+          VALUES (${isOnline ?? false}, ${welcomeMessage || null}, ${offlineMessage || null}, ${escalationKeywords || []}, ${autoEscalateAfter || null}, ${decoded.id}::uuid)
         `;
       } else {
         await sql`
@@ -449,7 +448,7 @@ export async function handler(event) {
               offline_message = COALESCE(${offlineMessage}, offline_message),
               escalation_keywords = COALESCE(${escalationKeywords}, escalation_keywords),
               auto_escalate_after = COALESCE(${autoEscalateAfter}, auto_escalate_after),
-              updated_by = ${decoded.userId}::uuid,
+              updated_by = ${decoded.id}::uuid,
               updated_at = NOW()
           WHERE id = ${existing[0].id}
         `;
@@ -473,7 +472,7 @@ export async function handler(event) {
 
       await sql`
         UPDATE livechat_settings
-        SET is_online = ${isOnline}, updated_by = ${decoded.userId}::uuid, updated_at = NOW()
+        SET is_online = ${isOnline}, updated_by = ${decoded.id}::uuid, updated_at = NOW()
       `;
 
       return {

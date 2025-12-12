@@ -12,8 +12,26 @@ import {
   X,
   ExternalLink,
   RefreshCw,
+  Bell,
+  Volume2,
 } from 'lucide-react';
 import { getAuthToken } from '../../lib/api';
+
+// Notification sound (base64 encoded short beep sound)
+const NOTIFICATION_SOUND = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1eXmNhYFJQUE9RTk1MS0tLS0pLTEtMTk5PTlBSU1VWV1laXF1eX2FiY2RlaGlrbG5wcXN1dnh6fH+BgoSGiImLjI6QkZOVlpeZmpudnqChpKWnqaqsrbCxs7W2uLq7vb7AwcPExsnKy83Oz9HS09TV1tfY2dra293d3t/f4OHh4uLj4+Pk5OXl5eXm5ubm5+fn5+fn5+fn5+fn5+bm5ubm5eXl5eXk5OTj4+Pi4uLh4eHg4N/f3t7d3dzc29va2tnZ2NjX1tbV1dTU09PS0tHR0M/PzsrJycjHxsXEw8LBwL++vby7urm4t7a1tLOysbCvrq2sq6qpqKempaWjoqGgnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUBAPz49PDs6OTg3NjU0MzIxMC8uLSwrKikoJyYlJCMiISAfHh0cGxoZGBcWFRQTEhEQDw4NDAsKCQgHBgUEAwIBAQEBAQEBAQICAgMDBAQFBQYGBwgICQkKCgsLDA0NDg8PEBEREhMUFBUWFxcYGRobHBwdHh8gISIjJCUmJygoKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1haW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+';
+
+// Play notification sound
+const playNotificationSound = () => {
+  try {
+    const audio = new Audio(NOTIFICATION_SOUND);
+    audio.volume = 0.5;
+    audio.play().catch(() => {
+      // Ignore errors (user hasn't interacted with page yet)
+    });
+  } catch (e) {
+    console.log('Could not play notification sound');
+  }
+};
 
 const API_BASE = '/.netlify/functions/livechat';
 
@@ -68,6 +86,11 @@ export default function AdminLiveChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollInterval = useRef<NodeJS.Timeout | null>(null);
 
+  // Notification state
+  const [notificationModal, setNotificationModal] = useState<ChatSession | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const seenWaitingSessions = useRef<Set<string>>(new Set());
+
   // Fetch all sessions
   const fetchSessions = useCallback(async () => {
     try {
@@ -76,12 +99,42 @@ export default function AdminLiveChat() {
       });
       const data = await response.json();
       if (data.success) {
+        // Check for new waiting_for_admin sessions
+        const waitingSessions = data.sessions.filter(
+          (s: ChatSession) => s.status === 'waiting_for_admin'
+        );
+
+        // Find new waiting sessions we haven't seen before
+        waitingSessions.forEach((session: ChatSession) => {
+          if (!seenWaitingSessions.current.has(session.id)) {
+            // New waiting session detected!
+            seenWaitingSessions.current.add(session.id);
+
+            // Only show notification if not first load and sound enabled
+            if (!loading) {
+              if (soundEnabled) {
+                playNotificationSound();
+              }
+              // Show notification modal
+              setNotificationModal(session);
+            }
+          }
+        });
+
+        // Clean up seen sessions that are no longer waiting
+        seenWaitingSessions.current.forEach((id) => {
+          const session = data.sessions.find((s: ChatSession) => s.id === id);
+          if (!session || session.status !== 'waiting_for_admin') {
+            seenWaitingSessions.current.delete(id);
+          }
+        });
+
         setSessions(data.sessions);
       }
     } catch (error) {
       console.error('Failed to fetch sessions:', error);
     }
-  }, [token]);
+  }, [token, loading, soundEnabled]);
 
   // Fetch messages for selected session
   const fetchMessages = useCallback(async (sessionId: string) => {
@@ -153,6 +206,35 @@ export default function AdminLiveChat() {
       const data = await response.json();
       if (data.success) {
         await fetchMessages(selectedSession.id);
+        await fetchSessions();
+      }
+    } catch (error) {
+      console.error('Failed to take over:', error);
+    } finally {
+      setTakingOver(false);
+    }
+  };
+
+  // Take over from notification modal
+  const handleTakeoverFromNotification = async (session: ChatSession) => {
+    setNotificationModal(null);
+    setSelectedSession(session);
+    await fetchMessages(session.id);
+
+    // Then take over
+    setTakingOver(true);
+    try {
+      const response = await fetch(`${API_BASE}/admin/takeover`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ sessionId: session.id }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        await fetchMessages(session.id);
         await fetchSessions();
       }
     } catch (error) {
@@ -322,12 +404,25 @@ export default function AdminLiveChat() {
           >
             Conversations
           </h2>
-          <button
-            onClick={fetchSessions}
-            className="p-2 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className={`p-2 rounded-lg transition-colors ${
+                soundEnabled
+                  ? 'text-purple-400 bg-purple-500/10'
+                  : 'text-gray-500 hover:text-gray-400 hover:bg-white/5'
+              }`}
+              title={soundEnabled ? 'Sound alerts on' : 'Sound alerts off'}
+            >
+              <Volume2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={fetchSessions}
+              className="p-2 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Sessions */}
@@ -551,6 +646,121 @@ export default function AdminLiveChat() {
           </div>
         )}
       </div>
+
+      {/* Notification Modal */}
+      {notificationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+          <div
+            className="w-full max-w-md rounded-xl overflow-hidden animate-pulse"
+            style={{
+              background: colors.bgCard,
+              border: `2px solid ${colors.purple500}`,
+              boxShadow: '0 0 30px rgba(139, 92, 246, 0.3)',
+            }}
+          >
+            {/* Header */}
+            <div
+              className="p-4 flex items-center gap-3 border-b"
+              style={{ borderColor: colors.borderLight, background: 'rgba(139, 92, 246, 0.1)' }}
+            >
+              <div className="p-2 rounded-full bg-orange-500/20 animate-bounce">
+                <Bell className="w-6 h-6 text-orange-400" />
+              </div>
+              <div>
+                <h2
+                  className="text-lg font-semibold text-white"
+                  style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+                >
+                  Team Member Requested!
+                </h2>
+                <p className="text-xs text-gray-400">Someone needs your help</p>
+              </div>
+              <button
+                onClick={() => setNotificationModal(null)}
+                className="ml-auto p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-purple-500/10 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 space-y-3">
+              {/* Visitor Info */}
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-purple-500/20">
+                  <User className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <p className="text-white font-medium">
+                    {notificationModal.visitor_name ||
+                      `Visitor ${notificationModal.visitor_id.slice(0, 8)}`}
+                  </p>
+                  {notificationModal.visitor_email && (
+                    <p className="text-xs text-gray-400">{notificationModal.visitor_email}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Current Page */}
+              {notificationModal.current_page && (
+                <div className="p-3 rounded-lg" style={{ background: colors.bgDark }}>
+                  <p className="text-xs text-gray-500 mb-1">Viewing page:</p>
+                  <p className="text-sm text-gray-300 truncate">
+                    {notificationModal.current_page}
+                  </p>
+                </div>
+              )}
+
+              {/* Last Message */}
+              {notificationModal.last_message && (
+                <div className="p-3 rounded-lg" style={{ background: colors.bgDark }}>
+                  <p className="text-xs text-gray-500 mb-1">Last message:</p>
+                  <p className="text-sm text-gray-300 line-clamp-2">
+                    {notificationModal.last_message}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div
+              className="p-4 flex items-center gap-3 border-t"
+              style={{ borderColor: colors.borderLight }}
+            >
+              <button
+                onClick={() => setNotificationModal(null)}
+                className="flex-1 px-4 py-2.5 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-purple-500/10 transition-colors"
+                style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+              >
+                Dismiss
+              </button>
+              <button
+                onClick={() => {
+                  setNotificationModal(null);
+                  handleSelectSession(notificationModal);
+                }}
+                className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 transition-colors"
+                style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+              >
+                View Chat
+              </button>
+              <button
+                onClick={() => handleTakeoverFromNotification(notificationModal)}
+                disabled={takingOver}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors disabled:opacity-50"
+                style={{ fontFamily: "'Neuzeit Grotesk', sans-serif" }}
+              >
+                {takingOver ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <PhoneCall className="w-4 h-4" />
+                )}
+                Take Over
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
