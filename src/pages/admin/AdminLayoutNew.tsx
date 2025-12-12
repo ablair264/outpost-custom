@@ -23,6 +23,7 @@ import {
   LayoutGrid
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { getAuthToken } from '../../lib/api';
 
 interface NavItem {
   id: string;
@@ -50,21 +51,47 @@ const AdminLayoutNew: React.FC = () => {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
+  // Fetch LiveChat online status from database
   useEffect(() => {
-    try {
-      const liveChatStatus = localStorage.getItem('liveChatOnline');
-      if (liveChatStatus !== null) {
-        setIsLiveChatOnline(liveChatStatus === 'true');
+    const fetchLiveChatStatus = async () => {
+      try {
+        const response = await fetch('/.netlify/functions/livechat/status');
+        const data = await response.json();
+        if (data.success) {
+          setIsLiveChatOnline(data.isOnline);
+        }
+      } catch (error) {
+        console.error('Failed to fetch LiveChat status:', error);
       }
-    } catch {}
+    };
+    fetchLiveChatStatus();
   }, []);
 
-  const toggleLiveChat = () => {
+  // Toggle LiveChat online status in database
+  const toggleLiveChat = async () => {
     const newStatus = !isLiveChatOnline;
-    setIsLiveChatOnline(newStatus);
+    setIsLiveChatOnline(newStatus); // Optimistic update
+
     try {
-      localStorage.setItem('liveChatOnline', String(newStatus));
-    } catch {}
+      const token = getAuthToken();
+      const response = await fetch('/.netlify/functions/livechat/admin/online', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ isOnline: newStatus }),
+      });
+
+      const data = await response.json();
+      if (!data.success) {
+        // Revert on failure
+        setIsLiveChatOnline(!newStatus);
+      }
+    } catch (error) {
+      console.error('Failed to toggle LiveChat status:', error);
+      setIsLiveChatOnline(!newStatus); // Revert on error
+    }
   };
 
   const handleLogout = async () => {

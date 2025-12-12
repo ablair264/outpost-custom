@@ -20,6 +20,8 @@ model AdminUser {
   // Relations
   assignedEnquiries ClothingEnquiry[] @relation("AssignedTo")
   notes             EnquiryNote[]
+  chatsTakenOver    ChatSession[]     @relation("ChatTakenOver")
+  chatMessages      ChatMessage[]     @relation("ChatMessageSender")
 
   @@map("admin_users")
 }
@@ -491,4 +493,94 @@ model MarginAuditLog {
 
   @@index([performedAt], name: "idx_margin_audit_performed_at")
   @@map("margin_audit_log")
+}
+
+// ============================================
+// LIVECHAT TABLES
+// ============================================
+
+model ChatSession {
+  id              String    @id @default(uuid()) @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Session identification (browser fingerprint or localStorage ID)
+  visitorId       String    @map("visitor_id") @db.VarChar(255)
+
+  // Visitor info (collected during chat or escalation)
+  visitorName     String?   @map("visitor_name") @db.VarChar(255)
+  visitorEmail    String?   @map("visitor_email") @db.VarChar(255)
+
+  // Session status: 'active', 'waiting_for_admin', 'admin_joined', 'closed'
+  status          String    @default("active") @db.VarChar(50)
+
+  // Admin takeover
+  takenOverBy     String?   @map("taken_over_by") @db.Uuid
+  takenOverAt     DateTime? @map("taken_over_at") @db.Timestamptz
+
+  // Context: what page they're on, product they're viewing
+  currentPage     String?   @map("current_page") @db.Text
+  productContext  Json?     @map("product_context") // {skuCode, styleName, brand, imageUrl}
+
+  // Last activity tracking
+  lastMessageAt   DateTime? @map("last_message_at") @db.Timestamptz
+  lastSeenByAdmin DateTime? @map("last_seen_by_admin") @db.Timestamptz
+
+  // Unread count for admin
+  unreadCount     Int       @default(0) @map("unread_count")
+
+  // Relations
+  messages        ChatMessage[]
+  takenOverByUser AdminUser?    @relation("ChatTakenOver", fields: [takenOverBy], references: [id])
+
+  @@index([status], name: "idx_chat_session_status")
+  @@index([visitorId], name: "idx_chat_session_visitor")
+  @@index([lastMessageAt(sort: Desc)], name: "idx_chat_session_last_message")
+  @@index([takenOverBy], name: "idx_chat_session_taken_over")
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid()) @db.Uuid
+  sessionId   String   @map("session_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Who sent it: 'visitor', 'ai', 'admin'
+  senderType  String   @map("sender_type") @db.VarChar(20)
+
+  // For admin messages, which admin sent it
+  adminId     String?  @map("admin_id") @db.Uuid
+
+  // Message content
+  content     String   @db.Text
+
+  // Optional metadata (product suggestions, links, etc.)
+  metadata    Json?
+
+  // Relations
+  session     ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  admin       AdminUser?  @relation("ChatMessageSender", fields: [adminId], references: [id])
+
+  @@index([sessionId], name: "idx_chat_message_session")
+  @@index([createdAt], name: "idx_chat_message_created")
+  @@map("chat_messages")
+}
+
+model LiveChatSettings {
+  id                  String   @id @default(uuid()) @db.Uuid
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  updatedBy           String?  @map("updated_by") @db.Uuid
+
+  // Global online/offline status
+  isOnline            Boolean  @default(false) @map("is_online")
+
+  // Auto-responses
+  offlineMessage      String?  @map("offline_message") @db.Text
+  welcomeMessage      String?  @map("welcome_message") @db.Text
+
+  // AI escalation triggers
+  escalationKeywords  String[] @map("escalation_keywords") // e.g., ['speak to someone', 'human', 'agent']
+  autoEscalateAfter   Int?     @map("auto_escalate_after") // messages count before auto-escalate option
+
+  @@map("livechat_settings")
 }

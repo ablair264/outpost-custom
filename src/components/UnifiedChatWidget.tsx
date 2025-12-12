@@ -1,16 +1,18 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageCircle, Send, X, Sparkles, User, Search, Lightbulb } from 'lucide-react';
+import { MessageCircle, Send, X, Sparkles, User, Search, Lightbulb, PhoneCall, Loader2 } from 'lucide-react';
 import SmartSearchResults from './search/SmartSearchResults';
 import { SearchProduct } from './search/SmartSearchProductCard';
 
 const API_BASE = '/.netlify/functions/products';
+const LIVECHAT_API = '/.netlify/functions/livechat';
 
 type ChatMessage = {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'admin' | 'system';
   content: string;
+  adminName?: string;
 };
 
 type ChatMode = 'livechat' | 'smartsearch';
@@ -62,6 +64,16 @@ Available categories: T-Shirts, Polo Shirts, Sweatshirts, Hoodies, Fleeces, Jack
 
 Keep responses concise (1-2 sentences).`;
 
+// Generate or retrieve visitor ID
+const getVisitorId = (): string => {
+  const stored = localStorage.getItem('outpost_visitor_id');
+  if (stored) return stored;
+
+  const newId = `v_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+  localStorage.setItem('outpost_visitor_id', newId);
+  return newId;
+};
+
 const UnifiedChatWidget: React.FC = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -75,25 +87,166 @@ const UnifiedChatWidget: React.FC = () => {
   const [idleTime, setIdleTime] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // LiveChat state
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isAdminOnline, setIsAdminOnline] = useState(false);
+  const [adminJoined, setAdminJoined] = useState(false);
+  const [showEscalateForm, setShowEscalateForm] = useState(false);
+  const [escalateName, setEscalateName] = useState('');
+  const [escalateEmail, setEscalateEmail] = useState('');
+  const [escalating, setEscalating] = useState(false);
+  const pollInterval = useRef<NodeJS.Timeout | null>(null);
+
   // Determine if we're on a clothing page
   const isClothingPage = CLOTHING_PATHS.some(path => location.pathname.startsWith(path));
+
+  // Check admin online status
+  const checkAdminStatus = useCallback(async () => {
+    try {
+      const response = await fetch(`${LIVECHAT_API}/status`);
+      const data = await response.json();
+      if (data.success) {
+        setIsAdminOnline(data.isOnline);
+      }
+    } catch (error) {
+      console.error('Failed to check admin status:', error);
+    }
+  }, []);
+
+  // Initialize or restore session
+  const initSession = useCallback(async () => {
+    if (mode !== 'livechat') return;
+
+    try {
+      const visitorId = getVisitorId();
+      const productContext = location.pathname.startsWith('/product/') ? {
+        page: location.pathname,
+        // Add product details if available
+      } : null;
+
+      const response = await fetch(`${LIVECHAT_API}/session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          visitorId,
+          currentPage: location.pathname,
+          productContext,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setSessionId(data.session.id);
+        setAdminJoined(data.session.status === 'admin_joined');
+
+        // Restore messages from session
+        if (data.session.messages && data.session.messages.length > 0) {
+          const restoredMessages: ChatMessage[] = data.session.messages.map((m: any) => ({
+            id: m.id,
+            role: m.sender_type === 'visitor' ? 'user' : m.sender_type,
+            content: m.content,
+            adminName: m.admin_name,
+          }));
+          setMessages(restoredMessages);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to init session:', error);
+    }
+  }, [mode, location.pathname]);
+
+  // Poll for new messages
+  const pollMessages = useCallback(async () => {
+    if (!sessionId || mode !== 'livechat') return;
+
+    try {
+      const lastMessage = messages[messages.length - 1];
+      const since = lastMessage ? new Date(Date.now() - 5000).toISOString() : undefined;
+
+      const url = since
+        ? `${LIVECHAT_API}/messages/${sessionId}?since=${since}`
+        : `${LIVECHAT_API}/messages/${sessionId}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.success) {
+        // Update admin joined status
+        if (data.adminJoined && !adminJoined) {
+          setAdminJoined(true);
+        }
+
+        // Add any new messages we don't have
+        if (data.messages && data.messages.length > 0) {
+          const existingIds = new Set(messages.map(m => m.id));
+          const newMessages = data.messages.filter((m: any) => !existingIds.has(m.id));
+
+          if (newMessages.length > 0) {
+            const formattedNew: ChatMessage[] = newMessages.map((m: any) => ({
+              id: m.id,
+              role: m.sender_type === 'visitor' ? 'user' : m.sender_type,
+              content: m.content,
+              adminName: m.admin_name,
+            }));
+            setMessages(prev => [...prev, ...formattedNew]);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to poll messages:', error);
+    }
+  }, [sessionId, mode, messages, adminJoined]);
 
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // Reset state when modal closes
+  // Check admin status on mount and periodically
+  useEffect(() => {
+    checkAdminStatus();
+    const interval = setInterval(checkAdminStatus, 30000); // Check every 30s
+    return () => clearInterval(interval);
+  }, [checkAdminStatus]);
+
+  // Initialize session when chat opens in livechat mode
+  useEffect(() => {
+    if (isOpen && mode === 'livechat') {
+      initSession();
+    }
+  }, [isOpen, mode, initSession]);
+
+  // Poll for messages when in livechat mode
+  useEffect(() => {
+    if (isOpen && mode === 'livechat' && sessionId) {
+      pollInterval.current = setInterval(pollMessages, 2000); // Poll every 2s
+    }
+
+    return () => {
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current);
+      }
+    };
+  }, [isOpen, mode, sessionId, pollMessages]);
+
+  // Reset state when modal closes (but keep session for livechat)
   useEffect(() => {
     if (!isOpen) {
       const timer = setTimeout(() => {
-        setMessages([]);
+        // Only reset search-related state
         setProducts([]);
         setHasSearched(false);
+        setShowEscalateForm(false);
+
+        // For livechat, keep messages and session
+        // For smartsearch, reset everything
+        if (mode === 'smartsearch') {
+          setMessages([]);
+        }
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, mode]);
 
   // Set mode based on page
   useEffect(() => {
@@ -106,7 +259,6 @@ const UnifiedChatWidget: React.FC = () => {
 
   // Proactive prompt after idle time on clothing pages (desktop only)
   useEffect(() => {
-    // Check if mobile (sm breakpoint is 640px)
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
 
     if (!isClothingPage || isOpen || isMobile) {
@@ -119,7 +271,6 @@ const UnifiedChatWidget: React.FC = () => {
       setIdleTime(prev => prev + 1);
     }, 1000);
 
-    // Show expanded button text after 30 seconds of idle time
     if (idleTime >= 30 && !showProactivePopup) {
       setShowProactivePopup(true);
     }
@@ -167,7 +318,6 @@ const UnifiedChatWidget: React.FC = () => {
         params.set('priceMax', searchQuery.priceMax.toString());
       }
       if (searchQuery.color) {
-        // Capitalize first letter to match database format (e.g., "red" -> "Red")
         const normalizedColor = searchQuery.color.charAt(0).toUpperCase() + searchQuery.color.slice(1).toLowerCase();
         params.set('colors', normalizedColor);
       }
@@ -178,7 +328,6 @@ const UnifiedChatWidget: React.FC = () => {
         params.set('search', searchQuery.keywords.join(' '));
       }
 
-      console.log('[UnifiedChat] Fetching:', `${API_BASE}/styles?${params.toString()}`);
       const response = await fetch(`${API_BASE}/styles?${params.toString()}`);
       if (!response.ok) return [];
 
@@ -198,6 +347,56 @@ const UnifiedChatWidget: React.FC = () => {
       }));
     } catch {
       return [];
+    }
+  };
+
+  // Save message to backend
+  const saveMessage = async (senderType: string, content: string) => {
+    if (!sessionId) return;
+
+    try {
+      await fetch(`${LIVECHAT_API}/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          senderType,
+          content,
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to save message:', error);
+    }
+  };
+
+  // Escalate to human
+  const handleEscalate = async () => {
+    if (!sessionId) return;
+
+    setEscalating(true);
+    try {
+      await fetch(`${LIVECHAT_API}/escalate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          visitorName: escalateName || null,
+          visitorEmail: escalateEmail || null,
+        }),
+      });
+
+      setShowEscalateForm(false);
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'system',
+        content: isAdminOnline
+          ? 'A team member will join shortly. Please wait...'
+          : 'Our team is currently offline. We\'ll get back to you as soon as possible!',
+      }]);
+    } catch (error) {
+      console.error('Failed to escalate:', error);
+    } finally {
+      setEscalating(false);
     }
   };
 
@@ -221,7 +420,7 @@ const UnifiedChatWidget: React.FC = () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            messages: messages.map(m => ({ role: m.role, content: m.content })).concat([{ role: 'user', content: trimmed }]),
+            messages: messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content })).concat([{ role: 'user', content: trimmed }]),
             systemPrompt: SMART_SEARCH_PROMPT,
           }),
         });
@@ -244,7 +443,6 @@ const UnifiedChatWidget: React.FC = () => {
           content: aiMessage,
         }]);
 
-        // Execute search if criteria provided
         const hasSearchCriteria = searchQuery && (
           (searchQuery.keywords && searchQuery.keywords.length > 0) ||
           (searchQuery.category && searchQuery.category.trim() !== '') ||
@@ -256,23 +454,37 @@ const UnifiedChatWidget: React.FC = () => {
           const results = await executeSearch(searchQuery);
           setProducts(results);
         }
+      } else if (adminJoined) {
+        // Admin has taken over - just save the message, don't call AI
+        await saveMessage('visitor', trimmed);
+        // The polling will pick up any admin responses
       } else {
-        // LiveChat mode - use service chat API
+        // LiveChat mode with AI - save message and get AI response
+        await saveMessage('visitor', trimmed);
+
         const apiUrl = process.env.REACT_APP_CHAT_API_URL || 'https://outpost-custom-production.up.railway.app/api/chat';
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: trimmed,
-            history: messages.map(m => ({ role: m.role, content: m.content })),
+            history: messages.filter(m => m.role !== 'system').map(m => ({
+              role: m.role === 'user' ? 'user' : 'assistant',
+              content: m.content
+            })),
           }),
         });
 
         const data = await response.json();
+        const aiResponse = data.reply || data.error || 'Sorry, I had trouble with that.';
+
+        // Save AI response to backend
+        await saveMessage('ai', aiResponse);
+
         setMessages(prev => [...prev, {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: data.reply || data.error || 'Sorry, I had trouble with that.',
+          content: aiResponse,
         }]);
       }
     } catch {
@@ -284,7 +496,7 @@ const UnifiedChatWidget: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, mode]);
+  }, [input, loading, messages, mode, adminJoined, sessionId]);
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -329,16 +541,25 @@ const UnifiedChatWidget: React.FC = () => {
                       <Search size={20} className="text-[#64a70b]" />
                     </div>
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#64a70b]/20 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-[#64a70b]/20 flex items-center justify-center relative">
                       <MessageCircle size={20} className="text-[#64a70b]" />
+                      {adminJoined && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-[#183028]" />
+                      )}
                     </div>
                   )}
                   <div>
                     <h2 className="text-lg font-semibold text-white hearns-font">
-                      {mode === 'smartsearch' ? 'Smart Search' : 'Live Chat'}
+                      {mode === 'smartsearch' ? 'Smart Search' : adminJoined ? 'Live Chat' : 'Chat'}
                     </h2>
                     <p className="text-xs text-white/50">
-                      {mode === 'smartsearch' ? 'Find the perfect products' : 'Ask us anything'}
+                      {mode === 'smartsearch'
+                        ? 'Find the perfect products'
+                        : adminJoined
+                          ? 'Connected with team member'
+                          : isAdminOnline
+                            ? 'Team available'
+                            : 'AI assistant'}
                     </p>
                   </div>
                 </div>
@@ -405,26 +626,47 @@ const UnifiedChatWidget: React.FC = () => {
                     {messages.map((msg) => (
                       <div
                         key={msg.id}
-                        className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        className={`flex gap-2 ${msg.role === 'user' ? 'justify-end' : msg.role === 'system' ? 'justify-center' : 'justify-start'}`}
                       >
-                        {msg.role === 'assistant' && (
-                          <div className="w-7 h-7 rounded-full bg-[#64a70b]/20 flex-shrink-0 flex items-center justify-center">
-                            <Sparkles size={14} className="text-[#64a70b]" />
+                        {msg.role === 'system' ? (
+                          <div className="px-4 py-2 rounded-xl bg-yellow-500/10 text-yellow-300/80 text-sm text-center max-w-[90%]">
+                            {msg.content}
                           </div>
-                        )}
-                        <div
-                          className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm ${
-                            msg.role === 'user'
-                              ? 'bg-[#64a70b] text-white rounded-br-sm'
-                              : 'bg-white/10 text-white/90 rounded-bl-sm'
-                          }`}
-                        >
-                          {msg.content}
-                        </div>
-                        {msg.role === 'user' && (
-                          <div className="w-7 h-7 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center">
-                            <User size={14} className="text-white/70" />
-                          </div>
+                        ) : (
+                          <>
+                            {(msg.role === 'assistant' || msg.role === 'admin') && (
+                              <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center ${
+                                msg.role === 'admin' ? 'bg-purple-500/20' : 'bg-[#64a70b]/20'
+                              }`}>
+                                {msg.role === 'admin' ? (
+                                  <User size={14} className="text-purple-400" />
+                                ) : (
+                                  <Sparkles size={14} className="text-[#64a70b]" />
+                                )}
+                              </div>
+                            )}
+                            <div className="flex flex-col max-w-[80%]">
+                              {msg.role === 'admin' && msg.adminName && (
+                                <span className="text-xs text-purple-400 mb-1">{msg.adminName}</span>
+                              )}
+                              <div
+                                className={`px-3 py-2 rounded-2xl text-sm ${
+                                  msg.role === 'user'
+                                    ? 'bg-[#64a70b] text-white rounded-br-sm'
+                                    : msg.role === 'admin'
+                                      ? 'bg-purple-500/20 text-purple-100 rounded-bl-sm'
+                                      : 'bg-white/10 text-white/90 rounded-bl-sm'
+                                }`}
+                              >
+                                {msg.content}
+                              </div>
+                            </div>
+                            {msg.role === 'user' && (
+                              <div className="w-7 h-7 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center">
+                                <User size={14} className="text-white/70" />
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     ))}
@@ -452,8 +694,64 @@ const UnifiedChatWidget: React.FC = () => {
                     <div ref={messagesEndRef} />
                   </div>
 
+                  {/* Escalate Form */}
+                  {showEscalateForm && mode === 'livechat' && !adminJoined && (
+                    <div className="p-4 border-t border-white/10 bg-white/5">
+                      <p className="text-sm text-white/70 mb-3">
+                        {isAdminOnline
+                          ? 'Enter your details and a team member will join shortly:'
+                          : 'Leave your details and we\'ll get back to you:'}
+                      </p>
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={escalateName}
+                          onChange={(e) => setEscalateName(e.target.value)}
+                          placeholder="Your name (optional)"
+                          className="w-full px-3 py-2 rounded-lg bg-white/10 text-white text-sm placeholder-white/40 outline-none border border-white/10 focus:border-[#64a70b]/50"
+                        />
+                        <input
+                          type="email"
+                          value={escalateEmail}
+                          onChange={(e) => setEscalateEmail(e.target.value)}
+                          placeholder="Your email (optional)"
+                          className="w-full px-3 py-2 rounded-lg bg-white/10 text-white text-sm placeholder-white/40 outline-none border border-white/10 focus:border-[#64a70b]/50"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setShowEscalateForm(false)}
+                            className="flex-1 px-3 py-2 rounded-lg text-sm text-white/60 hover:bg-white/5"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleEscalate}
+                            disabled={escalating}
+                            className="flex-1 px-3 py-2 rounded-lg bg-[#64a70b] text-white text-sm font-medium disabled:opacity-50"
+                          >
+                            {escalating ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Connect'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Input */}
                   <div className="p-3 border-t border-white/10">
+                    {/* Talk to human button (only in livechat mode, not when admin joined) */}
+                    {mode === 'livechat' && !adminJoined && !showEscalateForm && messages.length >= 2 && (
+                      <button
+                        onClick={() => setShowEscalateForm(true)}
+                        className="w-full mb-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white/70 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-2"
+                      >
+                        <PhoneCall size={14} />
+                        <span>Speak to a team member</span>
+                        {isAdminOnline && (
+                          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        )}
+                      </button>
+                    )}
+
                     <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10">
                       <input
                         type="text"
@@ -478,7 +776,7 @@ const UnifiedChatWidget: React.FC = () => {
             </motion.div>
           ) : (
             <>
-              {/* Main toggle button - expands with prompt text on desktop after idle time */}
+              {/* Main toggle button */}
               <motion.button
                 initial={{ scale: 0 }}
                 animate={{
@@ -503,7 +801,6 @@ const UnifiedChatWidget: React.FC = () => {
                 {isClothingPage ? (
                   <>
                     <Lightbulb size={20} fill="currentColor" />
-                    {/* Show expanded text on desktop when proactive popup would show */}
                     <span className="hidden sm:inline">
                       {showProactivePopup ? "Need help? Try Smart Search" : "Smart Search"}
                     </span>

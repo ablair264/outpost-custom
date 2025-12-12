@@ -23,6 +23,7 @@ import ClothingEnquiryDetail from './pages/admin/ClothingEnquiryDetail';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminBlogEditor from './pages/admin/AdminBlogEditor';
 import ProductManager from './pages/admin/ProductManager';
+import AdminLiveChat from './pages/admin/AdminLiveChat';
 import Collection from './pages/Collection';
 import AllSignage from './pages/AllSignage';
 import PavementSigns from './pages/PavementSigns';
@@ -101,7 +102,7 @@ function App() {
                 <Route path="customers" element={<div className="p-8"><h1 className="text-3xl font-black text-white">Customers</h1><p className="text-gray-400 mt-2">Coming soon - Customer management</p></div>} />
 
                 {/* LiveChat */}
-                <Route path="livechat" element={<div className="p-8"><h1 className="text-3xl font-black text-white">LiveChat</h1><p className="text-gray-400 mt-2">Coming soon - Live chat management</p></div>} />
+                <Route path="livechat" element={<AdminLiveChat />} />
 
                 {/* Settings */}
                 <Route path="users" element={<AdminUsers />} />
