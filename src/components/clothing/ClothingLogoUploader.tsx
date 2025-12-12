@@ -82,9 +82,10 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
     setError(null);
 
     // Create local preview for immediate display
+    let localPreviewUrl: string | null = null;
     if (file.type.startsWith('image/')) {
-      const localPreview = URL.createObjectURL(file);
-      setPreviewUrl(localPreview);
+      localPreviewUrl = URL.createObjectURL(file);
+      setPreviewUrl(localPreviewUrl);
     }
 
     try {
@@ -105,28 +106,36 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
         });
 
         // Upload to R2
-        const response = await fetch('/.netlify/functions/storage/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            filename: `logo-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
-            folder: 'logos',
-            data: base64,
-            contentType: file.type,
-          }),
-        });
+        try {
+          const response = await fetch('/.netlify/functions/storage/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              filename: `logo-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
+              folder: 'logos',
+              data: base64,
+              contentType: file.type,
+            }),
+          });
 
-        const result = await response.json();
-        if (result.success && result.publicUrl) {
-          uploadedUrl = result.publicUrl;
+          const result = await response.json();
+          if (result.success && result.publicUrl) {
+            uploadedUrl = result.publicUrl;
+          } else {
+            console.warn('R2 upload response:', result);
+          }
+        } catch (uploadErr) {
+          console.warn('R2 upload failed, using local preview:', uploadErr);
         }
       }
 
       setUploadState('complete');
 
-      // Auto-proceed after a moment with the R2 URL
+      // Auto-proceed after a moment - use R2 URL or fallback to local preview
+      // Always pass a URL to ensure logo preview step is shown
+      const finalUrl = uploadedUrl || localPreviewUrl;
       setTimeout(() => {
-        onComplete(uploadedUrl || undefined);
+        onComplete(finalUrl || undefined);
       }, 2500);
     } catch (err) {
       console.error('Logo upload error:', err);
