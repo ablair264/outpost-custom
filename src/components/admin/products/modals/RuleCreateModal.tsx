@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, AlertCircle, Eye } from 'lucide-react';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 // Admin purple theme colors
 const colors = {
@@ -41,7 +41,7 @@ interface RuleCreateModalProps {
 }
 
 export function RuleCreateModal({ onClose, onCreated }: RuleCreateModalProps) {
-  const { token } = useAuth();
+  const token = getAuthToken();
 
   // Form state
   const [name, setName] = useState('');

@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { Shirt, ChevronRight, Loader2, Percent, Tag, Image as ImageIcon } from 'lucide-react';
 import { useDrillDown } from '../ProductManager/DrillDownContext';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 const colors = {
   bgDark: '#1a1625',
@@ -39,7 +39,7 @@ interface StyleRow {
 const columnHelper = createColumnHelper<StyleRow>();
 
 export function StylesView() {
-  const { token } = useAuth();
+  const token = getAuthToken();
   const { navigateTo, searchQuery, activeBrand, activeProductType } = useDrillDown();
 
   const [data, setData] = useState<StyleRow[]>([]);

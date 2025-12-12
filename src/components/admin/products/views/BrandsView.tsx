@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { Building2, ChevronRight, Loader2, Percent, Tag } from 'lucide-react';
 import { useDrillDown } from '../ProductManager/DrillDownContext';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 // Admin purple theme colors
 const colors = {
@@ -36,7 +36,7 @@ interface BrandRow {
 const columnHelper = createColumnHelper<BrandRow>();
 
 export function BrandsView() {
-  const { token } = useAuth();
+  const token = getAuthToken();
   const { navigateTo, searchQuery } = useDrillDown();
 
   const [data, setData] = useState<BrandRow[]>([]);

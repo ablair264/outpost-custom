@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calculator, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 const colors = {
   bgDark: '#1a1625',
@@ -37,7 +37,7 @@ interface ApplyRuleModalProps {
 }
 
 export function ApplyRuleModal({ isOpen, onClose, selectedSkus, onSuccess }: ApplyRuleModalProps) {
-  const { token } = useAuth();
+  const token = getAuthToken();
   const [rules, setRules] = useState<MarginRule[]>([]);
   const [selectedRuleId, setSelectedRuleId] = useState<string>('');
   const [customMargin, setCustomMargin] = useState<string>('');

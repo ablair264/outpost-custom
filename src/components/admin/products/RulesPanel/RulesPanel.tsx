@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { RuleCard } from './RuleCard';
 import { RuleCreateModal } from '../modals/RuleCreateModal';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 // Admin purple theme colors
 const colors = {
@@ -55,7 +55,7 @@ interface RulesPanelProps {
 }
 
 export function RulesPanel({ onClose }: RulesPanelProps) {
-  const { token } = useAuth();
+  const token = getAuthToken();
   const [rules, setRules] = useState<MarginRule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

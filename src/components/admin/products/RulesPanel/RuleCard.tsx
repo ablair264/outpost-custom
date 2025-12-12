@@ -10,7 +10,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { MarginRule } from './RulesPanel';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 // Admin purple theme colors
 const colors = {
@@ -32,7 +32,7 @@ interface RuleCardProps {
 }
 
 export function RuleCard({ rule, icon, onUpdate }: RuleCardProps) {
-  const { token } = useAuth();
+  const token = getAuthToken();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isToggling, setIsToggling] = useState(false);

@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { Layers, ChevronRight, Loader2, Percent, Tag } from 'lucide-react';
 import { useDrillDown } from '../ProductManager/DrillDownContext';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 const colors = {
   bgDark: '#1a1625',
@@ -34,7 +34,7 @@ interface ProductTypeRow {
 const columnHelper = createColumnHelper<ProductTypeRow>();
 
 export function ProductTypesView() {
-  const { token } = useAuth();
+  const token = getAuthToken();
   const { navigateTo, searchQuery, activeBrand } = useDrillDown();
 
   const [data, setData] = useState<ProductTypeRow[]>([]);

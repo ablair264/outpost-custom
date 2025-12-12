@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { Package, Loader2, Percent, Tag, Check, Minus, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useDrillDown } from '../ProductManager/DrillDownContext';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 const colors = {
   bgDark: '#1a1625',
@@ -48,7 +48,7 @@ type SortColumn = 'sku_code' | 'style_name' | 'brand' | 'product_type' | 'single
 type SortDir = 'asc' | 'desc';
 
 export function AllProductsView() {
-  const { token } = useAuth();
+  const token = getAuthToken();
   const { searchQuery, selectedSkus, toggleSkuSelection, selectAllSkus } = useDrillDown();
 
   const [data, setData] = useState<ProductRow[]>([]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Tag, Loader2, AlertCircle, CheckCircle, Calendar, Plus } from 'lucide-react';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 const colors = {
   bgDark: '#1a1625',
@@ -32,7 +32,7 @@ interface SpecialOfferModalProps {
 }
 
 export function SpecialOfferModal({ isOpen, onClose, selectedSkus, onSuccess }: SpecialOfferModalProps) {
-  const { token } = useAuth();
+  const token = getAuthToken();
   const [offers, setOffers] = useState<SpecialOffer[]>([]);
   const [selectedOfferId, setSelectedOfferId] = useState<string>('');
   const [createNew, setCreateNew] = useState(false);

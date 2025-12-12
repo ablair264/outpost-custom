@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { Package, Loader2, Percent, Tag, Check, Minus } from 'lucide-react';
 import { useDrillDown } from '../ProductManager/DrillDownContext';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { getAuthToken } from '../../../../lib/api';
 
 const colors = {
   bgDark: '#1a1625',
@@ -45,7 +45,7 @@ interface VariantRow {
 const columnHelper = createColumnHelper<VariantRow>();
 
 export function VariantsView() {
-  const { token } = useAuth();
+  const token = getAuthToken();
   const {
     searchQuery,
     activeBrand,
