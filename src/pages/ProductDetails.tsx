@@ -59,6 +59,25 @@ const getBrandLogoUrl = (brandName: string): string | null => {
   return `https://cdn.brandfetch.io/${domain}/w/200/h/60?c=1idwNSepBcgUb6Y8Sjq`;
 };
 
+// Size ordering for proper display
+const SIZE_ORDER: Record<string, number> = {
+  'XXS': 1, '2XS': 1,
+  'XS': 2,
+  'S': 3, 'SM': 3, 'Small': 3,
+  'M': 4, 'MD': 4, 'Medium': 4,
+  'L': 5, 'LG': 5, 'Large': 5,
+  'XL': 6,
+  'XXL': 7, '2XL': 7,
+  'XXXL': 8, '3XL': 8,
+  '4XL': 9, 'XXXXL': 9,
+  '5XL': 10, 'XXXXXL': 10,
+  '6XL': 11,
+  '7XL': 12,
+  '8XL': 13,
+  // One size variants
+  'One Size': 100, 'ONESIZE': 100, 'OS': 100, 'O/S': 100,
+};
+
 interface ProductGroup {
   style_code: string;
   style_name: string;
@@ -214,9 +233,14 @@ const ProductDetails: React.FC = () => {
   const availableSizes = productGroup.variants
     .filter(v => v.colour_code === productGroup.colors[selectedColor]?.code)
     .map(v => ({ code: v.size_code, name: v.size_name }))
-    .filter((size, index, self) => 
+    .filter((size, index, self) =>
       index === self.findIndex(s => s.code === size.code)
-    );
+    )
+    .sort((a, b) => {
+      const orderA = SIZE_ORDER[a.name] ?? 50;
+      const orderB = SIZE_ORDER[b.name] ?? 50;
+      return orderA - orderB;
+    });
 
   const currentImages = [
     productGroup.colors[selectedColor]?.image || currentVariant?.primary_product_image_url,
@@ -418,14 +442,14 @@ const ProductDetails: React.FC = () => {
               </div>
             </div>
 
-            {/* Add to Cart */}
+            {/* Add to Order */}
             <div className="product-actions">
-              <button 
+              <button
                 className="add-to-cart-btn"
                 onClick={handleAddToCart}
                 disabled={availableSizes.length > 0 && !selectedSize}
               >
-                Add to Cart
+                Add to Order
               </button>
               <div style={{ height: 12 }} />
               <div style={{ display: 'flex', gap: 12 }}>

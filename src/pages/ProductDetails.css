@@ -493,37 +493,51 @@
     grid-template-columns: 1fr;
     gap: 30px;
   }
-  
+
   .product-images {
     order: 1;
+    flex-direction: column;
+    width: 100%;
   }
-  
+
   .product-info {
     order: 2;
     max-width: none;
   }
-  
+
   .image-thumbnails {
     flex-direction: row;
     order: 2;
     justify-content: center;
     min-width: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 0;
   }
-  
+
   .main-image {
     order: 1;
-    max-width: none;
+    max-width: 100%;
+    width: 100%;
   }
-  
+
+  .main-image img,
+  .main-product-image {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+  }
+
   .thumbnail {
     width: 60px;
     height: 60px;
+    flex-shrink: 0;
   }
-  
+
   .product-title {
     font-size: 22px;
   }
-  
+
   .product-price {
     font-size: 20px;
   }

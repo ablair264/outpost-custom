@@ -3,7 +3,7 @@ import { ShoppingCart, Heart, Send, ChevronDown, Sparkles, ArrowRight } from 'lu
 import { useCart } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useTheme } from '../contexts/ThemeContext';
-import CartDrawer from './CartDrawer';
+import OrderDrawer from './OrderDrawer';
 import WishlistDrawer from './WishlistDrawer';
 
 interface MegaMenuLink {
@@ -1226,8 +1226,8 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
         </div>
       </div>
 
-      {/* Cart Drawer */}
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      {/* Order Drawer */}
+      <OrderDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       {/* Wishlist Drawer */}
       <WishlistDrawer isOpen={isWishlistOpen} onClose={() => setIsWishlistOpen(false)} />

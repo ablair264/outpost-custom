@@ -118,65 +118,10 @@ const ClothingCard: React.FC<ClothingCardProps> = ({
   const displayColors = isExpanded ? productGroup.colors : productGroup.colors.slice(0, 5);
   const remainingColors = productGroup.colors.length - 5;
 
-  // Size ordering for proper range display
-  const SIZE_ORDER: Record<string, number> = {
-    'XXS': 1, '2XS': 1,
-    'XS': 2,
-    'S': 3, 'SM': 3, 'Small': 3,
-    'M': 4, 'MD': 4, 'Medium': 4,
-    'L': 5, 'LG': 5, 'Large': 5,
-    'XL': 6,
-    'XXL': 7, '2XL': 7,
-    'XXXL': 8, '3XL': 8,
-    '4XL': 9, 'XXXXL': 9,
-    '5XL': 10, 'XXXXXL': 10,
-    '6XL': 11,
-    '7XL': 12,
-    '8XL': 13,
-    // One size variants
-    'One Size': 100, 'ONESIZE': 100, 'OS': 100, 'O/S': 100,
-  };
-
-  // Get size range as a string like "XS - 3XL" or "One Size"
-  const getSizeRange = (): string => {
-    const sizes = new Set<string>();
-    productGroup.variants.forEach(v => {
-      if (v.size_name && v.sku_status !== 'Discontinued') {
-        sizes.add(v.size_name);
-      }
-    });
-
-    if (sizes.size === 0) return '';
-
-    const sizeArray = Array.from(sizes);
-
-    // Check for one-size items
-    const oneSizeVariants = sizeArray.filter(s =>
-      SIZE_ORDER[s] === 100 || s.toLowerCase().includes('one size')
-    );
-    if (oneSizeVariants.length > 0 && sizeArray.length === 1) {
-      return 'One Size';
-    }
-
-    // Sort sizes by order
-    const sortedSizes = sizeArray
-      .filter(s => SIZE_ORDER[s] !== undefined && SIZE_ORDER[s] !== 100)
-      .sort((a, b) => (SIZE_ORDER[a] || 50) - (SIZE_ORDER[b] || 50));
-
-    if (sortedSizes.length === 0) {
-      // Fallback to first size if no standard sizes found
-      return sizeArray[0];
-    }
-
-    if (sortedSizes.length === 1) {
-      return sortedSizes[0];
-    }
-
-    // Return range
-    return `${sortedSizes[0]} – ${sortedSizes[sortedSizes.length - 1]}`;
-  };
-
-  const sizeRange = getSizeRange();
+  // Use the pre-computed size_range from the ProductGroup, formatted nicely
+  const sizeRange = productGroup.size_range
+    ? formatSizeRange(productGroup.size_range)
+    : '';
 
   return (
     <motion.div
