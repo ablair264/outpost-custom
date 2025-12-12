@@ -85,7 +85,7 @@ export function RuleCard({ rule, icon, onUpdate }: RuleCardProps) {
 
   // Delete rule
   const handleDelete = async () => {
-    if (!confirm(`Are you sure you want to deactivate "${rule.name}"?`)) {
+    if (!window.confirm(`Are you sure you want to deactivate "${rule.name}"?`)) {
       return;
     }
 
