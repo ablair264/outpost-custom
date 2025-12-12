@@ -62,7 +62,8 @@
       "WebFetch(domain:outpostcustom.co.uk)",
       "Bash(CI=false npm run build:*)",
       "Bash(npx prisma migrate dev:*)",
-      "mcp__neon__describe_project"
+      "mcp__neon__describe_project",
+      "Bash(netlify deploy:*)"
     ],
     "deny": [],
     "ask": []

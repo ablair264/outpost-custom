@@ -297,7 +297,7 @@ export function RulesPanel({ onClose }: RulesPanelProps) {
             {rules.filter((r) => r.is_active).length} active rules
           </span>
           <span className="text-gray-500">
-            {rules.reduce((sum, r) => sum + (r.affected_count || 0), 0).toLocaleString()} products affected
+            {rules.reduce((sum, r) => sum + (parseInt(String(r.affected_count)) || 0), 0).toLocaleString()} products affected
           </span>
         </div>
       </div>

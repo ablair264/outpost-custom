@@ -81,24 +81,55 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
     setUploadState('processing');
     setError(null);
 
-    // Create preview
-    let logoUrl: string | null = null;
+    // Create local preview for immediate display
     if (file.type.startsWith('image/')) {
-      logoUrl = URL.createObjectURL(file);
-      setPreviewUrl(logoUrl);
+      const localPreview = URL.createObjectURL(file);
+      setPreviewUrl(localPreview);
     }
 
     try {
-      // Simulate upload/processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Actually upload the logo to R2 storage
+      let uploadedUrl: string | null = null;
+
+      if (file.type.startsWith('image/')) {
+        // Convert file to base64
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            const base64Data = result.split(',')[1];
+            resolve(base64Data);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        // Upload to R2
+        const response = await fetch('/.netlify/functions/storage/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: `logo-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
+            folder: 'logos',
+            data: base64,
+            contentType: file.type,
+          }),
+        });
+
+        const result = await response.json();
+        if (result.success && result.publicUrl) {
+          uploadedUrl = result.publicUrl;
+        }
+      }
 
       setUploadState('complete');
 
-      // Auto-proceed after a moment
+      // Auto-proceed after a moment with the R2 URL
       setTimeout(() => {
-        onComplete(logoUrl || undefined);
+        onComplete(uploadedUrl || undefined);
       }, 2500);
     } catch (err) {
+      console.error('Logo upload error:', err);
       setError('Something went wrong. Please try again.');
       setUploadState('idle');
     }
