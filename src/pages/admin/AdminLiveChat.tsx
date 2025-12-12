@@ -17,8 +17,8 @@ import {
 } from 'lucide-react';
 import { getAuthToken } from '../../lib/api';
 
-// Notification sound (base64 encoded short beep sound)
-const NOTIFICATION_SOUND = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1eXmNhYFJQUE9RTk1MS0tLS0pLTEtMTk5PTlBSU1VWV1laXF1eX2FiY2RlaGlrbG5wcXN1dnh6fH+BgoSGiImLjI6QkZOVlpeZmpudnqChpKWnqaqsrbCxs7W2uLq7vb7AwcPExsnKy83Oz9HS09TV1tfY2dra293d3t/f4OHh4uLj4+Pk5OXl5eXm5ubm5+fn5+fn5+fn5+fn5+bm5ubm5eXl5eXk5OTj4+Pi4uLh4eHg4N/f3t7d3dzc29va2tnZ2NjX1tbV1dTU09PS0tHR0M/PzsrJycjHxsXEw8LBwL++vby7urm4t7a1tLOysbCvrq2sq6qpqKempaWjoqGgnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUBAPz49PDs6OTg3NjU0MzIxMC8uLSwrKikoJyYlJCMiISAfHh0cGxoZGBcWFRQTEhEQDw4NDAsKCQgHBgUEAwIBAQEBAQEBAQICAgMDBAQFBQYGBwgICQkKCgsLDA0NDg8PEBEREhMUFBUWFxcYGRobHBwdHh8gISIjJCUmJygoKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1haW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+';
+// Notification sound stored in public/audio
+const NOTIFICATION_SOUND = '/audio/UIAlert-iPhone_notification_-Elevenlabs.mp3';
 
 // Play notification sound
 const playNotificationSound = () => {
