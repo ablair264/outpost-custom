@@ -67,13 +67,12 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Reset quote step when drawer closes
+  // Reset quote step when drawer closes (but not if showing quote modal)
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen && !showQuoteModal) {
       setQuoteStep('cart');
-      setShowQuoteModal(false);
     }
-  }, [isOpen]);
+  }, [isOpen, showQuoteModal]);
 
   const handleBrowseProducts = () => {
     onClose();
