@@ -27,6 +27,24 @@ const colors = {
   textMuted: '#666666',
 };
 
+// Size ordering for proper display
+const SIZE_ORDER: Record<string, number> = {
+  'XXS': 1, '2XS': 1,
+  'XS': 2,
+  'S': 3, 'SM': 3, 'Small': 3,
+  'M': 4, 'MD': 4, 'Medium': 4,
+  'L': 5, 'LG': 5, 'Large': 5,
+  'XL': 6,
+  'XXL': 7, '2XL': 7,
+  'XXXL': 8, '3XL': 8,
+  '4XL': 9, 'XXXXL': 9,
+  '5XL': 10, 'XXXXXL': 10,
+  '6XL': 11,
+  '7XL': 12,
+  '8XL': 13,
+  'One Size': 100, 'ONESIZE': 100, 'OS': 100, 'O/S': 100,
+};
+
 interface MobileProductSheetProps {
   productGroup: ProductGroup;
   isOpen: boolean;
@@ -164,14 +182,14 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
     : productGroup.variants.find(v => v.colour_code === currentColor?.colour_code)
       || productGroup.variants[0];
 
-  // Get available sizes for selected color
+  // Get available sizes for selected color, sorted by size order
   const availableSizes = Array.from(
     new Set(
       productGroup.variants
         .filter(v => v.colour_code === currentColor?.colour_code && v.sku_status !== 'Discontinued')
         .map(v => v.size_code)
     )
-  );
+  ).sort((a, b) => (SIZE_ORDER[a] ?? 50) - (SIZE_ORDER[b] ?? 50));
 
   // Get price
   const getCurrentPrice = (): { specific: number } | { min: number; max: number } | null => {

@@ -4,6 +4,7 @@ import { Product, getProductsByStyleCode } from '../lib/supabase';
 import './ProductDetails.css';
 import LogoCustomizerModal, { LogoOverlayConfig } from '../components/LogoCustomizerModal';
 import ImageModal from '../components/ImageModal';
+import { useCart } from '../contexts/CartContext';
 
 // Brand name to domain mapping for Brandfetch API
 const BRAND_DOMAINS: Record<string, string> = {
@@ -96,6 +97,7 @@ interface ProductGroup {
 const ProductDetails: React.FC = () => {
   const { styleCode } = useParams<{ styleCode: string }>();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [productGroup, setProductGroup] = useState<ProductGroup | null>(null);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
@@ -107,6 +109,7 @@ const ProductDetails: React.FC = () => {
   const [logoOverlay, setLogoOverlay] = useState<LogoOverlayConfig | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageModalIndex, setImageModalIndex] = useState(0);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     if (!styleCode) return;
@@ -261,12 +264,37 @@ const ProductDetails: React.FC = () => {
   };
 
   const handleAddToCart = () => {
-    // TODO: Implement add to cart functionality
-    console.log('Add to cart:', {
-      product: currentVariant,
+    if (!productGroup || !currentVariant) return;
+
+    // Get the selected variant with correct price
+    const selectedVariant = selectedSize
+      ? productGroup.variants.find(v =>
+          v.colour_code === productGroup.colors[selectedColor]?.code &&
+          v.size_code === selectedSize
+        ) || currentVariant
+      : currentVariant;
+
+    const price = parseFloat(selectedVariant.single_price) || productGroup.price_range?.min || 0;
+
+    // Create a GroupedProduct-like object for the cart
+    const cartProduct = {
+      style_code: productGroup.style_code,
+      style_name: productGroup.style_name,
+      brand: productGroup.brand,
+      primary_product_image_url: productGroup.colors[selectedColor]?.image || currentVariant.primary_product_image_url,
+      price_range: { min: price, max: price },
+    };
+
+    addToCart(
+      cartProduct as any,
       quantity,
-      selectedSize
-    });
+      productGroup.colors[selectedColor]?.name,
+      selectedSize || undefined
+    );
+
+    // Show feedback
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
   };
 
   const handleApplyLogo = (config: LogoOverlayConfig) => {
@@ -448,8 +476,9 @@ const ProductDetails: React.FC = () => {
                 className="add-to-cart-btn"
                 onClick={handleAddToCart}
                 disabled={availableSizes.length > 0 && !selectedSize}
+                style={addedToCart ? { backgroundColor: '#28a745' } : undefined}
               >
-                Add to Order
+                {addedToCart ? '✓ Added to Order' : 'Add to Order'}
               </button>
               <div style={{ height: 12 }} />
               <div style={{ display: 'flex', gap: 12 }}>
