@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { MarginRule } from './RulesPanel';
 import { getAuthToken } from '../../../../lib/api';
+import { RuleEditModal } from '../modals/RuleEditModal';
 
 // Admin purple theme colors
 const colors = {
@@ -36,6 +37,7 @@ export function RuleCard({ rule, icon, onUpdate }: RuleCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Format the rule description
   const getRuleDescription = () => {
@@ -248,8 +250,9 @@ export function RuleCard({ rule, icon, onUpdate }: RuleCardProps) {
                 {rule.is_active ? 'Active' : 'Inactive'}
               </button>
 
-              {/* Edit (placeholder) */}
+              {/* Edit */}
               <button
+                onClick={() => setShowEditModal(true)}
                 className="p-1.5 rounded-lg text-gray-500 hover:text-purple-300 hover:bg-purple-500/10 transition-colors"
                 title="Edit rule"
               >
@@ -274,6 +277,18 @@ export function RuleCard({ rule, icon, onUpdate }: RuleCardProps) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <RuleEditModal
+          rule={rule}
+          onClose={() => setShowEditModal(false)}
+          onUpdated={() => {
+            setShowEditModal(false);
+            onUpdate();
+          }}
+        />
       )}
     </div>
   );
