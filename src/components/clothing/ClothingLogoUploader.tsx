@@ -28,7 +28,7 @@ interface LogoPreviewData {
 
 interface ClothingLogoUploaderProps {
   onBack: () => void;
-  onComplete: () => void;
+  onComplete: (logoUrl?: string) => void;
   productTitle?: string;
   productImage?: string;
   onPreviewLogo?: () => void;
@@ -68,13 +68,13 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
         setUploadState('complete');
         // Auto-proceed after showing success
         setTimeout(() => {
-          onComplete();
+          onComplete(previewUrl || undefined);
         }, 2500);
       }, 1500);
 
       return () => clearTimeout(timer);
     }
-  }, [initialLogoData, uploadState, onComplete]);
+  }, [initialLogoData, uploadState, onComplete, previewUrl]);
 
   const processFile = useCallback(async (file: File) => {
     setSelectedFile(file);
@@ -82,8 +82,10 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
     setError(null);
 
     // Create preview
+    let logoUrl: string | null = null;
     if (file.type.startsWith('image/')) {
-      setPreviewUrl(URL.createObjectURL(file));
+      logoUrl = URL.createObjectURL(file);
+      setPreviewUrl(logoUrl);
     }
 
     try {
@@ -94,7 +96,7 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
 
       // Auto-proceed after a moment
       setTimeout(() => {
-        onComplete();
+        onComplete(logoUrl || undefined);
       }, 2500);
     } catch (err) {
       setError('Something went wrong. Please try again.');

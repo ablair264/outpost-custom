@@ -57,6 +57,9 @@ export interface ClothingEnquiry {
   quote_notes?: string;
   quote_sent_at?: string;
 
+  // Logo preview captures
+  logo_preview_captures?: LogoPreviewCapture[];
+
   // Metadata
   source: string;
 }
@@ -92,6 +95,16 @@ export interface LogoPreviewData {
   analysis?: LogoAnalysis;
 }
 
+export interface LogoPreviewCapture {
+  cartItemId: string;
+  productName: string;
+  selectedColor: string;
+  colorChanged: boolean;
+  originalColor: string;
+  logoPosition: { x: number; y: number; scale: number };
+  previewImageUrl: string;
+}
+
 export interface ContactFormData {
   name: string;
   email: string;
@@ -118,6 +131,8 @@ export interface SubmitEnquiryRequest {
   estimatedQuantity?: string;
   additionalNotes?: string;
   enquiryType: 'upload' | 'design_help' | 'consultation';
+  // Logo preview captures (optional)
+  logoPreviewCaptures?: LogoPreviewCapture[];
 }
 
 export interface SubmitEnquiryResponse {
@@ -193,6 +208,8 @@ export async function submitClothingEnquiry(
       estimatedQuantity: request.estimatedQuantity,
       additionalNotes: request.additionalNotes,
       enquiryType: request.enquiryType,
+      // Logo preview captures with R2 URLs
+      logoPreviewCaptures: request.logoPreviewCaptures,
     };
 
     const response = await enquiryApiFetch<{ success: boolean; enquiryId: string }>(
@@ -416,6 +433,7 @@ function mapEnquiryFromApi(apiEnquiry: any): ClothingEnquiry {
     quote_amount: apiEnquiry.quoteAmount,
     quote_notes: apiEnquiry.quoteNotes,
     quote_sent_at: apiEnquiry.quoteSentAt,
+    logo_preview_captures: apiEnquiry.logoPreviewCaptures,
     source: apiEnquiry.source || 'website',
   };
 }

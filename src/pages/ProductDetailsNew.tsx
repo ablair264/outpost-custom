@@ -7,7 +7,7 @@ import { useCart, cartUtils } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import LogoCustomizerModal, { LogoOverlayConfig } from '../components/LogoCustomizerModal';
 import ImageModal from '../components/ImageModal';
-import VinylLoader from '../components/VinylLoader';
+import PageLoader from '../components/PageLoader';
 import { ImageZoom, Image as ZoomImage } from '../components/animate-ui/primitives/effects/image-zoom';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../components/ui/carousel';
 import ClothingOrderWizard, { LogoPreviewData, ContactFormData } from '../components/clothing/ClothingOrderWizard';
@@ -266,7 +266,7 @@ const ProductDetailsNew: React.FC = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.dark }}>
-        <VinylLoader size={250} />
+        <PageLoader size={250} />
       </div>
     );
 

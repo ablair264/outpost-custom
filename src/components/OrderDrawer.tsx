@@ -9,6 +9,18 @@ import ClothingLogoUploader from './clothing/ClothingLogoUploader';
 import ClothingHelpRequestForm from './clothing/ClothingHelpRequestForm';
 import ClothingConsultationBooker from './clothing/ClothingConsultationBooker';
 import ClothingHowItWorks from './clothing/ClothingHowItWorks';
+import OrderLogoPreview from './clothing/OrderLogoPreview';
+
+// Logo preview capture interface
+interface LogoPreviewCapture {
+  cartItemId: string;
+  productName: string;
+  selectedColor: string;
+  colorChanged: boolean;
+  originalColor: string;
+  logoPosition: { x: number; y: number; scale: number };
+  previewImageUrl: string;
+}
 
 // Design system colors
 const colors = {
@@ -28,7 +40,7 @@ interface OrderDrawerProps {
   onClose: () => void;
 }
 
-type QuoteStep = 'cart' | 'path-selector' | 'upload' | 'help' | 'consult' | 'success' | 'how-it-works';
+type QuoteStep = 'cart' | 'path-selector' | 'upload' | 'logo-preview' | 'help' | 'consult' | 'success' | 'how-it-works';
 
 const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
@@ -46,6 +58,8 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [quoteStep, setQuoteStep] = useState<QuoteStep>('cart');
   const [showQuoteModal, setShowQuoteModal] = useState(false);
+  const [uploadedLogoUrl, setUploadedLogoUrl] = useState<string | null>(null);
+  const [logoPreviewCaptures, setLogoPreviewCaptures] = useState<LogoPreviewCapture[]>([]);
 
   // Detect mobile
   useEffect(() => {
@@ -158,9 +172,33 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
               productTitle={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
               productImage={firstCartItem?.image}
               onBack={() => setQuoteStep('path-selector')}
-              onComplete={() => setQuoteStep('success')}
+              onComplete={(logoUrl?: string) => {
+                if (logoUrl) {
+                  setUploadedLogoUrl(logoUrl);
+                  setQuoteStep('logo-preview');
+                } else {
+                  setQuoteStep('success');
+                }
+              }}
               isMobile={true}
             />
+          </div>
+        );
+      case 'logo-preview':
+        return (
+          <div className="px-4 py-3">
+            {uploadedLogoUrl && (
+              <OrderLogoPreview
+                logoUrl={uploadedLogoUrl}
+                onBack={() => setQuoteStep('upload')}
+                onComplete={(captures) => {
+                  setLogoPreviewCaptures(captures);
+                  setQuoteStep('success');
+                }}
+                onSkip={() => setQuoteStep('success')}
+                isMobile={true}
+              />
+            )}
           </div>
         );
       case 'help':
@@ -265,9 +303,29 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
                   productTitle={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
                   productImage={firstCartItem?.image}
                   onBack={() => setQuoteStep('path-selector')}
-                  onComplete={() => setQuoteStep('success')}
+                  onComplete={(logoUrl?: string) => {
+                    if (logoUrl) {
+                      setUploadedLogoUrl(logoUrl);
+                      setQuoteStep('logo-preview');
+                    } else {
+                      setQuoteStep('success');
+                    }
+                  }}
                   isMobile={false}
                 />
+              ) : quoteStep === 'logo-preview' ? (
+                uploadedLogoUrl && (
+                  <OrderLogoPreview
+                    logoUrl={uploadedLogoUrl}
+                    onBack={() => setQuoteStep('upload')}
+                    onComplete={(captures) => {
+                      setLogoPreviewCaptures(captures);
+                      setQuoteStep('success');
+                    }}
+                    onSkip={() => setQuoteStep('success')}
+                    isMobile={false}
+                  />
+                )
               ) : quoteStep === 'help' ? (
                 <ClothingHelpRequestForm
                   productTitle={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}

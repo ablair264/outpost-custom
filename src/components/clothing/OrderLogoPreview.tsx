@@ -11,6 +11,7 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCcw,
+  Loader2,
 } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 
@@ -23,6 +24,35 @@ const colors = {
   white: '#ffffff',
   textMuted: '#666666',
 };
+
+// Upload preview image to R2 storage
+async function uploadPreviewToR2(dataUrl: string, itemName: string): Promise<string> {
+  try {
+    // Extract base64 data from data URL
+    const base64Data = dataUrl.split(',')[1];
+    if (!base64Data) return '';
+
+    const response = await fetch('/.netlify/functions/storage/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: `${itemName.replace(/[^a-zA-Z0-9]/g, '-')}-preview.png`,
+        folder: 'logo-previews',
+        data: base64Data,
+        contentType: 'image/png',
+      }),
+    });
+
+    const result = await response.json();
+    if (result.success && result.publicUrl) {
+      return result.publicUrl;
+    }
+    return '';
+  } catch (error) {
+    console.error('Failed to upload preview:', error);
+    return '';
+  }
+}
 
 interface LogoPreviewCapture {
   cartItemId: string;
@@ -78,6 +108,8 @@ const OrderLogoPreview: React.FC<OrderLogoPreviewProps> = ({
   const [captures, setCaptures] = useState<Map<string, LogoPreviewCapture>>(new Map());
   const [showColorWarning, setShowColorWarning] = useState(false);
   const [pendingProceed, setPendingProceed] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState('');
 
   // Sample colors for items (in reality, this would come from product data)
   const sampleColors = [
@@ -102,7 +134,7 @@ const OrderLogoPreview: React.FC<OrderLogoPreviewProps> = ({
   // Track interaction with current item
   useEffect(() => {
     if (currentItem) {
-      setInteractedItems(prev => new Set([...prev, currentItem.id]));
+      setInteractedItems(prev => new Set(Array.from(prev).concat(currentItem.id)));
     }
   }, [currentItem?.id]);
 
@@ -268,15 +300,67 @@ const OrderLogoPreview: React.FC<OrderLogoPreviewProps> = ({
   };
 
   const completeProceed = async () => {
-    // Save final capture for current item
-    await saveCurrentCapture();
+    setIsUploading(true);
+    setUploadProgress('Saving preview...');
 
-    // Filter to only items that were interacted with
-    const finalCaptures = Array.from(captures.values()).filter(c =>
-      interactedItems.has(c.cartItemId)
-    );
+    try {
+      // Save final capture for current item
+      await saveCurrentCapture();
 
-    onComplete(finalCaptures);
+      // Get all captures (need to re-read after saveCurrentCapture updates state)
+      // Use a small delay to ensure state is updated
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Filter to only items that were interacted with
+      const allCaptures = new Map(captures);
+
+      // Also include current item if interacted
+      if (currentItem && interactedItems.has(currentItem.id)) {
+        const previewDataUrl = await capturePreview();
+        allCaptures.set(currentItem.id, {
+          cartItemId: currentItem.id,
+          productName: currentItem.name,
+          selectedColor: currentColor,
+          colorChanged: hasColorChanged,
+          originalColor,
+          logoPosition: { x: logoPosition.x, y: logoPosition.y, scale: logoScale },
+          previewImageUrl: previewDataUrl,
+        });
+      }
+
+      const capturesArray = Array.from(allCaptures.values()).filter(c =>
+        interactedItems.has(c.cartItemId)
+      );
+
+      // Upload each preview to R2
+      const uploadedCaptures: LogoPreviewCapture[] = [];
+      for (let i = 0; i < capturesArray.length; i++) {
+        const capture = capturesArray[i];
+        setUploadProgress(`Uploading preview ${i + 1} of ${capturesArray.length}...`);
+
+        if (capture.previewImageUrl && capture.previewImageUrl.startsWith('data:')) {
+          const uploadedUrl = await uploadPreviewToR2(capture.previewImageUrl, capture.productName);
+          uploadedCaptures.push({
+            ...capture,
+            previewImageUrl: uploadedUrl || capture.previewImageUrl,
+          });
+        } else {
+          uploadedCaptures.push(capture);
+        }
+      }
+
+      setUploadProgress('Done!');
+      onComplete(uploadedCaptures);
+    } catch (error) {
+      console.error('Error during preview upload:', error);
+      // Still complete with local data URLs if upload fails
+      const finalCaptures = Array.from(captures.values()).filter(c =>
+        interactedItems.has(c.cartItemId)
+      );
+      onComplete(finalCaptures);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleColorWarningConfirm = async () => {
@@ -522,7 +606,8 @@ const OrderLogoPreview: React.FC<OrderLogoPreviewProps> = ({
       <div className="flex gap-3">
         <button
           onClick={onSkip}
-          className={`flex-1 ${isMobile ? 'py-2.5' : 'py-3'} rounded-lg border border-white/20 text-white/80 font-medium transition-all hover:bg-white/5 flex items-center justify-center gap-2`}
+          disabled={isUploading}
+          className={`flex-1 ${isMobile ? 'py-2.5' : 'py-3'} rounded-lg border border-white/20 text-white/80 font-medium transition-all hover:bg-white/5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           <SkipForward className="w-4 h-4" />
           <span className="neuzeit-font">Skip Preview</span>
@@ -530,13 +615,45 @@ const OrderLogoPreview: React.FC<OrderLogoPreviewProps> = ({
 
         <button
           onClick={handleProceed}
-          className={`flex-1 ${isMobile ? 'py-2.5' : 'py-3'} rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2`}
+          disabled={isUploading}
+          className={`flex-1 ${isMobile ? 'py-2.5' : 'py-3'} rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed`}
           style={{ backgroundColor: colors.accent }}
         >
-          <span className="neuzeit-font">Continue</span>
-          <ChevronRight className="w-4 h-4" />
+          {isUploading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="neuzeit-font">Uploading...</span>
+            </>
+          ) : (
+            <>
+              <span className="neuzeit-font">Continue</span>
+              <ChevronRight className="w-4 h-4" />
+            </>
+          )}
         </button>
       </div>
+
+      {/* Uploading Overlay */}
+      <AnimatePresence>
+        {isUploading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          >
+            <div className="text-center">
+              <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: colors.accent }} />
+              <h3 className="text-white text-lg font-medium mb-2 hearns-font">
+                Saving Your Previews
+              </h3>
+              <p className="text-white/60 neuzeit-light-font">
+                {uploadProgress}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Color Change Warning Modal */}
       <AnimatePresence>

@@ -85,7 +85,7 @@ export async function handler(event) {
       }
 
       // Validate folder
-      const allowedFolders = ['slides', 'tiles', 'hero', 'accordion', 'logos', 'uploads'];
+      const allowedFolders = ['slides', 'tiles', 'hero', 'accordion', 'logos', 'uploads', 'logo-previews'];
       const safeFolder = allowedFolders.includes(folder) ? folder : 'uploads';
 
       // Generate unique key
@@ -140,7 +140,7 @@ export async function handler(event) {
       }
 
       // Validate folder
-      const allowedFolders = ['slides', 'tiles', 'hero', 'accordion', 'logos', 'uploads'];
+      const allowedFolders = ['slides', 'tiles', 'hero', 'accordion', 'logos', 'uploads', 'logo-previews'];
       const safeFolder = allowedFolders.includes(folder) ? folder : 'uploads';
 
       // Generate unique key
