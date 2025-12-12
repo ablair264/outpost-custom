@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn, 
 import { ProductGroup } from './ClothingBrowser';
 import { ColorVariant, getRgbValues } from '../../lib/supabase';
 import { useWishlist } from '../../contexts/WishlistContext';
+import { useCart } from '../../contexts/CartContext';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../ui/carousel';
 // ImageZoom removed - using fullscreen modal instead for better mobile UX
 import ClothingOrderWizard, { LogoPreviewData } from './ClothingOrderWizard';
@@ -74,6 +75,8 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
   const contentRef = useRef<HTMLDivElement>(null);
 
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const [addedToCart, setAddedToCart] = useState(false);
 
   // Load hex color lookup
   useEffect(() => {
@@ -234,6 +237,39 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
       variants: productGroup.variants,
     };
     toggleWishlist(groupedProduct);
+  };
+
+  // Handle add to cart
+  const handleAddToCart = () => {
+    // Get the selected variant with correct price
+    const selectedVariant = selectedSize
+      ? productGroup.variants.find(v =>
+          v.colour_code === currentColor?.colour_code &&
+          v.size_code === selectedSize
+        ) || currentVariant
+      : currentVariant;
+
+    const price = selectedVariant ? parseFloat(selectedVariant.single_price) : (productGroup.price_range?.min || 0);
+
+    // Create a GroupedProduct-like object for the cart
+    const cartProduct = {
+      style_code: productGroup.style_code,
+      style_name: productGroup.style_name,
+      brand: productGroup.brand,
+      primary_product_image_url: currentColor?.colour_image || currentVariant?.primary_product_image_url || '',
+      price_range: { min: price, max: price },
+    };
+
+    addToCart(
+      cartProduct as any,
+      1, // quantity
+      currentColor?.colour_name,
+      selectedSize || undefined
+    );
+
+    // Show feedback
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
   };
 
   // Handle enquiry submission

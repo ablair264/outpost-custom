@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, Check, ChevronRight, ChevronLeft, Ruler, Sparkles, Shirt, Droplets, Award, Info, ZoomIn, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, ColorVariant, getProductsByStyleCode, getRgbValues } from '../lib/supabase';
-import { cartUtils } from '../contexts/CartContext';
+import { useCart, cartUtils } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import LogoCustomizerModal, { LogoOverlayConfig } from '../components/LogoCustomizerModal';
 import ImageModal from '../components/ImageModal';
@@ -69,6 +69,9 @@ const ProductDetailsNew: React.FC = () => {
   const MAX_COLORS_DISPLAY = 20;
 
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     if (!styleCode) return;
@@ -401,6 +404,40 @@ const ProductDetailsNew: React.FC = () => {
   const handleApplyLogo = (config: LogoOverlayConfig) => {
     setLogoOverlay(config);
     setShowLogoModal(false);
+  };
+
+  const handleAddToCart = () => {
+    if (!productGroup || !currentVariant) return;
+
+    // Get the selected variant with correct price
+    const selectedVariant = selectedSize
+      ? productGroup.variants.find(v =>
+          v.colour_code === productGroup.colors[selectedColor]?.colour_code &&
+          v.size_code === selectedSize
+        ) || currentVariant
+      : currentVariant;
+
+    const price = parseFloat(selectedVariant.single_price) || productGroup.price_range?.min || 0;
+
+    // Create a GroupedProduct-like object for the cart
+    const cartProduct = {
+      style_code: productGroup.style_code,
+      style_name: productGroup.style_name,
+      brand: productGroup.brand,
+      primary_product_image_url: productGroup.colors[selectedColor]?.colour_image || currentVariant.primary_product_image_url,
+      price_range: { min: price, max: price },
+    };
+
+    addToCart(
+      cartProduct as any,
+      quantity,
+      productGroup.colors[selectedColor]?.colour_name,
+      selectedSize || undefined
+    );
+
+    // Show feedback
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
   };
 
   return (
@@ -847,18 +884,28 @@ const ProductDetailsNew: React.FC = () => {
                   transition={{ duration: 0.5, delay: 0.4 }}
                   className="space-y-3 pt-2"
                 >
-                  {/* Primary CTA - Start Order */}
+                  {/* Primary CTA - Add to Order */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setShowQuoteModal(true)}
-                      className="flex-1 h-12 rounded-[10px] neuzeit-font font-semibold text-sm text-white transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-xl hover:scale-[1.01]"
+                      onClick={handleAddToCart}
+                      disabled={availableSizes.length > 0 && !selectedSize}
+                      className="flex-1 h-12 rounded-[10px] neuzeit-font font-semibold text-sm text-white transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-xl hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                       style={{
-                        backgroundColor: colors.accent,
-                        boxShadow: `0 6px 20px ${colors.accent}30`,
+                        backgroundColor: addedToCart ? '#28a745' : colors.accent,
+                        boxShadow: `0 6px 20px ${addedToCart ? '#28a745' : colors.accent}30`,
                       }}
                     >
-                      <MessageSquare className="w-4 h-4" />
-                      Start Order
+                      {addedToCart ? (
+                        <>
+                          <Check className="w-4 h-4" />
+                          Added to Order
+                        </>
+                      ) : (
+                        <>
+                          <Shirt className="w-4 h-4" />
+                          Add to Order
+                        </>
+                      )}
                     </button>
                     <button
                       onClick={() => setShowHowItWorksModal(true)}
