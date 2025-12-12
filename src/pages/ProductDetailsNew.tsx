@@ -266,7 +266,7 @@ const ProductDetailsNew: React.FC = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.dark }}>
-        <PageLoader size={250} />
+        <PageLoader />
       </div>
     );
 

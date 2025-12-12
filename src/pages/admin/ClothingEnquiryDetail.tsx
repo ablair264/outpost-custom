@@ -410,6 +410,80 @@ const ClothingEnquiryDetail: React.FC = () => {
             </div>
           )}
 
+          {/* Logo Preview Captures */}
+          {enquiry.logoPreviewCaptures && enquiry.logoPreviewCaptures.length > 0 && (
+            <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">
+              <div className="px-5 py-4 border-b border-purple-500/10 bg-[#1e1a2e]/50">
+                <h2 className="font-semibold text-gray-200 neuzeit-font flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-gray-500" />
+                  Logo Preview on Products ({enquiry.logoPreviewCaptures.length})
+                </h2>
+              </div>
+              <div className="p-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {enquiry.logoPreviewCaptures.map((capture, index) => (
+                    <div
+                      key={capture.cartItemId || index}
+                      className="bg-[#1e1a2e] rounded-lg border border-purple-500/20 overflow-hidden"
+                    >
+                      {/* Preview Image */}
+                      {capture.previewImageUrl && (
+                        <div className="aspect-square relative">
+                          <img
+                            src={capture.previewImageUrl}
+                            alt={`Logo preview on ${capture.productName}`}
+                            className="w-full h-full object-contain bg-white"
+                          />
+                          {capture.colorChanged && (
+                            <div className="absolute top-2 right-2 px-2 py-1 bg-amber-500/90 rounded-full flex items-center gap-1">
+                              <Palette className="w-3 h-3 text-white" />
+                              <span className="text-xs text-white">Color changed</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {/* Details */}
+                      <div className="p-3 space-y-2">
+                        <p className="text-sm font-medium text-gray-200 truncate neuzeit-font">
+                          {capture.productName}
+                        </p>
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                          <Palette className="w-3 h-3" />
+                          <span>
+                            {capture.selectedColor}
+                            {capture.colorChanged && (
+                              <span className="text-amber-400 ml-1">
+                                (was {capture.originalColor})
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                          <MapPin className="w-3 h-3" />
+                          <span>
+                            Position: {Math.round(capture.logoPosition.x)}%, {Math.round(capture.logoPosition.y)}%
+                            • Scale: {Math.round(capture.logoPosition.scale)}%
+                          </span>
+                        </div>
+                        {capture.previewImageUrl && (
+                          <a
+                            href={capture.previewImageUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs text-purple-400 hover:text-purple-300 transition-colors"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            View Full Size
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Additional Notes from Customer */}
           {enquiry.additionalNotes && (
             <div className="bg-[#2a2440]/50 backdrop-blur-sm rounded-xl border border-purple-500/10 overflow-hidden">

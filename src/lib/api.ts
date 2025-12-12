@@ -185,6 +185,16 @@ export const authApi = {
 // ENQUIRIES API
 // ============================================
 
+export interface LogoPreviewCapture {
+  cartItemId: string;
+  productName: string;
+  selectedColor: string;
+  colorChanged: boolean;
+  originalColor: string;
+  logoPosition: { x: number; y: number; scale: number };
+  previewImageUrl: string;
+}
+
 export interface ClothingEnquiry {
   id: string;
   createdAt: string;
@@ -236,6 +246,9 @@ export interface ClothingEnquiry {
   quoteSentAt?: string;
 
   source: string;
+
+  // Logo preview captures
+  logoPreviewCaptures?: LogoPreviewCapture[];
 
   // Relations
   notes?: EnquiryNote[];
