@@ -176,10 +176,12 @@ const UnifiedChatWidget: React.FC = () => {
           setAdminJoined(true);
         }
 
-        // Add any new messages we don't have
+        // Add any new messages we don't have (only non-visitor messages, since visitor messages are added locally)
         if (data.messages && data.messages.length > 0) {
-          const existingIds = new Set(messages.map(m => m.id));
-          const newMessages = data.messages.filter((m: any) => !existingIds.has(m.id));
+          // Filter to only admin/ai/system messages - we already add visitor messages locally
+          const nonVisitorMessages = data.messages.filter((m: any) => m.sender_type !== 'visitor');
+          const existingContents = new Set(messages.map(m => m.content));
+          const newMessages = nonVisitorMessages.filter((m: any) => !existingContents.has(m.content));
 
           if (newMessages.length > 0) {
             const formattedNew: ChatMessage[] = newMessages.map((m: any) => ({
