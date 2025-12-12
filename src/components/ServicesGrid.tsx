@@ -99,8 +99,8 @@ const serviceCards = [
 
 const ServicesGrid: React.FC = () => {
   return (
-    <section id="services" className="relative bg-[#908d9a] py-12 sm:py-16 md:py-20">
-      <div className="mx-auto w-full max-w-[1450px] rounded-[10px] bg-[#c1c6c8] px-4 pt-8 pb-12 shadow-[0_35px_80px_rgba(26,24,32,0.15)] sm:px-8 sm:pt-10 sm:pb-16 md:px-10 md:pt-[47px] md:pb-[96px] lg:px-[74px]">
+    <section id="services" className="relative bg-[#183028] py-12 sm:py-16 md:py-20">
+      <div className="mx-auto w-full max-w-[1450px] rounded-[10px] bg-[#234a3a] px-4 pt-8 pb-12 shadow-[0_35px_80px_rgba(24,48,40,0.25)] sm:px-8 sm:pt-10 sm:pb-16 md:px-10 md:pt-[47px] md:pb-[96px] lg:px-[74px]">
         <style>{`
           @font-face {
             font-family: 'Hearns';
@@ -139,21 +139,17 @@ const ServicesGrid: React.FC = () => {
 
         <div className="flex flex-col gap-6 sm:gap-8 md:gap-10">
           {/* Header - Stacked on mobile, side-by-side on desktop */}
-          <div className="flex flex-col gap-3 sm:gap-4 text-[#221C35] lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-3 sm:gap-4 text-white lg:flex-row lg:items-end lg:justify-between">
             {/* Title + Scribble */}
             <div className="flex flex-col items-center lg:items-start">
               <p className="hearns-font text-[28px] tracking-[0.04em] sm:text-[36px] md:text-[48px] lg:text-[60px]">
                 WHAT WE DO
               </p>
-              <img
-                src="/images/Scribble_Purple.png"
-                alt=""
-                className="mt-1 w-[140px] sm:mt-2 sm:w-[180px] md:w-[220px] lg:w-[264px]"
-              />
+              <div className="h-[3px] rounded-full mt-2 sm:mt-3 w-[100px] sm:w-[140px] md:w-[180px] lg:w-[220px]" style={{ backgroundColor: '#64a70b' }} />
             </div>
 
             {/* Tagline - inline on mobile, separate on desktop */}
-            <p className="smilecake-font text-center text-sm sm:text-base md:text-lg lg:text-[20px] leading-relaxed text-[#221C35]/80 max-w-[320px] mx-auto lg:mx-0 lg:text-right lg:max-w-[260px]">
+            <p className="grotesk-font text-center text-sm sm:text-base md:text-lg lg:text-[20px] leading-relaxed text-white/70 max-w-[320px] mx-auto lg:mx-0 lg:text-right lg:max-w-[260px]">
               We're here to help you promote your business, build your brand or simply show your individuality.
             </p>
           </div>

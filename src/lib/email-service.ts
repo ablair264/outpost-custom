@@ -4,15 +4,18 @@
 // Note: Import will work once @emailjs/browser is installed
 // import emailjs from '@emailjs/browser';
 
-// Configuration - set these in your environment variables
-const EMAILJS_SERVICE_ID = process.env.REACT_APP_EMAILJS_SERVICE_ID || '';
+// Configuration - set these in your environment variables or use defaults
+const EMAILJS_SERVICE_ID = process.env.REACT_APP_EMAILJS_SERVICE_ID || 'service_hn5lrl4';
 const EMAILJS_PUBLIC_KEY = process.env.REACT_APP_EMAILJS_PUBLIC_KEY || '';
+
+// Email assets hosted on Cloudflare R2
+const EMAIL_LOGO_URL = process.env.REACT_APP_EMAIL_LOGO_URL || 'https://pub-bfb994b9a59b4cde864e00ae50d54eb3.r2.dev/emails/outpost-logo.png';
 
 // Template IDs - configure these in EmailJS dashboard
 const TEMPLATES = {
-  customerConfirmation: process.env.REACT_APP_EMAILJS_TEMPLATE_CUSTOMER || '',
-  staffNotification: process.env.REACT_APP_EMAILJS_TEMPLATE_STAFF || '',
-  quoteSent: process.env.REACT_APP_EMAILJS_TEMPLATE_QUOTE || '',
+  customerConfirmation: process.env.REACT_APP_EMAILJS_TEMPLATE_CUSTOMER || 'template_ty4nfnj',
+  staffNotification: process.env.REACT_APP_EMAILJS_TEMPLATE_STAFF || 'template_pvjzi6q',
+  quoteSent: process.env.REACT_APP_EMAILJS_TEMPLATE_QUOTE || 'template_wnny4xr',
 };
 
 export interface CustomerConfirmationData {
@@ -87,6 +90,7 @@ export async function sendCustomerConfirmation(
       enquiry_ref: data.enquiry_ref,
       product_name: data.product_name,
       estimated_response: data.estimated_response || '24 hours',
+      logo_url: EMAIL_LOGO_URL,
     };
 
     await emailjs.default.send(
@@ -131,6 +135,7 @@ export async function sendStaffNotification(
       additional_notes: data.additional_notes || 'None',
       logo_quality: data.logo_quality || 'N/A',
       admin_link: data.admin_link,
+      logo_url: EMAIL_LOGO_URL,
     };
 
     await emailjs.default.send(
@@ -171,6 +176,7 @@ export async function sendQuoteEmail(
       quote_amount: data.quote_amount,
       quote_notes: data.quote_notes || '',
       mockup_image_url: data.mockup_image_url || '',
+      logo_url: EMAIL_LOGO_URL,
     };
 
     await emailjs.default.send(

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Enquiry - Outpost Custom</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; background-color: #183028; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+  <!-- Wrapper Table -->
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #183028;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+
+        <!-- Main Container -->
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; width: 100%;">
+
+          <!-- Header with Logo -->
+          <tr>
+            <td align="center" style="padding-bottom: 25px;">
+              <img src="https://pub-bfb994b9a59b4cde864e00ae50d54eb3.r2.dev/emails/outpost-logo.png" alt="Outpost Custom" width="200" style="display: block; max-width: 200px; height: auto;" />
+            </td>
+          </tr>
+
+          <!-- Alert Banner -->
+          <tr>
+            <td style="padding-bottom: 20px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #64a70b; border-radius: 10px;">
+                <tr>
+                  <td style="padding: 18px 25px; text-align: center;">
+                    <span style="font-size: 16px; font-weight: bold; color: #ffffff; text-transform: uppercase; letter-spacing: 1px;">
+                      New Enquiry Received
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Main Content Card -->
+          <tr>
+            <td>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #234a3a; border-radius: 15px; overflow: hidden;">
+
+                <tr>
+                  <td style="padding: 30px 35px;">
+
+                    <!-- Reference & Type Row -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 25px;">
+                      <tr>
+                        <td width="50%" style="vertical-align: top;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                              <td style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; padding-bottom: 5px;">
+                                Reference
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="font-size: 20px; font-weight: bold; color: #64a70b;">
+                                {{enquiry_ref}}
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td width="50%" style="vertical-align: top; text-align: right;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="right">
+                            <tr>
+                              <td style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; padding-bottom: 5px;">
+                                Type
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <span style="display: inline-block; padding: 6px 14px; background-color: #183028; border-radius: 20px; font-size: 13px; color: #ffffff;">
+                                  {{enquiry_type}}
+                                </span>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Divider -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 25px;">
+                      <tr>
+                        <td style="height: 1px; background-color: rgba(255,255,255,0.1);"></td>
+                      </tr>
+                    </table>
+
+                    <!-- Customer Details -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 25px;">
+                      <tr>
+                        <td style="font-size: 14px; font-weight: bold; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 15px;">
+                          Customer Details
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #183028; border-radius: 10px;">
+                            <tr>
+                              <td style="padding: 18px 20px;">
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                  <tr>
+                                    <td style="padding-bottom: 12px;">
+                                      <span style="font-size: 12px; color: rgba(255,255,255,0.5);">Name</span><br>
+                                      <span style="font-size: 16px; color: #ffffff; font-weight: 500;">{{customer_name}}</span>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style="padding-bottom: 12px;">
+                                      <span style="font-size: 12px; color: rgba(255,255,255,0.5);">Email</span><br>
+                                      <a href="mailto:{{customer_email}}" style="font-size: 16px; color: #64a70b; text-decoration: none;">{{customer_email}}</a>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>
+                                      <span style="font-size: 12px; color: rgba(255,255,255,0.5);">Phone</span><br>
+                                      <a href="tel:{{customer_phone}}" style="font-size: 16px; color: #64a70b; text-decoration: none;">{{customer_phone}}</a>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Order Details -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 25px;">
+                      <tr>
+                        <td style="font-size: 14px; font-weight: bold; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 15px;">
+                          Enquiry Details
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                            <!-- Product -->
+                            <tr>
+                              <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                  <tr>
+                                    <td width="40%" style="font-size: 13px; color: rgba(255,255,255,0.6);">Product</td>
+                                    <td style="font-size: 14px; color: #ffffff; font-weight: 500;">{{product_name}}</td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                            <!-- Quantity -->
+                            <tr>
+                              <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                  <tr>
+                                    <td width="40%" style="font-size: 13px; color: rgba(255,255,255,0.6);">Est. Quantity</td>
+                                    <td style="font-size: 14px; color: #ffffff;">{{estimated_quantity}}</td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                            <!-- Logo Quality -->
+                            <tr>
+                              <td style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                  <tr>
+                                    <td width="40%" style="font-size: 13px; color: rgba(255,255,255,0.6);">Logo Quality</td>
+                                    <td style="font-size: 14px; color: #ffffff;">{{logo_quality}}</td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Notes -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 30px;">
+                      <tr>
+                        <td style="font-size: 14px; font-weight: bold; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 12px;">
+                          Additional Notes
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="background-color: #183028; border-radius: 10px; padding: 18px 20px;">
+                          <p style="margin: 0; font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                            {{additional_notes}}
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- CTA Button -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td align="center">
+                          <a href="{{admin_link}}" style="display: inline-block; padding: 16px 40px; background-color: #64a70b; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-radius: 8px;">
+                            View in Admin Panel
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding-top: 30px; text-align: center;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="font-size: 12px; color: rgba(255,255,255,0.4);">
+                    Enquiry ID: {{enquiry_id}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

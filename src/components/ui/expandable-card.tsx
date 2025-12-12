@@ -36,7 +36,15 @@ interface ExpandableCardProps {
   hoverItems?: string[]
 }
 
-const DEFAULT_GRADIENT = "linear-gradient(180deg, rgba(34,28,53,1) 0%, rgba(0,0,0,0.07) 100%)"
+// Green theme colors
+const colors = {
+  accent: '#64a70b',
+  accentHover: '#578f09',
+  dark: '#183028',
+  darkLight: '#234a3a',
+}
+
+const DEFAULT_GRADIENT = "linear-gradient(180deg, rgba(24,48,40,0.9) 0%, rgba(0,0,0,0.1) 100%)"
 
 // ServicesList component with tap-to-reveal descriptions
 function ServicesList({ groups, onClose }: { groups: ServiceGroup[]; onClose: () => void }) {
@@ -75,11 +83,11 @@ function ServicesList({ groups, onClose }: { groups: ServiceGroup[]; onClose: ()
                 onClick={(e) => toggleItem(item.label, e)}
               >
                 {Icon && (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#383349] flex-shrink-0">
-                    <Icon className="h-4 w-4 text-[#c1c6c8]" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full flex-shrink-0" style={{ backgroundColor: colors.darkLight }}>
+                    <Icon className="h-4 w-4" style={{ color: colors.accent }} />
                   </div>
                 )}
-                <span className="smilecake-font text-lg text-white">
+                <span className="grotesk-font text-lg text-white">
                   {item.label}
                 </span>
               </button>
@@ -93,12 +101,13 @@ function ServicesList({ groups, onClose }: { groups: ServiceGroup[]; onClose: ()
                     className="overflow-hidden"
                   >
                     <div className="px-3 pb-3 pt-0">
-                      <p className="grotesk-font text-sm text-[#908d9a] leading-relaxed pl-11 mb-2">
+                      <p className="grotesk-font text-sm text-white/60 leading-relaxed pl-11 mb-2">
                         {item.description}
                       </p>
                       <Link
                         to={item.href}
-                        className="inline-flex items-center gap-2 ml-11 text-sm text-[#c1c6c8] hover:text-white transition-colors"
+                        className="inline-flex items-center gap-2 ml-11 text-sm transition-colors"
+                        style={{ color: colors.accent }}
                         onClick={onClose}
                       >
                         Learn more
@@ -130,14 +139,15 @@ function ServicesList({ groups, onClose }: { groups: ServiceGroup[]; onClose: ()
               className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
               onClick={(e) => toggleGroup(group.title, e)}
             >
-              <span className="smilecake-font text-xl text-white">
+              <span className="grotesk-font text-xl text-white font-semibold">
                 {group.title}
               </span>
               <ChevronRight
                 className={cn(
-                  "h-5 w-5 text-[#908d9a] transition-transform duration-200",
+                  "h-5 w-5 transition-transform duration-200",
                   isGroupExpanded && "rotate-90"
                 )}
+                style={{ color: colors.accent }}
               />
             </button>
             <AnimatePresence>
@@ -164,8 +174,8 @@ function ServicesList({ groups, onClose }: { groups: ServiceGroup[]; onClose: ()
                             onClick={(e) => toggleItem(item.label, e)}
                           >
                             {Icon && (
-                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#383349] flex-shrink-0">
-                                <Icon className="h-3.5 w-3.5 text-[#c1c6c8]" />
+                              <div className="flex h-7 w-7 items-center justify-center rounded-full flex-shrink-0" style={{ backgroundColor: colors.darkLight }}>
+                                <Icon className="h-3.5 w-3.5" style={{ color: colors.accent }} />
                               </div>
                             )}
                             <span className="grotesk-font text-base text-white">
@@ -182,12 +192,13 @@ function ServicesList({ groups, onClose }: { groups: ServiceGroup[]; onClose: ()
                                 className="overflow-hidden"
                               >
                                 <div className="px-3 pb-3 pt-0">
-                                  <p className="grotesk-font text-sm text-[#908d9a] leading-relaxed pl-10 mb-2">
+                                  <p className="grotesk-font text-sm text-white/60 leading-relaxed pl-10 mb-2">
                                     {item.description}
                                   </p>
                                   <Link
                                     to={item.href}
-                                    className="inline-flex items-center gap-2 ml-10 text-sm text-[#c1c6c8] hover:text-white transition-colors"
+                                    className="inline-flex items-center gap-2 ml-10 text-sm transition-colors hover:opacity-80"
+                                    style={{ color: colors.accent }}
                                     onClick={onClose}
                                   >
                                     Learn more
@@ -358,7 +369,8 @@ export function ExpandableCard({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-10 h-full w-full bg-[#0a080f]/80"
+            className="fixed inset-0 z-10 h-full w-full"
+            style={{ backgroundColor: 'rgba(24, 48, 40, 0.9)' }}
           />
         )}
       </AnimatePresence>
@@ -370,7 +382,8 @@ export function ExpandableCard({
             <motion.div
               layoutId={`card-${title}-${id}`}
               ref={cardRef}
-              className="relative flex w-full max-w-[550px] flex-col overflow-hidden rounded-2xl bg-[#221C35] text-[#C1C6C8] shadow-2xl my-auto"
+              className="relative flex w-full max-w-[550px] flex-col overflow-hidden rounded-2xl text-white shadow-2xl my-auto"
+              style={{ backgroundColor: colors.dark }}
               {...props}
             >
               {/* Titlebar */}
@@ -382,7 +395,7 @@ export function ExpandableCard({
                   {title}
                 </motion.h3>
                 <button
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-[#908d9a] transition-colors hover:bg-white/10 hover:text-white"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"
                   onClick={() => setActive(false)}
                   aria-label="Close modal"
                 >
@@ -437,7 +450,8 @@ export function ExpandableCard({
                 <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4 border-t border-white/10">
                   <Link
                     to="/contact"
-                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-[#183028] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#1f4038]"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-[15px] px-6 py-3 font-semibold text-white transition-all hover:opacity-90"
+                    style={{ backgroundColor: colors.accent }}
                     onClick={() => setActive(false)}
                   >
                     Get Free Quote
@@ -445,7 +459,7 @@ export function ExpandableCard({
                   {categoryLink && (
                     <Link
                       to={categoryLink}
-                      className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-white/20 bg-transparent px-6 py-3 font-semibold text-white transition-colors hover:border-white/40 hover:bg-white/5"
+                      className="flex-1 flex items-center justify-center gap-2 rounded-[15px] border-2 border-white/20 bg-transparent px-6 py-3 font-semibold text-white transition-colors hover:border-white/40 hover:bg-white/5"
                       onClick={() => setActive(false)}
                     >
                       View All {title}
@@ -482,12 +496,14 @@ export function ExpandableCard({
             style={{ background: overlayGradient }}
           />
           {/* Darker overlay on hover for better text contrast */}
-          <div className="absolute inset-0 bg-[#221C35]/0 transition-all duration-300 group-hover:bg-[#221C35]/85" />
+          <div className="absolute inset-0 transition-all duration-300" style={{ backgroundColor: 'transparent' }}>
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-85 transition-all duration-300" style={{ backgroundColor: colors.dark }} />
+          </div>
         </div>
         <div className="relative flex h-full w-full flex-col items-center justify-start text-center px-3">
           <motion.h4
             layoutId={`title-${title}-${id}`}
-            className="hearns-font mt-5 sm:mt-7 text-xl sm:text-2xl md:text-[28px] uppercase tracking-[0.12em] sm:tracking-[0.14em] text-[#C1C6C8] drop-shadow-lg"
+            className="hearns-font mt-5 sm:mt-7 text-xl sm:text-2xl md:text-[28px] uppercase tracking-[0.12em] sm:tracking-[0.14em] text-white drop-shadow-lg"
           >
             {title}
           </motion.h4>
@@ -498,8 +514,9 @@ export function ExpandableCard({
               {hoverItems.map((item) => (
                 <li
                   key={item}
-                  className="grotesk-font text-xs sm:text-sm md:text-base text-white font-medium drop-shadow-md"
+                  className="grotesk-font text-xs sm:text-sm md:text-base text-white font-medium drop-shadow-md flex items-center gap-2 justify-center"
                 >
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: colors.accent }} />
                   {item}
                 </li>
               ))}
@@ -514,7 +531,8 @@ export function ExpandableCard({
               event.stopPropagation()
               setActive(true)
             }}
-            className="hearns-font absolute bottom-0 left-0 flex h-[32px] sm:h-[37px] w-[100px] sm:w-[120px] items-center justify-center rounded-none rounded-tr-[10px] bg-[#183028] text-[12px] sm:text-[14px] uppercase tracking-[0.06em] sm:tracking-[0.08em] text-white transition-colors duration-300 hover:bg-[#1f4038]"
+            className="hearns-font absolute bottom-0 left-0 flex h-[32px] sm:h-[37px] w-[100px] sm:w-[120px] items-center justify-center rounded-none rounded-tr-[15px] text-[12px] sm:text-[14px] uppercase tracking-[0.06em] sm:tracking-[0.08em] text-white transition-colors duration-300 hover:opacity-90"
+            style={{ backgroundColor: colors.accent }}
           >
             {buttonLabel}
           </motion.button>
