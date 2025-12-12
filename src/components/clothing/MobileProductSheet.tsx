@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
-import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn, X, Check, ShoppingBag } from 'lucide-react';
 import { ProductGroup } from './ClothingBrowser';
 import { ColorVariant, getRgbValues } from '../../lib/supabase';
 import { useWishlist } from '../../contexts/WishlistContext';
@@ -742,11 +742,22 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                   {/* Action Buttons */}
                   <div className="space-y-2 mt-4">
                     <button
-                      onClick={() => setShowQuoteModal(true)}
-                      className="w-full py-3 rounded-lg text-white font-bold text-base transition-all active:scale-[0.98]"
-                      style={{ backgroundColor: colors.accent }}
+                      onClick={handleAddToCart}
+                      disabled={availableSizes.length > 0 && !selectedSize}
+                      className="w-full py-3 rounded-lg text-white font-bold text-base transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
+                      style={{ backgroundColor: addedToCart ? '#28a745' : colors.accent }}
                     >
-                      Start Order
+                      {addedToCart ? (
+                        <>
+                          <Check className="w-4 h-4" />
+                          Added to Order
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingBag className="w-4 h-4" />
+                          Add to Order
+                        </>
+                      )}
                     </button>
                     <button
                       onClick={() => setShowHowItWorksModal(true)}
