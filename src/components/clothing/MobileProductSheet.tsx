@@ -165,17 +165,12 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
     : productGroup.variants.find(v => v.colour_code === currentColor?.colour_code)
       || productGroup.variants[0];
 
-  // Get available sizes for selected color, sorted by size order
-  // First try to match by colour_code, if no results, get all sizes for the product
-  const sizesForColor = productGroup.variants
-    .filter(v => v.colour_code === currentColor?.colour_code && v.sku_status !== 'Discontinued')
-    .map(v => v.size_code);
+  // Get available sizes - use available_sizes array from product (aggregated from product_styles)
+  // The API returns product_styles which have available_sizes as an array, not individual size_code values
+  const firstVariant = productGroup.variants[0] as any;
+  const allAvailableSizes: string[] = firstVariant?.available_sizes || [];
 
-  const sizesToUse = sizesForColor.length > 0
-    ? sizesForColor
-    : productGroup.variants.filter(v => v.sku_status !== 'Discontinued').map(v => v.size_code);
-
-  const availableSizes = Array.from(new Set(sizesToUse)).sort((a, b) => {
+  const availableSizes = Array.from(new Set(allAvailableSizes)).filter(s => s).sort((a, b) => {
     const aUpper = a.toUpperCase();
     const bUpper = b.toUpperCase();
     return (SIZE_ORDER[aUpper] ?? SIZE_ORDER[a] ?? 50) - (SIZE_ORDER[bUpper] ?? SIZE_ORDER[b] ?? 50);
