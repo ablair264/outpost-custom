@@ -113,6 +113,25 @@ export interface ContactFormData {
   notes: string;
 }
 
+export interface CartItemEnquiry {
+  id: string;
+  name: string;
+  styleCode?: string;
+  color?: string;
+  image?: string;
+  quantity: number;
+}
+
+export interface CartItemPreviewEnquiry {
+  itemId: string;
+  itemName: string;
+  itemImage: string;
+  logoX: number;
+  logoY: number;
+  logoSize: number;
+  interacted: boolean;
+}
+
 export interface SubmitEnquiryRequest {
   customerName: string;
   customerEmail: string;
@@ -133,6 +152,9 @@ export interface SubmitEnquiryRequest {
   enquiryType: 'upload' | 'design_help' | 'consultation';
   // Logo preview captures (optional)
   logoPreviewCaptures?: LogoPreviewCapture[];
+  // Multi-item cart support
+  cartItems?: CartItemEnquiry[];
+  cartItemPreviews?: CartItemPreviewEnquiry[];
 }
 
 export interface SubmitEnquiryResponse {

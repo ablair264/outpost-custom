@@ -25,6 +25,25 @@ export interface LogoPreviewData {
   analysis?: LogoAnalysis;
 }
 
+// For multi-item orders (cart)
+export interface CartItemPreview {
+  itemId: string;
+  itemName: string;
+  itemImage: string;
+  logoX: number;
+  logoY: number;
+  logoSize: number;
+  interacted: boolean;
+}
+
+export interface CartItem {
+  id: string;
+  name: string;
+  image: string;
+  brand?: string;
+  selectedColor?: string;
+}
+
 export interface ContactFormData {
   name: string;
   email: string;
@@ -34,7 +53,7 @@ export interface ContactFormData {
 }
 
 interface ClothingOrderWizardProps {
-  onSelectPath: (path: 'upload' | 'help' | 'consult', logoData?: LogoPreviewData, contactData?: ContactFormData) => void;
+  onSelectPath: (path: 'upload' | 'help' | 'consult', logoData?: LogoPreviewData, contactData?: ContactFormData, cartItemPreviews?: CartItemPreview[]) => void;
   productName?: string;
   productImage?: string;
   productColors?: Array<{
@@ -45,6 +64,8 @@ interface ClothingOrderWizardProps {
   }>;
   initialColorIndex?: number;
   isMobile?: boolean;
+  // For multi-item orders from cart
+  cartItems?: CartItem[];
 }
 
 // Theme colors - matching clothing pages
@@ -68,6 +89,7 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
   productColors = [],
   initialColorIndex = 0,
   isMobile = false,
+  cartItems = [],
 }) => {
   const [step, setStep] = useState<WizardStep>('has-logo');
 
@@ -80,6 +102,11 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
   const [logoError, setLogoError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [logoAnalysis, setLogoAnalysis] = useState<LogoAnalysis | null>(null);
+
+  // Multi-item cart state
+  const [selectedCartItemIndex, setSelectedCartItemIndex] = useState(0);
+  const [cartItemPreviews, setCartItemPreviews] = useState<Map<string, CartItemPreview>>(new Map());
+  const hasMultipleItems = cartItems.length > 1;
 
   // Contact form state
   const [contactForm, setContactForm] = useState<ContactFormData>({
@@ -97,7 +124,74 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
   const dragOffsetRef = useRef({ dxPct: 0, dyPct: 0 });
   const posPctRef = useRef({ x: logoX, y: logoY });
 
-  const currentProductImage = productColors[selectedColorIndex]?.image || productImage;
+  // Get current product image - from cart items if multiple, or single product otherwise
+  const currentCartItem = hasMultipleItems ? cartItems[selectedCartItemIndex] : null;
+  const currentProductImage = currentCartItem?.image || productColors[selectedColorIndex]?.image || productImage;
+  const currentProductName = currentCartItem?.name || productName;
+
+  // Save current item's preview state before switching
+  const saveCurrentItemPreview = () => {
+    if (hasMultipleItems && currentCartItem) {
+      setCartItemPreviews(prev => {
+        const newMap = new Map(prev);
+        newMap.set(currentCartItem.id, {
+          itemId: currentCartItem.id,
+          itemName: currentCartItem.name,
+          itemImage: currentCartItem.image,
+          logoX,
+          logoY,
+          logoSize,
+          interacted: true,
+        });
+        return newMap;
+      });
+    }
+  };
+
+  // Handle cart item selection
+  const handleSelectCartItem = (index: number) => {
+    if (index === selectedCartItemIndex) return;
+
+    // Save current item's state
+    saveCurrentItemPreview();
+
+    // Load new item's state if previously interacted
+    const newItem = cartItems[index];
+    const savedPreview = cartItemPreviews.get(newItem.id);
+
+    if (savedPreview) {
+      setLogoX(savedPreview.logoX);
+      setLogoY(savedPreview.logoY);
+      setLogoSize(savedPreview.logoSize);
+    } else {
+      // Reset to defaults for new item
+      setLogoX(50);
+      setLogoY(50);
+      setLogoSize(35);
+    }
+
+    setSelectedCartItemIndex(index);
+  };
+
+  // Get all interacted cart item previews for submission
+  const getCartItemPreviewsForSubmission = (): CartItemPreview[] => {
+    // Save current item first
+    if (hasMultipleItems && currentCartItem) {
+      const currentPreview: CartItemPreview = {
+        itemId: currentCartItem.id,
+        itemName: currentCartItem.name,
+        itemImage: currentCartItem.image,
+        logoX,
+        logoY,
+        logoSize,
+        interacted: true,
+      };
+      const allPreviews = new Map(cartItemPreviews);
+      allPreviews.set(currentCartItem.id, currentPreview);
+      return Array.from(allPreviews.values()).filter(p => p.interacted);
+    }
+    return [];
+  };
 
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
@@ -295,6 +389,9 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
 
   const handleSubmit = () => {
     if (validateForm()) {
+      // Get cart item previews for multi-item orders
+      const itemPreviews = hasMultipleItems ? getCartItemPreviewsForSubmission() : undefined;
+
       onSelectPath('upload', {
         logoSrc,
         x: logoX,
@@ -302,7 +399,7 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
         size: logoSize,
         colorIndex: selectedColorIndex,
         analysis: logoAnalysis || undefined,
-      }, contactForm);
+      }, contactForm, itemPreviews);
     }
   };
 
@@ -319,32 +416,32 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
             className="w-full"
           >
             {/* Header */}
-            <div className={`text-center ${isMobile ? 'mb-6' : 'mb-8 md:mb-10'}`}>
-              <div className={`inline-flex items-center gap-2 ${isMobile ? 'px-3 py-1.5' : 'px-4 py-1.5'} rounded-full bg-white/10 ${isMobile ? 'mb-3' : 'mb-4'}`}>
-                <Shirt className="w-4 h-4" style={{ color: clothingColors.accent }} />
-                <span className="neuzeit-font text-sm text-white/70">Customise Your {productName}</span>
+            <div className={`text-center ${isMobile ? 'mb-4' : 'mb-8 md:mb-10'}`}>
+              <div className={`inline-flex items-center gap-2 ${isMobile ? 'px-3 py-1' : 'px-4 py-1.5'} rounded-full bg-white/10 ${isMobile ? 'mb-2' : 'mb-4'}`}>
+                <Shirt className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} style={{ color: clothingColors.accent }} />
+                <span className={`neuzeit-font ${isMobile ? 'text-xs' : 'text-sm'} text-white/70`}>Customise Your {productName}</span>
               </div>
-              <h2 className={`hearns-font ${isMobile ? 'text-2xl' : 'text-3xl md:text-4xl'} text-white ${isMobile ? 'mb-2' : 'mb-3'}`}>
+              <h2 className={`hearns-font ${isMobile ? 'text-xl' : 'text-3xl md:text-4xl'} text-white ${isMobile ? 'mb-1' : 'mb-3'}`}>
                 Do you have a logo?
               </h2>
-              <p className="neuzeit-light-font text-sm text-white/60 max-w-lg mx-auto">
+              <p className={`neuzeit-light-font ${isMobile ? 'text-sm' : 'text-base'} text-white/60 max-w-lg mx-auto`}>
                 Let us know and we'll guide you through the next steps
               </p>
             </div>
 
             {/* Two options */}
-            <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'md:grid-cols-2 gap-4 md:gap-6'} max-w-2xl mx-auto`}>
+            <div className={`grid ${isMobile ? 'grid-cols-1 gap-2' : 'md:grid-cols-2 gap-4 md:gap-6'} max-w-2xl mx-auto`}>
               <button
-                onClick={() => onSelectPath('upload')}
-                className={`group relative text-left ${isMobile ? 'p-4' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
+                onClick={() => setStep('upload-logo')}
+                className={`group relative text-left ${isMobile ? 'p-3' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
               >
-                <div className={`flex ${isMobile ? 'items-center gap-4' : 'flex-col'}`}>
-                  <div className={`${isMobile ? 'w-12 h-12' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
-                    <Check className={isMobile ? 'w-6 h-6' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
+                <div className={`flex ${isMobile ? 'items-center gap-3' : 'flex-col'}`}>
+                  <div className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
+                    <Check className={isMobile ? 'w-5 h-5' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
                   </div>
                   <div className="flex-1">
-                    <h3 className={`embossing-font ${isMobile ? 'text-base' : 'text-lg'} text-white ${isMobile ? 'mb-1' : 'mb-2'} uppercase tracking-wide`}>Yes, I have a logo</h3>
-                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-sm' : 'text-sm mb-4'}`}>
+                    <h3 className={`embossing-font ${isMobile ? 'text-sm' : 'text-lg'} text-white ${isMobile ? 'mb-0.5' : 'mb-2'} uppercase tracking-wide`}>Yes, I have a logo</h3>
+                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-xs' : 'text-sm mb-4'}`}>
                       I have my logo file ready to upload
                     </p>
                   </div>
@@ -354,22 +451,22 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                     </div>
                   )}
                   {isMobile && (
-                    <ArrowRight className="w-5 h-5 text-white/40 flex-shrink-0" />
+                    <ArrowRight className="w-4 h-4 text-white/40 flex-shrink-0" />
                   )}
                 </div>
               </button>
 
               <button
                 onClick={() => setStep('needs-help-options')}
-                className={`group relative text-left ${isMobile ? 'p-4' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
+                className={`group relative text-left ${isMobile ? 'p-3' : 'p-6'} rounded-[15px] border-2 border-white/20 hover:border-[#64a70b]/50 bg-white/5 hover:bg-white/10 transition-all duration-300 ${!isMobile && 'hover:-translate-y-1'}`}
               >
-                <div className={`flex ${isMobile ? 'items-center gap-4' : 'flex-col'}`}>
-                  <div className={`${isMobile ? 'w-12 h-12' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
-                    <Palette className={isMobile ? 'w-6 h-6' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
+                <div className={`flex ${isMobile ? 'items-center gap-3' : 'flex-col'}`}>
+                  <div className={`${isMobile ? 'w-10 h-10' : 'w-14 h-14'} rounded-[12px] flex items-center justify-center ${isMobile ? '' : 'mb-4'} bg-white/10 flex-shrink-0`}>
+                    <Palette className={isMobile ? 'w-5 h-5' : 'w-7 h-7'} style={{ color: clothingColors.accent }} />
                   </div>
                   <div className="flex-1">
-                    <h3 className={`embossing-font ${isMobile ? 'text-base' : 'text-lg'} text-white ${isMobile ? 'mb-1' : 'mb-2'} uppercase tracking-wide`}>No, I need help</h3>
-                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-sm' : 'text-sm mb-4'}`}>
+                    <h3 className={`embossing-font ${isMobile ? 'text-sm' : 'text-lg'} text-white ${isMobile ? 'mb-0.5' : 'mb-2'} uppercase tracking-wide`}>No, I need help</h3>
+                    <p className={`neuzeit-light-font text-white/60 ${isMobile ? 'text-xs' : 'text-sm mb-4'}`}>
                       I need a logo designed or want to discuss options
                     </p>
                   </div>
@@ -379,7 +476,7 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                     </div>
                   )}
                   {isMobile && (
-                    <ArrowRight className="w-5 h-5 text-white/40 flex-shrink-0" />
+                    <ArrowRight className="w-4 h-4 text-white/40 flex-shrink-0" />
                   )}
                 </div>
               </button>
@@ -785,9 +882,56 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                 Preview Your Logo
               </h2>
               <p className="neuzeit-light-font text-sm text-white/60 max-w-lg mx-auto">
-                This is just an illustration to help you visualise placement. Our team will create a professional mockup.
+                {hasMultipleItems
+                  ? `Position your logo on each item. Click an item below to preview.`
+                  : `This is just an illustration to help you visualise placement. Our team will create a professional mockup.`
+                }
               </p>
             </div>
+
+            {/* Cart Item Thumbnails - only show for multi-item orders */}
+            {hasMultipleItems && (
+              <div className="mb-6">
+                <label className="embossing-font text-xs uppercase tracking-wide text-white/70 block mb-3">
+                  Items in your order ({cartItems.length})
+                </label>
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {cartItems.map((item, index) => {
+                    const isSelected = index === selectedCartItemIndex;
+                    const hasInteracted = cartItemPreviews.has(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleSelectCartItem(index)}
+                        className={`relative flex-shrink-0 rounded-[12px] overflow-hidden transition-all ${
+                          isSelected
+                            ? 'ring-2 ring-[#64a70b] scale-105'
+                            : 'ring-1 ring-white/20 hover:ring-white/40'
+                        }`}
+                        style={{ width: 72, height: 72 }}
+                      >
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover bg-white"
+                        />
+                        {hasInteracted && (
+                          <div className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-[#64a70b] flex items-center justify-center">
+                            <Check className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-[#64a70b]/10" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="neuzeit-font text-xs text-white/50 mt-2">
+                  {currentProductName}
+                </p>
+              </div>
+            )}
 
             <div className="grid md:grid-cols-2 gap-6">
               {/* Preview area */}

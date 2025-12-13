@@ -1,26 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Minus, Plus, X, ShoppingBag, Sparkles, ChevronLeft, Info } from 'lucide-react';
+import { Minus, Plus, X, ShoppingBag, Sparkles, ChevronLeft, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart, cartUtils } from '../contexts/CartContext';
 import { Button } from './ui/button';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
-import ClothingOrderWizard from './clothing/ClothingOrderWizard';
-import ClothingLogoUploader from './clothing/ClothingLogoUploader';
+import ClothingOrderWizard, { LogoPreviewData, ContactFormData, CartItemPreview, CartItem } from './clothing/ClothingOrderWizard';
 import ClothingHelpRequestForm from './clothing/ClothingHelpRequestForm';
 import ClothingConsultationBooker from './clothing/ClothingConsultationBooker';
-import ClothingHowItWorks from './clothing/ClothingHowItWorks';
-import OrderLogoPreview from './clothing/OrderLogoPreview';
-
-// Logo preview capture interface
-interface LogoPreviewCapture {
-  cartItemId: string;
-  productName: string;
-  selectedColor: string;
-  colorChanged: boolean;
-  originalColor: string;
-  logoPosition: { x: number; y: number; scale: number };
-  previewImageUrl: string;
-}
+import { submitClothingEnquiry } from '../lib/enquiry-service';
+import { sendEnquiryEmails } from '../lib/email-service';
 
 // Design system colors
 const colors = {
@@ -40,7 +28,7 @@ interface OrderDrawerProps {
   onClose: () => void;
 }
 
-type QuoteStep = 'cart' | 'path-selector' | 'upload' | 'logo-preview' | 'help' | 'consult' | 'success' | 'how-it-works';
+type QuoteStep = 'cart' | 'wizard' | 'help' | 'consult' | 'submitting' | 'success';
 
 const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
@@ -58,8 +46,8 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [quoteStep, setQuoteStep] = useState<QuoteStep>('cart');
   const [showQuoteModal, setShowQuoteModal] = useState(false);
-  const [uploadedLogoUrl, setUploadedLogoUrl] = useState<string | null>(null);
-  const [logoPreviewCaptures, setLogoPreviewCaptures] = useState<LogoPreviewCapture[]>([]);
+  const [enquiryRef, setEnquiryRef] = useState<string>('');
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Detect mobile
   useEffect(() => {
@@ -81,10 +69,11 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Reset quote step when drawer closes (but not if showing quote modal)
+  // Reset quote step when drawer closes
   useEffect(() => {
     if (!isOpen && !showQuoteModal) {
       setQuoteStep('cart');
+      setSubmitError(null);
     }
   }, [isOpen, showQuoteModal]);
 
@@ -95,11 +84,10 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
 
   const handleStartOrder = () => {
     if (isMobile) {
-      // On mobile, transition the sheet to show the path selector
-      setQuoteStep('path-selector');
+      setQuoteStep('wizard');
     } else {
-      // On desktop, show modal and close drawer
       setShowQuoteModal(true);
+      setQuoteStep('wizard');
       onClose();
     }
   };
@@ -111,140 +99,207 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  // Get first cart item for quote flow context
+  // Convert cart items to format expected by ClothingOrderWizard
+  const cartItemsForWizard: CartItem[] = cart.map(item => ({
+    id: item.id,
+    name: item.name,
+    image: item.image,
+    brand: item.brand,
+    selectedColor: item.selectedColor,
+  }));
+
+  // Get first cart item for single-item orders
   const firstCartItem = cart[0];
 
-  // Render quote flow content for mobile sheet
-  const renderMobileQuoteContent = () => {
+  // Handle path selection from ClothingOrderWizard
+  const handleSelectPath = async (
+    path: 'upload' | 'help' | 'consult',
+    logoData?: LogoPreviewData,
+    contactData?: ContactFormData,
+    cartItemPreviews?: CartItemPreview[]
+  ) => {
+    // Handle upload path with contact data - submit to backend
+    if (path === 'upload' && contactData && logoData) {
+      setSubmitError(null);
+      setQuoteStep('submitting');
+
+      try {
+        // Submit enquiry to Supabase
+        const result = await submitClothingEnquiry({
+          customerName: contactData.name,
+          customerEmail: contactData.email,
+          customerPhone: contactData.phone,
+          productId: cart.length > 1 ? 'multi-item-order' : firstCartItem?.styleCode,
+          productName: cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || '',
+          productStyleCode: cart.length > 1 ? undefined : firstCartItem?.styleCode,
+          productColor: firstCartItem?.selectedColor,
+          productImageUrl: firstCartItem?.image,
+          logoData: logoData.logoSrc,
+          logoAnalysis: logoData.analysis,
+          logoPositionX: logoData.x,
+          logoPositionY: logoData.y,
+          logoSizePercent: logoData.size,
+          estimatedQuantity: contactData.quantity,
+          additionalNotes: contactData.notes,
+          enquiryType: 'upload',
+          // Include cart item previews for multi-item orders
+          cartItems: cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            styleCode: item.styleCode,
+            color: item.selectedColor,
+            image: item.image,
+            quantity: item.quantity,
+          })),
+          cartItemPreviews: cartItemPreviews,
+        });
+
+        if (result.success && result.enquiryId && result.enquiryRef) {
+          setEnquiryRef(result.enquiryRef);
+
+          // Send email notifications
+          sendEnquiryEmails({
+            customerEmail: contactData.email,
+            customerName: contactData.name,
+            customerPhone: contactData.phone,
+            enquiryId: result.enquiryId,
+            enquiryRef: result.enquiryRef,
+            productName: cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || '',
+            enquiryType: 'upload',
+            estimatedQuantity: contactData.quantity,
+            additionalNotes: contactData.notes,
+            logoQuality: logoData.analysis?.qualityTier,
+          }).catch(console.error);
+
+          setQuoteStep('success');
+        } else {
+          setSubmitError(result.error || 'Something went wrong. Please try again.');
+          setQuoteStep('wizard');
+        }
+      } catch (error) {
+        console.error('Submission error:', error);
+        setSubmitError('Something went wrong. Please try again.');
+        setQuoteStep('wizard');
+      }
+      return;
+    }
+
+    // Handle other paths (help, consult)
+    switch (path) {
+      case 'help':
+        setQuoteStep('help');
+        break;
+      case 'consult':
+        setQuoteStep('consult');
+        break;
+    }
+  };
+
+  // Render modal content based on step
+  const renderModalContent = () => {
     switch (quoteStep) {
-      case 'how-it-works':
+      case 'wizard':
         return (
-          <div className="px-4 py-3">
-            <button
-              onClick={() => setQuoteStep('path-selector')}
-              className="mb-3 text-white/70 flex items-center gap-1.5 text-sm"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back
-            </button>
-            <ClothingHowItWorks
-              isOpen={true}
-              onClose={() => setQuoteStep('path-selector')}
-              onStartOrder={() => setQuoteStep('path-selector')}
-            />
-          </div>
+          <ClothingOrderWizard
+            productName={cart.length > 1 ? `${cart.length} items in your order` : firstCartItem?.name || 'Your Order'}
+            productImage={firstCartItem?.image}
+            productColors={[]}
+            initialColorIndex={0}
+            onSelectPath={handleSelectPath}
+            isMobile={isMobile}
+            cartItems={cart.length > 1 ? cartItemsForWizard : []}
+          />
         );
-      case 'path-selector':
-        return (
-          <div className="px-4 py-3">
-            <button
-              onClick={() => setQuoteStep('cart')}
-              className="mb-3 text-white/70 flex items-center gap-1.5 text-sm"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back to Order
-            </button>
-            <ClothingOrderWizard
-              productName={cart.length > 1 ? `${cart.length} items in your order` : firstCartItem?.name || 'Your Order'}
-              productImage={firstCartItem?.image}
-              productColors={[]}
-              initialColorIndex={0}
-              onSelectPath={(path) => {
-                if (path === 'upload') setQuoteStep('upload');
-                else if (path === 'help') setQuoteStep('help');
-                else if (path === 'consult') setQuoteStep('consult');
-              }}
-              isMobile={true}
-            />
-            <button
-              onClick={() => setQuoteStep('how-it-works')}
-              className="w-full mt-4 py-2 rounded-lg text-white/80 font-medium text-sm border border-white/20 flex items-center justify-center gap-2"
-            >
-              <Info className="w-4 h-4" />
-              How does it work?
-            </button>
-          </div>
-        );
-      case 'upload':
-        return (
-          <div className="px-4 py-3">
-            <ClothingLogoUploader
-              productTitle={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
-              productImage={firstCartItem?.image}
-              onBack={() => setQuoteStep('path-selector')}
-              onComplete={(logoUrl?: string) => {
-                if (logoUrl) {
-                  setUploadedLogoUrl(logoUrl);
-                  setQuoteStep('logo-preview');
-                } else {
-                  setQuoteStep('success');
-                }
-              }}
-              isMobile={true}
-            />
-          </div>
-        );
-      case 'logo-preview':
-        return (
-          <div className="px-4 py-3">
-            {uploadedLogoUrl && (
-              <OrderLogoPreview
-                logoUrl={uploadedLogoUrl}
-                onBack={() => setQuoteStep('upload')}
-                onComplete={(captures) => {
-                  setLogoPreviewCaptures(captures);
-                  setQuoteStep('success');
-                }}
-                onSkip={() => setQuoteStep('success')}
-                isMobile={true}
-              />
-            )}
-          </div>
-        );
+
       case 'help':
         return (
-          <div className="px-4 py-3">
-            <ClothingHelpRequestForm
-              productTitle={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
-              onBack={() => setQuoteStep('path-selector')}
-              onComplete={() => setQuoteStep('success')}
-              isMobile={true}
-            />
-          </div>
+          <ClothingHelpRequestForm
+            productTitle={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
+            onBack={() => setQuoteStep('wizard')}
+            onComplete={() => setQuoteStep('success')}
+            isMobile={isMobile}
+          />
         );
+
       case 'consult':
         return (
-          <div className="px-4 py-3">
-            <ClothingConsultationBooker
-              productName={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
-              onBack={() => setQuoteStep('path-selector')}
-              onComplete={() => setQuoteStep('success')}
-              isMobile={true}
-            />
+          <ClothingConsultationBooker
+            productName={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
+            onBack={() => setQuoteStep('wizard')}
+            onComplete={() => setQuoteStep('success')}
+            isMobile={isMobile}
+          />
+        );
+
+      case 'submitting':
+        return (
+          <div className="w-full max-w-xl mx-auto text-center py-16">
+            <div className="w-16 h-16 mx-auto mb-6">
+              <div
+                className="w-full h-full rounded-full border-4 border-t-transparent animate-spin"
+                style={{ borderColor: `${colors.accent} transparent ${colors.accent} ${colors.accent}` }}
+              />
+            </div>
+            <h2 className="hearns-font text-2xl text-white mb-2">
+              Submitting your request...
+            </h2>
+            <p className="neuzeit-light-font text-white/60">
+              Please wait while we process your enquiry
+            </p>
           </div>
         );
+
       case 'success':
         return (
-          <div className="text-center py-12 px-4">
-            <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-8 h-8 text-green-400" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-2">Enquiry Submitted!</h3>
-            <p className="text-white/70 text-sm mb-6">
-              We'll be in touch within 24 hours to discuss your order.
+          <div className="w-full max-w-xl mx-auto text-center py-12">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', delay: 0.2 }}
+              className="w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center"
+              style={{ backgroundColor: `${colors.accent}25` }}
+            >
+              <Check className="w-12 h-12" style={{ color: colors.accent }} />
+            </motion.div>
+
+            <h2 className="hearns-font text-3xl text-white mb-3">
+              Request Received!
+            </h2>
+
+            {enquiryRef && (
+              <div className="inline-block px-4 py-2 rounded-lg bg-white/10 border border-white/20 mb-4">
+                <p className="embossing-font text-xs text-white/50 uppercase tracking-wide mb-1">
+                  Your Reference
+                </p>
+                <p className="neuzeit-font text-xl font-bold" style={{ color: colors.accent }}>
+                  {enquiryRef}
+                </p>
+              </div>
+            )}
+
+            <p className="embossing-font text-xl mb-4" style={{ color: colors.accent }}>
+              We'll be in touch soon
             </p>
+            <p className="neuzeit-light-font text-white/70 max-w-md mx-auto mb-8">
+              Our team will review your request and get back to you within 24 hours with a mockup and quote.
+              {enquiryRef && ' Keep your reference number handy for any enquiries.'}
+            </p>
+
             <button
               onClick={() => {
+                setShowQuoteModal(false);
                 setQuoteStep('cart');
+                setEnquiryRef('');
                 onClose();
               }}
-              className="px-6 py-3 rounded-lg text-white font-semibold"
+              className="px-6 py-3 rounded-xl neuzeit-font font-semibold text-black transition-all hover:opacity-90"
               style={{ backgroundColor: colors.accent }}
             >
               Continue Browsing
             </button>
           </div>
         );
+
       default:
         return null;
     }
@@ -257,113 +312,86 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
     return (
       <>
         {/* Backdrop */}
-        <div
-          className="fixed inset-0 bg-black/70 z-50 transition-opacity"
-          onClick={() => setShowQuoteModal(false)}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => {
+            if (quoteStep !== 'submitting') {
+              setShowQuoteModal(false);
+              setQuoteStep('cart');
+            }
+          }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
         />
         {/* Modal */}
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        >
           <div
-            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl"
+            className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl"
             style={{ backgroundColor: colors.dark }}
           >
-            {/* Close button */}
-            <button
-              onClick={() => setShowQuoteModal(false)}
-              className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-lg transition-colors z-10"
-            >
-              <X className="w-5 h-5 text-white/60" />
-            </button>
+            {/* Background texture */}
+            <div
+              className="absolute inset-0 opacity-20 pointer-events-none"
+              style={{
+                backgroundImage: 'url(/BlackTextureBackground.webp)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
 
-            {/* Modal Content */}
-            <div className="p-6">
-              {quoteStep === 'cart' || quoteStep === 'path-selector' ? (
-                <>
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-white mb-2">Start Your Order</h2>
-                    <p className="text-white/60">
-                      {cart.length} {cart.length === 1 ? 'item' : 'items'} in your order
-                    </p>
-                  </div>
-                  <ClothingOrderWizard
-                    productName={cart.length > 1 ? `${cart.length} items in your order` : firstCartItem?.name || 'Your Order'}
-                    productImage={firstCartItem?.image}
-                    productColors={[]}
-                    initialColorIndex={0}
-                    onSelectPath={(path) => {
-                      if (path === 'upload') setQuoteStep('upload');
-                      else if (path === 'help') setQuoteStep('help');
-                      else if (path === 'consult') setQuoteStep('consult');
-                    }}
-                    isMobile={false}
-                  />
-                </>
-              ) : quoteStep === 'upload' ? (
-                <ClothingLogoUploader
-                  productTitle={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
-                  productImage={firstCartItem?.image}
-                  onBack={() => setQuoteStep('path-selector')}
-                  onComplete={(logoUrl?: string) => {
-                    if (logoUrl) {
-                      setUploadedLogoUrl(logoUrl);
-                      setQuoteStep('logo-preview');
-                    } else {
-                      setQuoteStep('success');
-                    }
-                  }}
-                  isMobile={false}
-                />
-              ) : quoteStep === 'logo-preview' ? (
-                uploadedLogoUrl && (
-                  <OrderLogoPreview
-                    logoUrl={uploadedLogoUrl}
-                    onBack={() => setQuoteStep('upload')}
-                    onComplete={(captures) => {
-                      setLogoPreviewCaptures(captures);
-                      setQuoteStep('success');
-                    }}
-                    onSkip={() => setQuoteStep('success')}
-                    isMobile={false}
-                  />
-                )
-              ) : quoteStep === 'help' ? (
-                <ClothingHelpRequestForm
-                  productTitle={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
-                  onBack={() => setQuoteStep('path-selector')}
-                  onComplete={() => setQuoteStep('success')}
-                  isMobile={false}
-                />
-              ) : quoteStep === 'consult' ? (
-                <ClothingConsultationBooker
-                  productName={cart.length > 1 ? `${cart.length} items` : firstCartItem?.name || 'Your Order'}
-                  onBack={() => setQuoteStep('path-selector')}
-                  onComplete={() => setQuoteStep('success')}
-                  isMobile={false}
-                />
-              ) : quoteStep === 'success' ? (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="w-8 h-8 text-green-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">Enquiry Submitted!</h3>
-                  <p className="text-white/70 text-sm mb-6">
-                    We'll be in touch within 24 hours to discuss your order.
-                  </p>
+            {/* Close button */}
+            {quoteStep !== 'submitting' && (
+              <button
+                onClick={() => {
+                  setShowQuoteModal(false);
+                  setQuoteStep('cart');
+                }}
+                className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
+            )}
+
+            {/* Content */}
+            <div className="relative z-10 p-6 md:p-10 overflow-y-auto max-h-[90vh] scrollbar-clothing">
+              {/* Error message */}
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 p-4 rounded-[12px] bg-red-500/10 border border-red-500/20 text-center"
+                >
+                  <p className="neuzeit-font text-sm text-red-400">{submitError}</p>
                   <button
-                    onClick={() => {
-                      setQuoteStep('cart');
-                      setShowQuoteModal(false);
-                    }}
-                    className="px-6 py-3 rounded-lg text-white font-semibold"
-                    style={{ backgroundColor: colors.accent }}
+                    onClick={() => setSubmitError(null)}
+                    className="neuzeit-font text-xs text-red-300 hover:text-red-200 mt-2 underline"
                   >
-                    Continue Browsing
+                    Dismiss
                   </button>
-                </div>
-              ) : null}
+                </motion.div>
+              )}
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={quoteStep}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {renderModalContent()}
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
-        </div>
+        </motion.div>
       </>
     );
   }
@@ -410,8 +438,18 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
 
               {quoteStep !== 'cart' ? (
                 // Quote flow content
-                <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(95vh - 40px)' }}>
-                  {renderMobileQuoteContent()}
+                <div className="flex-1 overflow-y-auto px-4 py-3" style={{ maxHeight: 'calc(95vh - 40px)' }}>
+                  {/* Back button for non-wizard steps */}
+                  {quoteStep !== 'wizard' && quoteStep !== 'submitting' && quoteStep !== 'success' && (
+                    <button
+                      onClick={() => setQuoteStep('wizard')}
+                      className="mb-3 text-white/70 flex items-center gap-1.5 text-sm"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Back
+                    </button>
+                  )}
+                  {renderModalContent()}
                 </div>
               ) : (
                 <>

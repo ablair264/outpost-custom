@@ -28,7 +28,7 @@ interface LogoPreviewData {
 
 interface ClothingLogoUploaderProps {
   onBack: () => void;
-  onComplete: (logoUrl?: string) => void;
+  onComplete: () => void;
   productTitle?: string;
   productImage?: string;
   onPreviewLogo?: () => void;
@@ -68,77 +68,35 @@ const ClothingLogoUploader: React.FC<ClothingLogoUploaderProps> = ({
         setUploadState('complete');
         // Auto-proceed after showing success
         setTimeout(() => {
-          onComplete(previewUrl || undefined);
+          onComplete();
         }, 2500);
       }, 1500);
 
       return () => clearTimeout(timer);
     }
-  }, [initialLogoData, uploadState, onComplete, previewUrl]);
+  }, [initialLogoData, uploadState, onComplete]);
 
   const processFile = useCallback(async (file: File) => {
     setSelectedFile(file);
     setUploadState('processing');
     setError(null);
 
-    // Create local preview for immediate display
-    let localPreviewUrl: string | null = null;
+    // Create preview
     if (file.type.startsWith('image/')) {
-      localPreviewUrl = URL.createObjectURL(file);
-      setPreviewUrl(localPreviewUrl);
+      setPreviewUrl(URL.createObjectURL(file));
     }
 
     try {
-      // Actually upload the logo to R2 storage
-      let uploadedUrl: string | null = null;
-
-      if (file.type.startsWith('image/')) {
-        // Convert file to base64
-        const base64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            const result = reader.result as string;
-            const base64Data = result.split(',')[1];
-            resolve(base64Data);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-
-        // Upload to R2
-        try {
-          const response = await fetch('/.netlify/functions/storage/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              filename: `logo-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
-              folder: 'logos',
-              data: base64,
-              contentType: file.type,
-            }),
-          });
-
-          const result = await response.json();
-          if (result.success && result.publicUrl) {
-            uploadedUrl = result.publicUrl;
-          } else {
-            console.warn('R2 upload response:', result);
-          }
-        } catch (uploadErr) {
-          console.warn('R2 upload failed, using local preview:', uploadErr);
-        }
-      }
+      // Simulate upload/processing delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       setUploadState('complete');
 
-      // Auto-proceed after a moment - use R2 URL or fallback to local preview
-      // Always pass a URL to ensure logo preview step is shown
-      const finalUrl = uploadedUrl || localPreviewUrl;
+      // Auto-proceed after a moment
       setTimeout(() => {
-        onComplete(finalUrl || undefined);
+        onComplete();
       }, 2500);
     } catch (err) {
-      console.error('Logo upload error:', err);
       setError('Something went wrong. Please try again.');
       setUploadState('idle');
     }
