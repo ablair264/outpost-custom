@@ -147,6 +147,7 @@ export async function getAllProducts(
 
         // Pricing - use aggregated min/max
         single_price: style.price_min?.toString() || '0',
+        final_price: style.price_min?.toString() || '0',
         price_min: style.price_min,
         price_max: style.price_max,
 
