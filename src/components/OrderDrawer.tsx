@@ -430,10 +430,18 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              drag={quoteStep === 'cart' ? 'y' : false}
+              drag={quoteStep === 'submitting' ? false : 'y'}
               dragConstraints={{ top: 0, bottom: 0 }}
               dragElastic={{ top: 0, bottom: 0.5 }}
-              onDragEnd={handleDragEnd}
+              onDragEnd={(e, info) => {
+                if (info.offset.y > 100 || info.velocity.y > 500) {
+                  if (quoteStep === 'cart') {
+                    onClose();
+                  } else if (quoteStep !== 'submitting') {
+                    setQuoteStep('cart');
+                  }
+                }
+              }}
               className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl overflow-hidden"
               style={{
                 backgroundColor: colors.dark,
@@ -441,15 +449,34 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
                 height: quoteStep !== 'cart' ? '95vh' : 'auto',
               }}
             >
-              {/* Drag Handle */}
-              <div className="flex justify-center pt-3 pb-2">
+              {/* Drag Handle - tappable to go back/close */}
+              <div
+                className="flex justify-center pt-3 pb-2 cursor-pointer"
+                onClick={() => {
+                  if (quoteStep === 'cart') {
+                    onClose();
+                  } else if (quoteStep !== 'submitting') {
+                    setQuoteStep('cart');
+                  }
+                }}
+              >
                 <div className="w-10 h-1 rounded-full bg-white/30" />
               </div>
 
               {quoteStep !== 'cart' ? (
                 // Quote flow content
                 <div className="flex-1 overflow-y-auto px-4 py-3" style={{ maxHeight: 'calc(95vh - 40px)' }}>
-                  {/* Back button for non-wizard steps */}
+                  {/* Back button for wizard step - goes back to cart */}
+                  {quoteStep === 'wizard' && (
+                    <button
+                      onClick={() => setQuoteStep('cart')}
+                      className="mb-3 text-white/70 flex items-center gap-1.5 text-sm"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Back to cart
+                    </button>
+                  )}
+                  {/* Back button for other non-wizard steps */}
                   {quoteStep !== 'wizard' && quoteStep !== 'submitting' && quoteStep !== 'success' && (
                     <button
                       onClick={() => setQuoteStep('wizard')}
