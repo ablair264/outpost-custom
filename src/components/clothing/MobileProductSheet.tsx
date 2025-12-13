@@ -68,9 +68,34 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
   const sheetRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const { addToCart } = useCart();
+  const { addToCart, clearCart, cart } = useCart();
   const [addedToCart, setAddedToCart] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [cartItemPreviews, setCartItemPreviews] = useState<Array<{
+    itemId: string;
+    itemName: string;
+    itemImage: string;
+    logoX: number;
+    logoY: number;
+    logoSize: number;
+    interacted: boolean;
+  }>>([]);
+
+  // Handle swipe down to close
+  const handleDragEnd = (event: any, info: PanInfo) => {
+    // If dragged down more than 100px or with velocity > 500, close the sheet
+    if (info.offset.y > 100 || info.velocity.y > 500) {
+      handleClose();
+    }
+  };
+
+  // Close handler that resets state
+  const handleClose = () => {
+    setShowQuoteModal(false);
+    setShowHowItWorksModal(false);
+    setQuoteStep('logo-options');
+    onClose();
+  };
 
   // Load hex color lookup
   useEffect(() => {
@@ -250,6 +275,16 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
         estimatedQuantity: contactData.quantity || '',
         additionalNotes: contactData.message || '',
         enquiryType: pathType as 'upload' | 'design_help' | 'consultation',
+        // Include cart items and their logo previews
+        cartItems: cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          styleCode: item.styleCode,
+          color: item.selectedColor,
+          image: item.image,
+          quantity: item.quantity,
+        })),
+        cartItemPreviews: cartItemPreviews.length > 0 ? cartItemPreviews : undefined,
       };
 
       const result = await submitClothingEnquiry(enquiryData);
@@ -268,6 +303,8 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
           logoQuality: savedLogoData?.analysis?.qualityTier,
         });
         setQuoteStep('success');
+        // Clear the cart after successful enquiry submission
+        clearCart();
       } else {
         throw new Error('Failed to submit enquiry');
       }
@@ -396,12 +433,22 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                 code: c.colour_code,
               }))}
               initialColorIndex={selectedColor}
-              onSelectPath={(path) => {
+              onSelectPath={(path, logoData, contactData, itemPreviews) => {
+                // Store logo data and cart item previews for enquiry submission
+                if (logoData) setSavedLogoData(logoData);
+                if (itemPreviews) setCartItemPreviews(itemPreviews);
                 if (path === 'upload') setQuoteStep('upload');
                 else if (path === 'help') setQuoteStep('help');
                 else if (path === 'consult') setQuoteStep('consult');
               }}
               isMobile={true}
+              cartItems={cart.map(item => ({
+                id: item.id,
+                name: item.name,
+                image: item.image,
+                brand: item.brand,
+                selectedColor: item.selectedColor,
+              }))}
             />
           </div>
         );
@@ -412,7 +459,10 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
               productTitle={productGroup.style_name}
               productImage={currentColor?.colour_image || productGroup.variants[0]?.primary_product_image_url}
               onBack={() => setQuoteStep('logo-options')}
-              onComplete={() => setQuoteStep('success')}
+              onComplete={() => {
+                setQuoteStep('success');
+                clearCart();
+              }}
               isMobile={true}
             />
           </div>
@@ -423,7 +473,10 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             <ClothingHelpRequestForm
               productTitle={productGroup.style_name}
               onBack={() => setQuoteStep('logo-options')}
-              onComplete={() => setQuoteStep('success')}
+              onComplete={() => {
+                setQuoteStep('success');
+                clearCart();
+              }}
               isMobile={true}
             />
           </div>
@@ -434,7 +487,10 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             <ClothingConsultationBooker
               productName={productGroup.style_name}
               onBack={() => setQuoteStep('logo-options')}
-              onComplete={() => setQuoteStep('success')}
+              onComplete={() => {
+                setQuoteStep('success');
+                clearCart();
+              }}
               isMobile={true}
             />
           </div>
@@ -483,7 +539,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             className="fixed inset-0 bg-black/60 z-50"
             style={{ touchAction: 'none' }}
             onTouchMove={(e) => e.preventDefault()}
@@ -495,6 +551,10 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             initial={{ y: '100%' }}
             animate={{ y: '0%' }}
             exit={{ y: '100%' }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.5 }}
+            onDragEnd={handleDragEnd}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             className="fixed inset-x-0 bottom-0 z-50 rounded-t-[10px] overflow-hidden flex flex-col"
             style={{
@@ -503,9 +563,14 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             }}
           >
             {/* Drag Handle - tap to close */}
-            <div
-              className="flex justify-center pt-3 pb-2 flex-shrink-0"
-              onClick={onClose}
+            <motion.div
+              className="flex justify-center pt-3 pb-2 flex-shrink-0 cursor-grab active:cursor-grabbing"
+              onClick={handleClose}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                handleClose();
+              }}
+              style={{ touchAction: 'none' }}
             >
               <div
                 className="w-12 h-1.5 rounded-full"
@@ -514,7 +579,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                   boxShadow: `0 2px 8px ${colors.accent}40`,
                 }}
               />
-            </div>
+            </motion.div>
 
             {/* Scrollable Content */}
             <div
@@ -701,50 +766,43 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                   {(availableSizes.length === 0 || selectedSize) && (
                     <div className="mb-4">
                       <p className="text-white/70 text-xs mb-1.5">Quantity</p>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
-                          <button
-                            onTouchEnd={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (quantity > 1) setQuantity(quantity - 1);
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              if (quantity > 1) setQuantity(quantity - 1);
-                            }}
-                            disabled={quantity <= 1}
-                            className="w-10 h-10 rounded-md flex items-center justify-center transition-all active:bg-white/10 disabled:opacity-30 select-none"
-                            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
-                          >
-                            <Minus className="w-5 h-5 text-white/70" />
-                          </button>
-                          <span className="w-12 text-center text-lg font-semibold text-white">
-                            {quantity}
-                          </span>
-                          <button
-                            onTouchEnd={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setQuantity(quantity + 1);
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setQuantity(quantity + 1);
-                            }}
-                            className="w-10 h-10 rounded-md flex items-center justify-center transition-all select-none"
-                            style={{ backgroundColor: `${colors.accent}30`, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
-                          >
-                            <Plus className="w-5 h-5" style={{ color: colors.accent }} />
-                          </button>
-                        </div>
-                        {quantity > 1 && currentVariant && (
-                          <span className="text-white/50 text-sm">
-                            Total: £{(parseFloat(currentVariant.final_price || '0') * quantity).toFixed(2)}
-                          </span>
-                        )}
+                      <div className="flex items-center justify-between p-1 rounded-lg bg-white/5 border border-white/10">
+                        <button
+                          onTouchEnd={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (quantity > 1) setQuantity(quantity - 1);
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (quantity > 1) setQuantity(quantity - 1);
+                          }}
+                          disabled={quantity <= 1}
+                          className="w-12 h-12 rounded-md flex items-center justify-center transition-all active:bg-white/10 disabled:opacity-30 select-none"
+                          style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                        >
+                          <Minus className="w-5 h-5 text-white/70" />
+                        </button>
+                        <span className="flex-1 text-center text-lg font-semibold text-white">
+                          {quantity}
+                        </span>
+                        <button
+                          onTouchEnd={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setQuantity(quantity + 1);
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setQuantity(quantity + 1);
+                          }}
+                          className="w-12 h-12 rounded-md flex items-center justify-center transition-all select-none"
+                          style={{ backgroundColor: `${colors.accent}30`, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                        >
+                          <Plus className="w-5 h-5" style={{ color: colors.accent }} />
+                        </button>
                       </div>
                     </div>
                   )}
