@@ -964,6 +964,12 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                 </div>
                 <p className="neuzeit-font text-xs text-white/50 mt-2">
                   {currentProductName}
+                  {currentCartItem?.selectedColor && (
+                    <span className="ml-2 text-white/70">• {currentCartItem.selectedColor}</span>
+                  )}
+                </p>
+                <p className="neuzeit-light-font text-[11px] text-white/40 mt-1">
+                  To change colours, edit items in your cart
                 </p>
               </div>
             )}

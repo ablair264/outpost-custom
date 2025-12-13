@@ -199,11 +199,21 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
   const renderModalContent = () => {
     switch (quoteStep) {
       case 'wizard':
+        // For single item, show the selected color; for multiple items, each item has its own selected color
+        const singleItemColors = cart.length === 1 && firstCartItem?.selectedColor
+          ? [{
+              name: firstCartItem.selectedColor,
+              rgb: undefined, // We don't have the RGB stored in cart
+              image: firstCartItem.image,
+              code: firstCartItem.selectedColor,
+            }]
+          : [];
+
         return (
           <ClothingOrderWizard
             productName={cart.length > 1 ? `${cart.length} items in your order` : firstCartItem?.name || 'Your Order'}
             productImage={firstCartItem?.image}
-            productColors={[]}
+            productColors={singleItemColors}
             initialColorIndex={0}
             onSelectPath={handleSelectPath}
             isMobile={isMobile}

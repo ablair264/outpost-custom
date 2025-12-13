@@ -32,6 +32,24 @@ const colors = {
   textMuted: '#666666',
 };
 
+// Size ordering for proper display
+const SIZE_ORDER: Record<string, number> = {
+  'XXS': 1, '2XS': 1,
+  'XS': 2,
+  'S': 3, 'SM': 3, 'SMALL': 3,
+  'M': 4, 'MD': 4, 'MEDIUM': 4,
+  'L': 5, 'LG': 5, 'LARGE': 5,
+  'XL': 6,
+  'XXL': 7, '2XL': 7,
+  'XXXL': 8, '3XL': 8,
+  '4XL': 9, 'XXXXL': 9,
+  '5XL': 10, 'XXXXXL': 10,
+  '6XL': 11,
+  '7XL': 12,
+  '8XL': 13,
+  'ONE SIZE': 100, 'ONESIZE': 100, 'OS': 100, 'O/S': 100,
+};
+
 interface ProductGroup {
   style_code: string;
   style_name: string;
@@ -331,7 +349,12 @@ const ProductDetailsNew: React.FC = () => {
   const availableSizes = productGroup.variants
     .filter(v => v.colour_code === productGroup.colors[selectedColor]?.colour_code)
     .map(v => ({ code: v.size_code, name: v.size_name }))
-    .filter((size, i, self) => i === self.findIndex(s => s.code === size.code));
+    .filter((size, i, self) => i === self.findIndex(s => s.code === size.code))
+    .sort((a, b) => {
+      const aUpper = a.code.toUpperCase();
+      const bUpper = b.code.toUpperCase();
+      return (SIZE_ORDER[aUpper] ?? SIZE_ORDER[a.code] ?? 50) - (SIZE_ORDER[bUpper] ?? SIZE_ORDER[b.code] ?? 50);
+    });
 
   const mainImage = getColorImage(selectedColor) || currentVariant?.primary_product_image_url;
 
@@ -858,7 +881,12 @@ const ProductDetailsNew: React.FC = () => {
                       {availableSizes.map(s => (
                         <button
                           key={s.code}
-                          onClick={() => setSelectedSize(s.code)}
+                          onClick={() => {
+                            if (selectedSize !== s.code) {
+                              setSelectedSize(s.code);
+                              setQuantity(1); // Reset quantity when size changes
+                            }
+                          }}
                           className={`px-3 py-1.5 rounded-[8px] border neuzeit-font text-sm transition-all duration-200 ${
                             selectedSize === s.code
                               ? ''
@@ -877,7 +905,7 @@ const ProductDetailsNew: React.FC = () => {
                   </motion.div>
                 )}
 
-                {/* Quantity Selector */}
+                {/* Quantity Selector - disabled until size is selected (if sizes available) */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -886,12 +914,15 @@ const ProductDetailsNew: React.FC = () => {
                 >
                   <p className="embossing-font text-[10px] uppercase tracking-[0.15em] text-white/70">
                     Quantity
+                    {availableSizes.length > 0 && !selectedSize && (
+                      <span className="text-white/40 ml-2 normal-case tracking-normal">(select size first)</span>
+                    )}
                   </p>
-                  <div className="flex items-center gap-3">
+                  <div className={`flex items-center gap-3 ${availableSizes.length > 0 && !selectedSize ? 'opacity-40 pointer-events-none' : ''}`}>
                     <div className="flex items-center gap-1 p-1 rounded-[10px] bg-white/5 border border-white/10">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        disabled={quantity <= 1}
+                        disabled={quantity <= 1 || (availableSizes.length > 0 && !selectedSize)}
                         className="w-10 h-10 rounded-[8px] flex items-center justify-center transition-all hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
                       >
                         <Minus className="w-4 h-4 text-white/70" />
@@ -900,8 +931,11 @@ const ProductDetailsNew: React.FC = () => {
                         {quantity}
                       </span>
                       <button
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="w-10 h-10 rounded-[8px] flex items-center justify-center transition-all"
+                        onClick={() => {
+                          if (availableSizes.length === 0 || selectedSize) setQuantity(quantity + 1);
+                        }}
+                        disabled={availableSizes.length > 0 && !selectedSize}
+                        className="w-10 h-10 rounded-[8px] flex items-center justify-center transition-all disabled:opacity-30"
                         style={{ backgroundColor: `${colors.accent}30` }}
                       >
                         <Plus className="w-4 h-4" style={{ color: colors.accent }} />

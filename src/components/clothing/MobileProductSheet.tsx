@@ -193,7 +193,11 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
         .filter(v => v.colour_code === currentColor?.colour_code && v.sku_status !== 'Discontinued')
         .map(v => v.size_code)
     )
-  ).sort((a, b) => (SIZE_ORDER[a] ?? 50) - (SIZE_ORDER[b] ?? 50));
+  ).sort((a, b) => {
+    const aUpper = a.toUpperCase();
+    const bUpper = b.toUpperCase();
+    return (SIZE_ORDER[aUpper] ?? SIZE_ORDER[a] ?? 50) - (SIZE_ORDER[bUpper] ?? SIZE_ORDER[b] ?? 50);
+  });
 
   // Get price
   const getCurrentPrice = (): { specific: number } | { min: number; max: number } | null => {
@@ -661,12 +665,22 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                             onTouchEnd={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              setSelectedSize(selectedSize === size ? '' : size);
+                              if (selectedSize === size) {
+                                setSelectedSize('');
+                              } else {
+                                setSelectedSize(size);
+                                setQuantity(1); // Reset quantity when size changes
+                              }
                             }}
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              setSelectedSize(selectedSize === size ? '' : size);
+                              if (selectedSize === size) {
+                                setSelectedSize('');
+                              } else {
+                                setSelectedSize(size);
+                                setQuantity(1); // Reset quantity when size changes
+                              }
                             }}
                             className={`min-w-[44px] h-9 px-3 rounded-lg text-sm font-medium transition-all select-none ${
                               selectedSize === size
@@ -774,10 +788,15 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                     })}
                   </div>
 
-                  {/* Quantity Selector */}
+                  {/* Quantity Selector - only enabled when size is selected (if sizes available) */}
                   <div className="mb-3">
-                    <p className="text-white/60 text-xs mb-1.5">Quantity</p>
-                    <div className="flex items-center gap-2">
+                    <p className="text-white/60 text-xs mb-1.5">
+                      Quantity
+                      {availableSizes.length > 0 && !selectedSize && (
+                        <span className="text-white/40 ml-1">(select size first)</span>
+                      )}
+                    </p>
+                    <div className={`flex items-center gap-2 ${availableSizes.length > 0 && !selectedSize ? 'opacity-40 pointer-events-none' : ''}`}>
                       <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
                         <button
                           onTouchEnd={(e) => {
@@ -790,7 +809,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                             e.stopPropagation();
                             if (quantity > 1) setQuantity(quantity - 1);
                           }}
-                          disabled={quantity <= 1}
+                          disabled={quantity <= 1 || (availableSizes.length > 0 && !selectedSize)}
                           className="w-9 h-9 rounded-md flex items-center justify-center transition-all active:bg-white/10 disabled:opacity-30 select-none"
                           style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                         >
@@ -803,14 +822,15 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                           onTouchEnd={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            setQuantity(quantity + 1);
+                            if (availableSizes.length === 0 || selectedSize) setQuantity(quantity + 1);
                           }}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            setQuantity(quantity + 1);
+                            if (availableSizes.length === 0 || selectedSize) setQuantity(quantity + 1);
                           }}
-                          className="w-9 h-9 rounded-md flex items-center justify-center transition-all select-none"
+                          disabled={availableSizes.length > 0 && !selectedSize}
+                          className="w-9 h-9 rounded-md flex items-center justify-center transition-all select-none disabled:opacity-30"
                           style={{ backgroundColor: `${colors.accent}30`, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                         >
                           <Plus className="w-4 h-4" style={{ color: colors.accent }} />
