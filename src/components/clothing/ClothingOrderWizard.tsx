@@ -1098,8 +1098,8 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                   </div>
                 </div>
 
-                {/* Color swatches */}
-                {productColors.length > 1 && (
+                {/* Color swatches - show even with single color so user sees what's selected */}
+                {productColors.length >= 1 && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="embossing-font text-xs uppercase tracking-wide text-white/70">

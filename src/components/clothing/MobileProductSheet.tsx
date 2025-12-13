@@ -141,7 +141,30 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
 
   // Build colors with proper hex values
   const buildColors = useCallback((): ColorVariant[] => {
-    return productGroup.colors.map(color => {
+    // Debug: log colors data
+    console.log('Building colors from productGroup.colors:', productGroup.colors);
+
+    // Fallback: if colors array is empty, try to extract from variants
+    let colorsSource = productGroup.colors;
+    if (!colorsSource || colorsSource.length === 0) {
+      console.log('No colors in productGroup.colors, extracting from variants');
+      // Extract unique colors from variants
+      const uniqueColors = new Map<string, any>();
+      productGroup.variants.forEach(v => {
+        if (v.colour_code && !uniqueColors.has(v.colour_code)) {
+          uniqueColors.set(v.colour_code, {
+            code: v.colour_code,
+            name: v.colour_name || v.colour_code,
+            rgb: v.rgb,
+            image: v.colour_image || v.primary_product_image_url,
+          });
+        }
+      });
+      colorsSource = Array.from(uniqueColors.values());
+      console.log('Extracted colors from variants:', colorsSource);
+    }
+
+    return colorsSource.map(color => {
       const variant = productGroup.variants.find(v => v.colour_code === color.code);
 
       const getHexColor = (rgbString: string): string | null => {
