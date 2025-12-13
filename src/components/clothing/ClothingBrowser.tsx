@@ -292,11 +292,12 @@ const ClothingBrowser: React.FC = () => {
       const colorVariants = (firstVariant as any).color_variants;
       if (colorVariants && Array.isArray(colorVariants) && colorVariants.length > 0) {
         // Use pre-computed color variants from database
+        // Note: Database uses colourCode, colourName, colourImage (camelCase with 'colour')
         uniqueColors = colorVariants.map((cv: any) => ({
-          code: cv.code || '',
-          name: cv.name || cv.code || '',
-          rgb: convertRgbToCSS(cv.rgb) || getColorHexValue(cv.name || ''),
-          image: cv.image || firstVariant.primary_product_image_url
+          code: cv.colourCode || cv.code || '',
+          name: cv.colourName || cv.name || cv.colourCode || cv.code || '',
+          rgb: convertRgbToCSS(cv.rgb) || getColorHexValue(cv.colourName || cv.name || ''),
+          image: cv.colourImage || cv.image || firstVariant.primary_product_image_url
         }));
       } else {
         // Fallback: extract from variant data (slower)
@@ -315,27 +316,15 @@ const ClothingBrowser: React.FC = () => {
         }, []);
       }
 
-      // Use price_min/price_max from API if available
-      const priceMin = (firstVariant as any).price_min;
-      const priceMax = (firstVariant as any).price_max;
-
-      let priceRange: { min: number; max: number };
-      if (priceMin !== undefined && priceMax !== undefined) {
-        priceRange = {
-          min: parseFloat(priceMin) || 0,
-          max: parseFloat(priceMax) || 0
-        };
-      } else {
-        // Fallback: calculate from variants
-        const prices = variants
-          .filter(v => v.sku_status !== 'Discontinued')
-          .map(v => parseFloat(v.single_price))
-          .filter(p => !isNaN(p) && p > 0);
-        priceRange = prices.length > 0 ? {
-          min: Math.min(...prices),
-          max: Math.max(...prices)
-        } : { min: 0, max: 0 };
-      }
+      // Calculate price range from final_price (includes margin)
+      const prices = variants
+        .filter(v => v.sku_status !== 'Discontinued')
+        .map(v => parseFloat(v.final_price))
+        .filter(p => !isNaN(p) && p > 0);
+      const priceRange = prices.length > 0 ? {
+        min: Math.min(...prices),
+        max: Math.max(...prices)
+      } : { min: 0, max: 0 };
 
       return {
         style_code: styleCode,

@@ -8,7 +8,6 @@ import ClothingOrderWizard, { LogoPreviewData } from './ClothingOrderWizard';
 import ClothingLogoUploader from './ClothingLogoUploader';
 import ClothingHelpRequestForm from './ClothingHelpRequestForm';
 import ClothingConsultationBooker from './ClothingConsultationBooker';
-import ClothingHowItWorks from './ClothingHowItWorks';
 import { submitClothingEnquiry, SubmitEnquiryRequest } from '../../lib/enquiry-service';
 import { sendEnquiryEmails } from '../../lib/email-service';
 
@@ -144,7 +143,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
 
       return {
         colour_code: color.code,
-        colour_name: color.name,
+        colour_name: color.name || variant?.colour_name || color.code,
         colour_image: color.image,
         rgb: displayColor,
         colour_shade: variant?.colour_shade,
@@ -167,13 +166,16 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
       || productGroup.variants[0];
 
   // Get available sizes for selected color, sorted by size order
-  const availableSizes = Array.from(
-    new Set(
-      productGroup.variants
-        .filter(v => v.colour_code === currentColor?.colour_code && v.sku_status !== 'Discontinued')
-        .map(v => v.size_code)
-    )
-  ).sort((a, b) => {
+  // First try to match by colour_code, if no results, get all sizes for the product
+  const sizesForColor = productGroup.variants
+    .filter(v => v.colour_code === currentColor?.colour_code && v.sku_status !== 'Discontinued')
+    .map(v => v.size_code);
+
+  const sizesToUse = sizesForColor.length > 0
+    ? sizesForColor
+    : productGroup.variants.filter(v => v.sku_status !== 'Discontinued').map(v => v.size_code);
+
+  const availableSizes = Array.from(new Set(sizesToUse)).sort((a, b) => {
     const aUpper = a.toUpperCase();
     const bUpper = b.toUpperCase();
     return (SIZE_ORDER[aUpper] ?? SIZE_ORDER[a] ?? 50) - (SIZE_ORDER[bUpper] ?? SIZE_ORDER[b] ?? 50);
@@ -182,12 +184,12 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
   // Get price
   const getCurrentPrice = (): { specific: number } | { min: number; max: number } | null => {
     if (selectedSize && currentVariant) {
-      const price = parseFloat(currentVariant.single_price);
+      const price = parseFloat(currentVariant.final_price);
       if (!isNaN(price) && price > 0) return { specific: price };
     }
     const colorVariantPrices = productGroup.variants
       .filter(v => v.colour_code === currentColor?.colour_code)
-      .map(v => parseFloat(v.single_price))
+      .map(v => parseFloat(v.final_price))
       .filter(p => !isNaN(p) && p > 0);
     if (colorVariantPrices.length === 0) return productGroup.price_range || null;
     const min = Math.min(...colorVariantPrices);
@@ -209,7 +211,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
         ) || currentVariant
       : currentVariant;
 
-    const price = selectedVariant ? parseFloat(selectedVariant.single_price) : (productGroup.price_range?.min || 0);
+    const price = selectedVariant ? parseFloat(selectedVariant.final_price) : (productGroup.price_range?.min || 0);
 
     const cartProduct = {
       style_code: productGroup.style_code,
@@ -285,26 +287,95 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
     setOpenAccordion(openAccordion === section ? null : section);
   };
 
+  // How It Works steps data
+  const howItWorksSteps = [
+    {
+      number: 1,
+      title: 'Choose your garments',
+      description: 'Browse our catalogue online, pop into our shop to try on garments, or chat to our team who will advise on the best options for you.',
+    },
+    {
+      number: 2,
+      title: 'Get a FREE quote + mockup',
+      description: 'Send us your logo and our design team will create a visual of how your clothing will look.',
+    },
+    {
+      number: 3,
+      title: 'Approve your order',
+      description: 'Once you approve your order, we\'ll get it into production. This usually takes 5-10 working days.',
+    },
+    {
+      number: 4,
+      title: 'Order up!',
+      description: 'We\'ll let you know when your order is ready to collect from our Kidderminster shop, or we can post it to you.',
+    },
+  ];
+
   // Render quote flow content
   const renderQuoteContent = () => {
     if (showHowItWorksModal) {
       return (
-        <div className="px-3 py-2">
+        <div className="px-4 py-2">
           <button
-            onClick={() => setShowHowItWorksModal(false)}
-            className="mb-3 text-white/70 flex items-center gap-1.5 text-sm"
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowHowItWorksModal(false);
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowHowItWorksModal(false);
+            }}
+            className="mb-4 text-white/70 flex items-center gap-1.5 text-sm select-none"
+            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
           >
             <ChevronLeft className="w-4 h-4" />
             Back
           </button>
-          <ClothingHowItWorks
-            isOpen={showHowItWorksModal}
-            onClose={() => setShowHowItWorksModal(false)}
-            onStartOrder={() => {
+
+          {/* How It Works Content - inline version for mobile sheet */}
+          <div className="text-center mb-6">
+            <h2 className="hearns-font text-2xl text-white mb-2">How does it work?</h2>
+            <p className="text-white/60 text-sm">Getting custom branded workwear is easy</p>
+          </div>
+
+          <div className="space-y-4 mb-6">
+            {howItWorksSteps.map((step) => (
+              <div
+                key={step.number}
+                className="flex gap-4 p-4 rounded-xl bg-white/5 border border-white/10"
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm"
+                  style={{ backgroundColor: colors.accent }}
+                >
+                  {step.number}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-white font-semibold text-sm mb-1">{step.title}</h3>
+                  <p className="text-white/70 text-xs leading-relaxed">{step.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setShowHowItWorksModal(false);
-              setQuoteStep('logo-options');
             }}
-          />
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowHowItWorksModal(false);
+            }}
+            className="w-full py-3 rounded-lg text-white font-bold text-base select-none"
+            style={{ backgroundColor: colors.accent, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+          >
+            Got it!
+          </button>
         </div>
       );
     }
@@ -456,7 +527,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
               className="flex-1 overflow-y-auto overscroll-none"
               style={{ paddingBottom: '80px' }}
             >
-              {showQuoteModal ? (
+              {(showQuoteModal || showHowItWorksModal) ? (
                 renderQuoteContent()
               ) : (
                 <div className="px-4">
@@ -676,7 +747,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                         </div>
                         {quantity > 1 && currentVariant && (
                           <span className="text-white/50 text-sm">
-                            Total: £{(parseFloat(currentVariant.single_price || '0') * quantity).toFixed(2)}
+                            Total: £{(parseFloat(currentVariant.final_price || '0') * quantity).toFixed(2)}
                           </span>
                         )}
                       </div>
@@ -807,7 +878,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             </div>
 
             {/* Fixed Add to Order Button at Bottom */}
-            {!showQuoteModal && (
+            {!showQuoteModal && !showHowItWorksModal && (
               <div
                 className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10"
                 style={{ backgroundColor: colors.dark }}

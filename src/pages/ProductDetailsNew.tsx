@@ -178,7 +178,7 @@ const ProductDetailsNew: React.FC = () => {
           };
         });
 
-        const prices = variants.map(v => parseFloat(v.single_price)).filter(p => !isNaN(p) && p > 0);
+        const prices = variants.map(v => parseFloat(v.final_price)).filter(p => !isNaN(p) && p > 0);
         const priceRange = prices.length ? { min: Math.min(...prices), max: Math.max(...prices) } : undefined;
 
         setProductGroup({
@@ -315,7 +315,7 @@ const ProductDetailsNew: React.FC = () => {
   // Get the current price - specific variant price if size selected, otherwise show range for selected color
   const getCurrentPrice = (): { specific: number } | { min: number; max: number } | null => {
     if (selectedSize && currentVariant) {
-      const price = parseFloat(currentVariant.single_price);
+      const price = parseFloat(currentVariant.final_price);
       if (!isNaN(price) && price > 0) {
         return { specific: price };
       }
@@ -324,7 +324,7 @@ const ProductDetailsNew: React.FC = () => {
     const colorVariants = productGroup.variants.filter(
       v => v.colour_code === productGroup.colors[selectedColor]?.colour_code
     );
-    const prices = colorVariants.map(v => parseFloat(v.single_price)).filter(p => !isNaN(p) && p > 0);
+    const prices = colorVariants.map(v => parseFloat(v.final_price)).filter(p => !isNaN(p) && p > 0);
     if (prices.length === 0) return productGroup.price_range ? { min: productGroup.price_range.min, max: productGroup.price_range.max } : null;
     const min = Math.min(...prices);
     const max = Math.max(...prices);
@@ -440,7 +440,7 @@ const ProductDetailsNew: React.FC = () => {
         ) || currentVariant
       : currentVariant;
 
-    const price = parseFloat(selectedVariant.single_price) || productGroup.price_range?.min || 0;
+    const price = parseFloat(selectedVariant.final_price) || productGroup.price_range?.min || 0;
 
     // Create a GroupedProduct-like object for the cart
     const cartProduct = {

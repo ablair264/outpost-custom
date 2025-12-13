@@ -34,6 +34,7 @@ export interface Product {
   side_image_url?: string;
   additional_image_url?: string;
   single_price: string;
+  final_price: string;
   gender: string;
   categorisation: string;
   colour_code: string;
