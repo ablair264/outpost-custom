@@ -63,7 +63,8 @@
       "Bash(CI=false npm run build:*)",
       "Bash(npx prisma migrate dev:*)",
       "mcp__neon__describe_project",
-      "Bash(netlify deploy:*)"
+      "Bash(netlify deploy:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

@@ -471,6 +471,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.5 }}
+            dragListener={false}
             onDragEnd={handleDragEnd}
             className="fixed inset-x-0 bottom-0 z-50 rounded-t-[10px] overflow-hidden"
             style={{
@@ -478,8 +479,15 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
               backgroundColor: colors.dark,
             }}
           >
-            {/* Drag Handle */}
-            <div className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing">
+            {/* Drag Handle - only this triggers sheet drag */}
+            <motion.div
+              className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.5 }}
+              onDragEnd={handleDragEnd}
+              style={{ touchAction: 'none' }}
+            >
               <div
                 className="w-12 h-1.5 rounded-full"
                 style={{
@@ -487,14 +495,13 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                   boxShadow: `0 2px 8px ${colors.accent}40`,
                 }}
               />
-            </div>
+            </motion.div>
 
-            {/* Content */}
+            {/* Content - buttons are now clickable */}
             <div
               ref={contentRef}
               className="h-full overflow-y-auto overscroll-none pb-6"
-              style={{ touchAction: 'pan-y', maxHeight: 'calc(100% - 24px)' }}
-              onTouchMove={(e) => e.stopPropagation()}
+              style={{ maxHeight: 'calc(100% - 24px)' }}
             >
               {showQuoteModal ? (
                 renderQuoteContent()
