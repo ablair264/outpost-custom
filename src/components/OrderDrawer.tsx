@@ -566,54 +566,79 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 z-40 transition-opacity"
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 bottom-0 w-full sm:max-w-lg bg-gradient-to-br from-[#1a1a1a] to-[#252525] border-l border-gray-800 z-50 flex flex-col shadow-2xl">
+      <motion.div
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+        className="fixed right-0 top-0 bottom-0 w-full sm:max-w-lg z-50 flex flex-col shadow-2xl overflow-hidden"
+        style={{ backgroundColor: colors.dark }}
+      >
+        {/* Background texture */}
+        <div
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{
+            backgroundImage: 'url(/BlackTextureBackground.webp)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+
         {/* Header */}
-        <div className="border-b border-gray-800 p-6">
+        <div className="relative z-10 border-b border-white/10 p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <ShoppingBag className="w-6 h-6" style={{ color: '#6da71d' }} />
-              <h2 className="text-2xl font-bold text-white">
+              <ShoppingBag className="w-6 h-6" style={{ color: colors.accent }} />
+              <h2 className="hearns-font text-2xl text-white">
                 Your Order
               </h2>
               {cart.length > 0 && (
-                <span className="text-sm font-normal text-gray-400">
+                <span className="neuzeit-font text-sm font-normal text-white/50">
                   ({cart.length} {cart.length === 1 ? 'item' : 'items'})
                 </span>
               )}
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
             >
-              <X className="w-5 h-5 text-gray-400" />
+              <X className="w-5 h-5 text-white/60" />
             </button>
           </div>
         </div>
 
         {/* Cart Items - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="relative z-10 flex-1 overflow-y-auto p-6 space-y-4 scrollbar-clothing">
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <ShoppingBag className="w-16 h-16 text-gray-600 mb-4" />
-              <p className="text-lg font-medium text-gray-300 mb-2">
+              <div
+                className="w-20 h-20 rounded-full flex items-center justify-center mb-6"
+                style={{ backgroundColor: `${colors.accent}20` }}
+              >
+                <ShoppingBag className="w-10 h-10" style={{ color: colors.accent }} />
+              </div>
+              <p className="hearns-font text-xl text-white mb-2">
                 You have not yet started an order
               </p>
-              <p className="text-sm text-gray-400 mb-6">
+              <p className="neuzeit-light-font text-sm text-white/60 mb-6">
                 Browse our products to add them to your order
               </p>
-              <Button
+              <button
                 onClick={handleBrowseProducts}
-                className="text-white font-semibold"
-                style={{ background: '#6da71d' }}
+                className="neuzeit-font font-semibold text-white px-6 py-3 rounded-xl transition-all hover:opacity-90"
+                style={{ backgroundColor: colors.accent }}
               >
                 Browse Products
-              </Button>
+              </button>
             </div>
           ) : (
             cart.map((item) => (
@@ -630,27 +655,30 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
 
         {/* Footer with totals and CTAs */}
         {cart.length > 0 && (
-          <div className="border-t border-gray-800 p-6 space-y-4 bg-[#1a1a1a]">
+          <div
+            className="relative z-10 border-t border-white/10 p-6 space-y-4"
+            style={{ backgroundColor: colors.dark }}
+          >
             {/* Totals */}
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-gray-300">
+            <div className="space-y-2 text-sm neuzeit-font">
+              <div className="flex justify-between text-white/70">
                 <span>Subtotal</span>
                 <span>{cartUtils.formatPrice(subtotal)}</span>
               </div>
-              <div className="flex justify-between text-gray-300">
+              <div className="flex justify-between text-white/70">
                 <span>VAT (20%)</span>
                 <span>{cartUtils.formatPrice(tax)}</span>
               </div>
-              <div className="flex justify-between text-gray-300">
+              <div className="flex justify-between text-white/70">
                 <span>Shipping</span>
                 <span>{shipping === 0 ? 'FREE' : cartUtils.formatPrice(shipping)}</span>
               </div>
               {shipping > 0 && subtotal < 50 && (
-                <p className="text-xs" style={{ color: '#6da71d' }}>
+                <p className="text-xs" style={{ color: colors.accent }}>
                   Add {cartUtils.formatPrice(50 - subtotal)} more for free shipping!
                 </p>
               )}
-              <div className="border-t border-gray-800 pt-2 mt-2"></div>
+              <div className="border-t border-white/10 pt-2 mt-2"></div>
               <div className="flex justify-between text-lg font-bold text-white">
                 <span>Total</span>
                 <span>{cartUtils.formatPrice(total)}</span>
@@ -658,26 +686,28 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
             </div>
 
             {/* CTAs */}
-            <div className="space-y-2">
-              <Button
+            <div className="space-y-3">
+              <button
                 onClick={handleStartOrder}
-                className="w-full font-semibold shadow-lg text-white"
-                style={{ background: '#6da71d' }}
+                className="w-full py-3.5 rounded-xl neuzeit-font font-semibold text-white transition-all hover:opacity-90 flex items-center justify-center gap-2"
+                style={{
+                  backgroundColor: colors.accent,
+                  boxShadow: `0 6px 20px ${colors.accent}40`,
+                }}
               >
-                <Sparkles className="w-4 h-4 mr-2" />
+                <Sparkles className="w-4 h-4" />
                 Start Order
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={handleBrowseProducts}
-                variant="outline"
-                className="w-full border-gray-600 text-white hover:bg-gray-800"
+                className="w-full py-3 rounded-xl neuzeit-font font-medium text-white/80 border border-white/20 transition-all hover:bg-white/5"
               >
                 Add More Products
-              </Button>
+              </button>
             </div>
           </div>
         )}
-      </div>
+      </motion.div>
     </>
   );
 };
@@ -700,21 +730,21 @@ interface CartItemCardProps {
 
 const CartItemCard: React.FC<CartItemCardProps> = ({ item, onRemove, onIncrement, onDecrement }) => {
   return (
-    <div className="flex gap-4 p-4 rounded-lg bg-[#252525] border border-gray-800 transition-all hover:border-gray-700">
+    <div className="flex gap-4 p-4 rounded-[12px] bg-white/5 border border-white/10 transition-all hover:border-white/20">
       {/* Product Image */}
-      <div className="w-20 h-20 rounded-md overflow-hidden bg-gray-900 flex-shrink-0">
+      <div className="w-20 h-20 rounded-[10px] overflow-hidden bg-white flex-shrink-0">
         {item.image ? (
           <img
             src={item.image}
             alt={item.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain p-1"
             onError={(e) => {
-              e.currentTarget.src = `https://via.placeholder.com/80x80/1a1a1a/6da71d?text=${encodeURIComponent(item.name.slice(0, 2))}`;
+              e.currentTarget.src = `https://via.placeholder.com/80x80/183028/64a70b?text=${encodeURIComponent(item.name.slice(0, 2))}`;
             }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-600">
-            <ShoppingBag className="w-8 h-8" />
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: colors.darkLight }}>
+            <ShoppingBag className="w-8 h-8 text-white/40" />
           </div>
         )}
       </div>
@@ -723,10 +753,10 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item, onRemove, onIncrement
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-start gap-2 mb-1">
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-white text-sm truncate">
+            <h3 className="neuzeit-font font-medium text-white text-sm truncate">
               {item.name}
             </h3>
-            <p className="text-xs text-gray-400">
+            <p className="neuzeit-light-font text-xs text-white/50">
               {item.brand}
               {item.selectedColor && ` • ${item.selectedColor}`}
               {item.selectedSize && ` • ${item.selectedSize}`}
@@ -734,37 +764,38 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item, onRemove, onIncrement
           </div>
           <button
             onClick={onRemove}
-            className="p-1 hover:bg-red-900/20 rounded transition-colors group flex-shrink-0"
+            className="p-1.5 hover:bg-red-500/10 rounded-lg transition-colors group flex-shrink-0"
             aria-label="Remove item"
           >
-            <X className="w-4 h-4 text-gray-400 group-hover:text-red-400 transition-colors" />
+            <X className="w-4 h-4 text-white/40 group-hover:text-red-400 transition-colors" />
           </button>
         </div>
 
         {/* Price and Quantity */}
-        <div className="flex items-center justify-between mt-2">
-          <span className="font-semibold text-white">
+        <div className="flex items-center justify-between mt-3">
+          <span className="neuzeit-font font-semibold text-white">
             {cartUtils.formatPrice(item.price)}
           </span>
 
           {/* Quantity Controls */}
-          <div className="flex items-center gap-2 bg-[#1a1a1a] rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-white/10 rounded-lg p-1">
             <button
               onClick={onDecrement}
-              className="p-1 rounded transition-colors hover:bg-[rgba(109,167,29,0.2)]"
+              className="p-1.5 rounded-md transition-colors hover:bg-white/10"
               aria-label="Decrease quantity"
             >
-              <Minus className="w-3 h-3 text-gray-300" />
+              <Minus className="w-3 h-3 text-white/70" />
             </button>
-            <span className="w-8 text-center text-sm font-medium text-white">
+            <span className="w-8 text-center text-sm font-medium text-white neuzeit-font">
               {item.quantity}
             </span>
             <button
               onClick={onIncrement}
-              className="p-1 rounded transition-colors hover:bg-[rgba(109,167,29,0.2)]"
+              className="p-1.5 rounded-md transition-colors"
+              style={{ backgroundColor: `${colors.accent}30` }}
               aria-label="Increase quantity"
             >
-              <Plus className="w-3 h-3 text-gray-300" />
+              <Plus className="w-3 h-3" style={{ color: colors.accent }} />
             </button>
           </div>
         </div>

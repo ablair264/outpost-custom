@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, Check, ChevronRight, ChevronLeft, Ruler, Sparkles, Shirt, Droplets, Award, Info, ZoomIn, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Heart, Check, ChevronRight, ChevronLeft, Ruler, Sparkles, Shirt, Droplets, Award, Info, ZoomIn, MessageSquare, Minus, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product, ColorVariant, getProductsByStyleCode, getRgbValues } from '../lib/supabase';
 import { useCart, cartUtils } from '../contexts/CartContext';
@@ -877,6 +877,44 @@ const ProductDetailsNew: React.FC = () => {
                   </motion.div>
                 )}
 
+                {/* Quantity Selector */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.35 }}
+                  className="space-y-2"
+                >
+                  <p className="embossing-font text-[10px] uppercase tracking-[0.15em] text-white/70">
+                    Quantity
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 p-1 rounded-[10px] bg-white/5 border border-white/10">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        disabled={quantity <= 1}
+                        className="w-10 h-10 rounded-[8px] flex items-center justify-center transition-all hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        <Minus className="w-4 h-4 text-white/70" />
+                      </button>
+                      <span className="w-12 text-center neuzeit-font text-lg font-semibold text-white">
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="w-10 h-10 rounded-[8px] flex items-center justify-center transition-all"
+                        style={{ backgroundColor: `${colors.accent}30` }}
+                      >
+                        <Plus className="w-4 h-4" style={{ color: colors.accent }} />
+                      </button>
+                    </div>
+                    <span className="neuzeit-light-font text-sm text-white/50">
+                      {currentPrice && 'specific' in currentPrice && quantity > 1
+                        ? `Total: ${cartUtils.formatPrice(currentPrice.specific * quantity)}`
+                        : 'units'}
+                    </span>
+                  </div>
+                </motion.div>
+
                 {/* Action Buttons */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -903,7 +941,7 @@ const ProductDetailsNew: React.FC = () => {
                       ) : (
                         <>
                           <Shirt className="w-4 h-4" />
-                          Add to Order
+                          Add {quantity > 1 ? `${quantity} ` : ''}to Order
                         </>
                       )}
                     </button>

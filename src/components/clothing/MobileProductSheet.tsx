@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
-import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn, X, Check, ShoppingBag } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Sparkles, Info, ChevronDown, ZoomIn, X, Check, ShoppingBag, Minus, Plus } from 'lucide-react';
 import { ProductGroup } from './ClothingBrowser';
 import { ColorVariant, getRgbValues } from '../../lib/supabase';
 import { useWishlist } from '../../contexts/WishlistContext';
@@ -77,6 +77,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
   const [addedToCart, setAddedToCart] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   // Load hex color lookup
   useEffect(() => {
@@ -262,7 +263,7 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
 
     addToCart(
       cartProduct as any,
-      1, // quantity
+      quantity,
       currentColor?.colour_name,
       selectedSize || undefined
     );
@@ -468,25 +469,16 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
             animate={{ y: '0%' }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0, bottom: 0.5 }}
-            dragListener={false}
-            onDragEnd={handleDragEnd}
             className="fixed inset-x-0 bottom-0 z-50 rounded-t-[10px] overflow-hidden"
             style={{
               height: '95%',
               backgroundColor: colors.dark,
             }}
           >
-            {/* Drag Handle - only this triggers sheet drag */}
-            <motion.div
-              className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={{ top: 0, bottom: 0.5 }}
-              onDragEnd={handleDragEnd}
-              style={{ touchAction: 'none' }}
+            {/* Drag Handle - tap to close */}
+            <div
+              className="flex justify-center pt-3 pb-2"
+              onClick={onClose}
             >
               <div
                 className="w-12 h-1.5 rounded-full"
@@ -495,9 +487,9 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                   boxShadow: `0 2px 8px ${colors.accent}40`,
                 }}
               />
-            </motion.div>
+            </div>
 
-            {/* Content - buttons are now clickable */}
+            {/* Content */}
             <div
               ref={contentRef}
               className="h-full overflow-y-auto overscroll-none pb-6"
@@ -508,11 +500,11 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
               ) : (
                 <div className="px-3 pb-4">
                   {/* Image Carousel - reduced size */}
-                  <div className="relative mb-3">
-                    <Carousel setApi={setCarouselApi} className="w-full">
-                      <CarouselContent>
+                  <div className="relative mb-3 overflow-hidden">
+                    <Carousel setApi={setCarouselApi} className="w-full overflow-hidden">
+                      <CarouselContent className="-ml-0">
                         {galleryImages.map((img, idx) => (
-                          <CarouselItem key={idx}>
+                          <CarouselItem key={idx} className="pl-0">
                             <div
                               className="aspect-[4/3] bg-white rounded-lg overflow-hidden relative cursor-pointer"
                               onClick={() => setFullscreenImage(img.src)}
@@ -584,18 +576,33 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
 
                   {/* Color Selection - Dropdown */}
                   <div className="mb-3 relative">
+                    <p className="text-white/70 text-xs mb-1.5">
+                      Colour: <span className="text-white font-medium">{currentColor?.colour_name || currentColor?.colour_code || 'Select'}</span>
+                    </p>
                     <button
-                      onClick={() => setColorDropdownOpen(!colorDropdownOpen)}
-                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/10 border border-white/20"
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setColorDropdownOpen(!colorDropdownOpen);
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setColorDropdownOpen(!colorDropdownOpen);
+                      }}
+                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg bg-white/10 border border-white/20 select-none"
+                      style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div
-                          className="w-5 h-5 rounded-full border border-white/30"
-                          style={{ backgroundColor: currentColor?.rgb }}
+                          className="w-6 h-6 rounded-full border-2 border-white/40 flex-shrink-0"
+                          style={{ backgroundColor: currentColor?.rgb || '#cccccc' }}
                         />
-                        <span className="text-white text-sm">{currentColor?.colour_name}</span>
+                        <span className="text-white text-sm font-medium truncate">
+                          {currentColor?.colour_name || currentColor?.colour_code || 'Select colour'}
+                        </span>
                       </div>
-                      <ChevronDown className={`w-4 h-4 text-white/60 transition-transform ${colorDropdownOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 text-white/60 transition-transform flex-shrink-0 ${colorDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
 
                     <AnimatePresence>
@@ -608,22 +615,33 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                         >
                           {colorVariants.map((color, idx) => (
                             <button
-                              key={color.colour_code}
-                              onClick={() => {
+                              key={color.colour_code || idx}
+                              onTouchEnd={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 setSelectedColor(idx);
                                 setColorDropdownOpen(false);
                               }}
-                              className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-white/10 transition-colors ${
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setSelectedColor(idx);
+                                setColorDropdownOpen(false);
+                              }}
+                              className={`w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-white/10 transition-colors select-none ${
                                 selectedColor === idx ? 'bg-white/10' : ''
                               }`}
+                              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                             >
                               <div
-                                className="w-4 h-4 rounded-full border border-white/30 flex-shrink-0"
-                                style={{ backgroundColor: color.rgb }}
+                                className="w-5 h-5 rounded-full border border-white/30 flex-shrink-0"
+                                style={{ backgroundColor: color.rgb || '#cccccc' }}
                               />
-                              <span className="text-white text-sm truncate">{color.colour_name}</span>
+                              <span className="text-white text-sm truncate flex-1">
+                                {color.colour_name || color.colour_code || `Color ${idx + 1}`}
+                              </span>
                               {selectedColor === idx && (
-                                <span className="ml-auto text-xs" style={{ color: colors.accent }}>✓</span>
+                                <Check className="w-4 h-4 flex-shrink-0" style={{ color: colors.accent }} />
                               )}
                             </button>
                           ))}
@@ -635,17 +653,27 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                   {/* Size Selection - improved layout */}
                   {availableSizes.length > 0 && (
                     <div className="mb-3">
-                      <p className="text-white/70 text-xs mb-1.5">Size Range: {productGroup.size_range}</p>
-                      <div className="flex flex-wrap gap-1.5">
+                      <p className="text-white/70 text-xs mb-2">Size: <span className="text-white font-medium">{selectedSize || 'Select'}</span></p>
+                      <div className="flex flex-wrap gap-2">
                         {availableSizes.map((size) => (
                           <button
                             key={size}
-                            onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
-                            className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
+                            onTouchEnd={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedSize(selectedSize === size ? '' : size);
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setSelectedSize(selectedSize === size ? '' : size);
+                            }}
+                            className={`min-w-[44px] h-9 px-3 rounded-lg text-sm font-medium transition-all select-none ${
                               selectedSize === size
                                 ? 'bg-white text-gray-900'
-                                : 'bg-white/10 text-white hover:bg-white/20'
+                                : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'
                             }`}
+                            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                           >
                             {size}
                           </button>
@@ -746,8 +774,58 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                     })}
                   </div>
 
+                  {/* Quantity Selector */}
+                  <div className="mb-3">
+                    <p className="text-white/60 text-xs mb-1.5">Quantity</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
+                        <button
+                          onTouchEnd={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (quantity > 1) setQuantity(quantity - 1);
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (quantity > 1) setQuantity(quantity - 1);
+                          }}
+                          disabled={quantity <= 1}
+                          className="w-9 h-9 rounded-md flex items-center justify-center transition-all active:bg-white/10 disabled:opacity-30 select-none"
+                          style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                        >
+                          <Minus className="w-4 h-4 text-white/70" />
+                        </button>
+                        <span className="w-10 text-center text-base font-semibold text-white">
+                          {quantity}
+                        </span>
+                        <button
+                          onTouchEnd={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setQuantity(quantity + 1);
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setQuantity(quantity + 1);
+                          }}
+                          className="w-9 h-9 rounded-md flex items-center justify-center transition-all select-none"
+                          style={{ backgroundColor: `${colors.accent}30`, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                        >
+                          <Plus className="w-4 h-4" style={{ color: colors.accent }} />
+                        </button>
+                      </div>
+                      {quantity > 1 && currentVariant && (
+                        <span className="text-white/50 text-xs">
+                          Total: £{(parseFloat(currentVariant.single_price || '0') * quantity).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Action Buttons */}
-                  <div className="space-y-2 mt-4">
+                  <div className="space-y-2">
                     <button
                       onClick={handleAddToCart}
                       disabled={availableSizes.length > 0 && !selectedSize}
@@ -762,13 +840,23 @@ const MobileProductSheet: React.FC<MobileProductSheetProps> = ({
                       ) : (
                         <>
                           <ShoppingBag className="w-4 h-4" />
-                          Add to Order
+                          Add {quantity > 1 ? `${quantity} ` : ''}to Order
                         </>
                       )}
                     </button>
                     <button
-                      onClick={() => setShowHowItWorksModal(true)}
-                      className="w-full py-2 rounded-lg text-white/80 font-medium text-sm border border-white/20 flex items-center justify-center gap-2"
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowHowItWorksModal(true);
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowHowItWorksModal(true);
+                      }}
+                      className="w-full py-2.5 rounded-lg text-white/80 font-medium text-sm border border-white/20 flex items-center justify-center gap-2 select-none active:bg-white/10"
+                      style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                     >
                       <Info className="w-4 h-4" />
                       How does it work?

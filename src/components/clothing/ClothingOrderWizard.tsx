@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, Eye, Palette, Calendar, ArrowRight, ArrowLeft, Check, Shirt, Move, FileImage, User, Mail, Phone, Hash, MessageSquare } from 'lucide-react';
+import { Upload, Eye, Palette, Calendar, ArrowRight, ArrowLeft, Check, Shirt, Move, FileImage, User, Mail, Phone, Hash, MessageSquare, RotateCw, AlertTriangle } from 'lucide-react';
 
 export type WizardStep = 'has-logo' | 'upload-logo' | 'needs-help-options' | 'preview' | 'contact-form';
 
@@ -98,10 +98,14 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
   const [logoX, setLogoX] = useState(50);
   const [logoY, setLogoY] = useState(50);
   const [logoSize, setLogoSize] = useState(35);
+  const [logoRotation, setLogoRotation] = useState(0);
   const [selectedColorIndex, setSelectedColorIndex] = useState(initialColorIndex);
+  const [originalColorIndex] = useState(initialColorIndex);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [logoAnalysis, setLogoAnalysis] = useState<LogoAnalysis | null>(null);
+  const [showColorWarning, setShowColorWarning] = useState(false);
+  const [pendingColorIndex, setPendingColorIndex] = useState<number | null>(null);
 
   // Multi-item cart state
   const [selectedCartItemIndex, setSelectedCartItemIndex] = useState(0);
@@ -367,6 +371,37 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
     setLogoX(posPctRef.current.x);
     setLogoY(posPctRef.current.y);
   };
+
+  // Handle color selection with warning
+  const handleColorSelect = (idx: number) => {
+    if (idx === selectedColorIndex) return;
+
+    // If changing from original color, show warning
+    if (selectedColorIndex === originalColorIndex && idx !== originalColorIndex) {
+      setPendingColorIndex(idx);
+      setShowColorWarning(true);
+    } else {
+      setSelectedColorIndex(idx);
+    }
+  };
+
+  const confirmColorChange = () => {
+    if (pendingColorIndex !== null) {
+      setSelectedColorIndex(pendingColorIndex);
+    }
+    setShowColorWarning(false);
+    setPendingColorIndex(null);
+  };
+
+  const cancelColorChange = () => {
+    setShowColorWarning(false);
+    setPendingColorIndex(null);
+  };
+
+  // Rotation handlers
+  const rotateLeft = () => setLogoRotation((r) => (r - 15 + 360) % 360);
+  const rotateRight = () => setLogoRotation((r) => (r + 15) % 360);
+  const resetRotation = () => setLogoRotation(0);
 
   const validateForm = (): boolean => {
     const errors: Partial<ContactFormData> = {};
@@ -958,7 +993,7 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                             left: `${logoX}%`,
                             top: `${logoY}%`,
                             width: `${logoSize}%`,
-                            transform: 'translate(-50%, -50%)',
+                            transform: `translate(-50%, -50%) rotate(${logoRotation}deg)`,
                             pointerEvents: 'auto',
                           }}
                           onPointerDown={startDrag}
@@ -1022,27 +1057,91 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
                   />
                 </div>
 
+                {/* Rotation controls */}
+                <div>
+                  <label className="embossing-font text-xs uppercase tracking-wide text-white/70 block mb-2">
+                    Rotation ({logoRotation}°)
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={rotateLeft}
+                      className="flex-1 h-10 rounded-[8px] bg-white/10 hover:bg-white/15 flex items-center justify-center gap-2 text-white/80 transition-colors"
+                    >
+                      <RotateCw className="w-4 h-4 transform -scale-x-100" />
+                      <span className="neuzeit-font text-xs">-15°</span>
+                    </button>
+                    <button
+                      onClick={resetRotation}
+                      className="h-10 px-3 rounded-[8px] bg-white/10 hover:bg-white/15 text-white/60 neuzeit-font text-xs transition-colors"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      onClick={rotateRight}
+                      className="flex-1 h-10 rounded-[8px] bg-white/10 hover:bg-white/15 flex items-center justify-center gap-2 text-white/80 transition-colors"
+                    >
+                      <span className="neuzeit-font text-xs">+15°</span>
+                      <RotateCw className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
                 {/* Color swatches */}
                 {productColors.length > 1 && (
                   <div>
-                    <label className="embossing-font text-xs uppercase tracking-wide text-white/70 block mb-2">
-                      Product Colour
-                    </label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="embossing-font text-xs uppercase tracking-wide text-white/70">
+                        Product Colour
+                      </label>
+                      {selectedColorIndex !== originalColorIndex && (
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs neuzeit-font">
+                          <AlertTriangle className="w-3 h-3" />
+                          Changed
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
                       {productColors.map((c, idx) => (
                         <button
                           key={c.code || c.name + idx}
-                          onClick={() => setSelectedColorIndex(idx)}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
+                          onClick={() => handleColorSelect(idx)}
+                          className={`relative p-2 rounded-[10px] transition-all ${
                             idx === selectedColorIndex
-                              ? 'scale-110 border-[#64a70b]'
-                              : 'border-white/20 hover:border-white/40'
+                              ? 'bg-[#64a70b]/20 ring-2 ring-[#64a70b]'
+                              : 'bg-white/5 hover:bg-white/10 ring-1 ring-white/10'
                           }`}
-                          style={{ backgroundColor: c.rgb || '#cccccc' }}
-                          title={c.name}
-                        />
+                        >
+                          <div
+                            className={`w-full aspect-square rounded-full border-2 mb-1.5 ${
+                              idx === selectedColorIndex
+                                ? 'border-[#64a70b]'
+                                : 'border-white/20'
+                            }`}
+                            style={{ backgroundColor: c.rgb || '#cccccc' }}
+                          />
+                          <span className={`block text-center text-[10px] truncate ${
+                            idx === selectedColorIndex ? 'text-white' : 'text-white/60'
+                          } neuzeit-font`}>
+                            {c.name}
+                          </span>
+                          {idx === originalColorIndex && idx !== selectedColorIndex && (
+                            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[8px] text-white/60">
+                              ✓
+                            </span>
+                          )}
+                          {idx === selectedColorIndex && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#64a70b] flex items-center justify-center">
+                              <Check className="w-2.5 h-2.5 text-white" />
+                            </div>
+                          )}
+                        </button>
                       ))}
                     </div>
+                    {selectedColorIndex !== originalColorIndex && (
+                      <p className="mt-2 text-xs text-amber-400/80 neuzeit-light-font">
+                        Original colour: {productColors[originalColorIndex]?.name}
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -1355,6 +1454,85 @@ const ClothingOrderWizard: React.FC<ClothingOrderWizardProps> = ({
           </div>
         </motion.div>
       )}
+
+      {/* Color Change Warning Modal */}
+      <AnimatePresence>
+        {showColorWarning && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/70 z-50"
+              onClick={cancelColorChange}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div
+                className="w-full max-w-md rounded-xl p-6 shadow-2xl"
+                style={{ backgroundColor: clothingColors.dark }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-amber-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white hearns-font">
+                    Change Colour?
+                  </h3>
+                </div>
+
+                <p className="text-white/70 mb-4 neuzeit-light-font">
+                  You're about to change the product colour from{' '}
+                  <strong className="text-white">{productColors[originalColorIndex]?.name}</strong> to{' '}
+                  <strong className="text-white">{productColors[pendingColorIndex || 0]?.name}</strong>.
+                </p>
+
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="flex-1 p-3 rounded-lg bg-white/5 text-center">
+                    <div
+                      className="w-10 h-10 rounded-full mx-auto mb-2 border-2 border-white/20"
+                      style={{ backgroundColor: productColors[originalColorIndex]?.rgb || '#ccc' }}
+                    />
+                    <span className="text-xs text-white/60 neuzeit-font">Current</span>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-white/40" />
+                  <div className="flex-1 p-3 rounded-lg bg-[#64a70b]/10 text-center ring-2 ring-[#64a70b]">
+                    <div
+                      className="w-10 h-10 rounded-full mx-auto mb-2 border-2 border-[#64a70b]"
+                      style={{ backgroundColor: productColors[pendingColorIndex || 0]?.rgb || '#ccc' }}
+                    />
+                    <span className="text-xs text-white neuzeit-font">New</span>
+                  </div>
+                </div>
+
+                <p className="text-white/50 text-sm mb-6 neuzeit-light-font">
+                  This will update the colour for your order. You can always change it back.
+                </p>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={cancelColorChange}
+                    className="flex-1 py-2.5 rounded-lg border border-white/20 text-white/80 font-medium transition-all hover:bg-white/5 neuzeit-font"
+                  >
+                    Keep Original
+                  </button>
+                  <button
+                    onClick={confirmColorChange}
+                    className="flex-1 py-2.5 rounded-lg font-semibold text-white transition-all neuzeit-font"
+                    style={{ backgroundColor: clothingColors.accent }}
+                  >
+                    Change Colour
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

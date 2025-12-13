@@ -204,12 +204,20 @@ const UnifiedChatWidget: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // Check admin status on mount and periodically
+  // Only check admin status when in livechat mode and chat is open (or about to open)
   useEffect(() => {
+    // Only check status when in livechat mode
+    if (mode !== 'livechat') return;
+
+    // Check once when mode switches to livechat
     checkAdminStatus();
-    const interval = setInterval(checkAdminStatus, 30000); // Check every 30s
-    return () => clearInterval(interval);
-  }, [checkAdminStatus]);
+
+    // Only poll periodically if chat is open
+    if (isOpen) {
+      const interval = setInterval(checkAdminStatus, 30000); // Check every 30s while open
+      return () => clearInterval(interval);
+    }
+  }, [checkAdminStatus, mode, isOpen]);
 
   // Initialize session when chat opens in livechat mode
   useEffect(() => {
