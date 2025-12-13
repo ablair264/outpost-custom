@@ -42,6 +42,12 @@ export interface CartItem {
   image: string;
   brand?: string;
   selectedColor?: string;
+  availableColors?: Array<{
+    name: string;
+    rgb?: string;
+    image?: string;
+    code?: string;
+  }>;
 }
 
 export interface ContactFormData {

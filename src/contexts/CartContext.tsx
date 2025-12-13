@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { GroupedProduct } from '../lib/supabase';
 
+interface ColorOption {
+  name: string;
+  code?: string;
+  rgb?: string;
+  image?: string;
+}
+
 interface CartItem {
   id: string;
   name: string;
@@ -11,6 +18,7 @@ interface CartItem {
   styleCode: string;
   selectedColor?: string;
   selectedSize?: string;
+  availableColors?: ColorOption[];
 }
 
 interface CartContextType {
@@ -56,6 +64,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         );
       }
 
+      // Extract available colors from product
+      const availableColors: ColorOption[] = product.colors?.map(c => ({
+        name: c.colour_name,
+        code: c.colour_code,
+        rgb: c.rgb,
+        image: c.colour_image,
+      })) || [];
+
       return [
         ...prev,
         {
@@ -68,6 +84,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           styleCode: product.style_code,
           selectedColor: color,
           selectedSize: size,
+          availableColors,
         },
       ];
     });

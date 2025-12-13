@@ -100,13 +100,22 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
   };
 
   // Convert cart items to format expected by ClothingOrderWizard
-  const cartItemsForWizard: CartItem[] = cart.map(item => ({
-    id: item.id,
-    name: item.name,
-    image: item.image,
-    brand: item.brand,
-    selectedColor: item.selectedColor,
-  }));
+  const cartItemsForWizard: CartItem[] = cart.map(item => {
+    const itemWithColors = item as any; // TypeScript doesn't know about availableColors
+    return {
+      id: item.id,
+      name: item.name,
+      image: item.image,
+      brand: item.brand,
+      selectedColor: item.selectedColor,
+      availableColors: itemWithColors.availableColors?.map((c: any) => ({
+        name: c.name,
+        rgb: c.rgb,
+        image: c.image,
+        code: c.code,
+      })) || [],
+    };
+  });
 
   // Get first cart item for single-item orders
   const firstCartItem = cart[0];
@@ -199,22 +208,28 @@ const OrderDrawer: React.FC<OrderDrawerProps> = ({ isOpen, onClose }) => {
   const renderModalContent = () => {
     switch (quoteStep) {
       case 'wizard':
-        // For single item, show the selected color; for multiple items, each item has its own selected color
-        const singleItemColors = cart.length === 1 && firstCartItem?.selectedColor
-          ? [{
-              name: firstCartItem.selectedColor,
-              rgb: undefined, // We don't have the RGB stored in cart
-              image: firstCartItem.image,
-              code: firstCartItem.selectedColor,
-            }]
-          : [];
+        // Get all available colors from cart items
+        // For single item, use availableColors stored from the product
+        // For multi-item, each cart item already has its own colors stored
+        const firstItem = cart[0] as any; // TypeScript doesn't know about availableColors yet
+        const productColorsForWizard = firstItem?.availableColors?.map((c: any) => ({
+          name: c.name,
+          rgb: c.rgb,
+          image: c.image,
+          code: c.code,
+        })) || [];
+
+        // Find initial color index based on selected color
+        const initialIdx = productColorsForWizard.findIndex(
+          (c: any) => c.name === firstItem?.selectedColor || c.code === firstItem?.selectedColor
+        );
 
         return (
           <ClothingOrderWizard
             productName={cart.length > 1 ? `${cart.length} items in your order` : firstCartItem?.name || 'Your Order'}
             productImage={firstCartItem?.image}
-            productColors={singleItemColors}
-            initialColorIndex={0}
+            productColors={productColorsForWizard}
+            initialColorIndex={initialIdx >= 0 ? initialIdx : 0}
             onSelectPath={handleSelectPath}
             isMobile={isMobile}
             cartItems={cart.length > 1 ? cartItemsForWizard : []}
